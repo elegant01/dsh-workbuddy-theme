@@ -1,18 +1,23 @@
 name: publish
 
-# 打 tag（形如 v0.1.2）即发布：先校验 tag 与 package.json 版本一致，再发 npm、建 GitHub Release。
-# 发布信息只有一个来源——package.json；tag 只是触发器。
+# 打 tag（形如 v0.1.2）触发：校验 tag 与 package.json 版本、校验插件清单、构建冒烟测试、
+# 建 GitHub Release。
+#
+# 注意：这里**不**执行 npm publish。
+# npm 账号开启 2FA 后（auth-and-writes / auth-only），任何 token —— 包括 Automation ——
+# 发布会一律要求 OTP，CI 里拿不到。发布请在本机执行：
+#     npm publish --registry=https://registry.npmjs.org/ --otp=<6位验证码>
 on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch: # 允许在 Actions 页面手动跑，便于排查认证问题
+  workflow_dispatch: # 允许在 Actions 页面手动跑
 
 permissions:
   contents: write # 建 Release 需要
 
 jobs:
-  publish:
+  verify-and-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,10 +25,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          # 不缓存 npm 依赖：本包零依赖，缓存只会多一次失败机会
 
-      # tag 与 package.json 必须一致，否则发出去的版本号和 tag 对不上，
-      # 事后谁也说不清 v0.1.2 到底对应哪份代码。
+      # tag 与 package.json 必须一致，否则事后说不清 v0.1.2 到底对应哪份代码。
       - name: 校验 tag 与 package.json 版本一致
         run: |
           tag="${GITHUB_REF_NAME#v}"
@@ -34,7 +37,7 @@ jobs:
             exit 1
           fi
 
-      # 装机前的健全性检查：这几项错了，包装上也是坏的（都是真踩过的坑）
+      # 装机前的健全性检查：这几项错了，包发出去也是坏的（都是真踩过的坑）
       - name: 校验插件清单
         run: |
           node -e '
@@ -51,54 +54,20 @@ jobs:
             console.log("清单 OK:", j.name, j.version);
           '
 
-      # 先确认 secret 真的传进来了、也真的能用。这一步失败说明是 token 的问题，
-      # 而不是 npm publish 的其他毛病——省得对着 EOTP/ENEEDAUTH 瞎猜。
-      - name: 校验 NPM_TOKEN 可用
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: 构建冒烟测试
         run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "::error::secrets.NPM_TOKEN 为空，请检查仓库 Settings → Secrets。"
-            exit 1
-          fi
-          echo "token 长度: ${#NODE_AUTH_TOKEN}"
-          who="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $NODE_AUTH_TOKEN" https://registry.npmjs.org/-/whoami)"
-          echo "whoami HTTP $who"
-          # 401 = token 无效或已撤销
-          if [ "$who" != "200" ]; then
-            echo "::error::NPM_TOKEN 认证失败（HTTP $who）。请在 npmjs.com 重新生成 Automation token。"
-            exit 1
-          fi
-          # 探一下写入能力：读权限的 token 会 here 报 401 "one-time pass"，
-          # 说明它其实是 Publish（要 OTP）而不是 Automation。
-          name="$(node -p "require('./package.json').name")"
-          put="$(curl -s -o /tmp/put.txt -w '%{http_code}' -X PUT \
-            -H "Authorization: Bearer $NODE_AUTH_TOKEN" -H 'Content-Type: application/json' \
-            --data '{"_id":"'"$name"'","name":"'"$name"'","dist-tags":{"probe":"0.0.0"}}' \
-            "https://registry.npmjs.org/$name")"
-          echo "写权限探测 HTTP $put"
-          # 说明：只要账号 2FA 是 auth-and-writes，Publish / Classic / Automation 三种 token
-          # 在 npm 注册表端都会被要求 OTP（实测 2026-11）。这是账号级限制，换 token 类型解不开。
-          if [ "$put" = "401" ] || grep -q "one-time pass" /tmp/put.txt; then
-            echo "::warning::token 被要求 OTP。若确为 Automation 类型，这是 npm 账号 auth-and-writes 的账号级限制。"
-          fi
-
-      - name: 发布到 npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          # 关键：用注册表 scope 前缀传 token，别依赖 .npmrc 里的 ${NODE_AUTH_TOKEN} 展开
-          # （npm 在某些版本/环境下不会展开该变量，直接静默失败成 ENEEDAUTH）。
-          npm publish --access public \
-            --//registry.npmjs.org/:_authToken="$NODE_AUTH_TOKEN"
+          npm pack --dry-run
+          node --input-type=module -e '
+            const m = await import("./index.js");
+            if (typeof m.apply !== "function" || !m.name) {
+              throw new Error("index.js 必须具名导出 name 与 apply");
+            }
+            console.log("宿主端导出 OK:", m.name);
+          '
 
       - name: 建 GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
         run: |
-          gh release create "$tag" \
-            --title "$tag" \
-            --generate-notes \
-            "dsh-workbuddy-theme-*.tgz" 2>/dev/null || \
           gh release create "$tag" --title "$tag" --generate-notes
