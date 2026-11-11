@@ -6,6 +6,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch: # 允许在 Actions 页面手动跑，便于排查认证问题
 
 permissions:
   contents: write # 建 Release 需要
@@ -50,8 +51,39 @@ jobs:
             console.log("清单 OK:", j.name, j.version);
           '
 
+      # 先确认 secret 真的传进来了、也真的能用。这一步失败说明是 token 的问题，
+      # 而不是 npm publish 的其他毛病——省得对着 EOTP/ENEEDAUTH 瞎猜。
+      - name: 校验 NPM_TOKEN 可用
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::error::secrets.NPM_TOKEN 为空，请检查仓库 Settings → Secrets。"
+            exit 1
+          fi
+          echo "token 长度: ${#NODE_AUTH_TOKEN}"
+          who="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $NODE_AUTH_TOKEN" https://registry.npmjs.org/-/whoami)"
+          echo "whoami HTTP $who"
+          # 401 = token 无效或已撤销；写权限不足会在 publish 步骤以 EOTP 暴露
+          if [ "$who" != "200" ]; then
+            echo "::error::NPM_TOKEN 认证失败（HTTP $who）。请在 npmjs.com 重新生成 Automation token。"
+            exit 1
+          fi
+          # auth-and-writes 账号的 tokens 即使类型是 Automation，有时也会被要求 OTP。
+          # 这里先探一下写入能力，好把问题定位在 token 而不是打包。
+          put="$(curl -s -o /tmp/put.txt -w '%{http_code}' -X PUT \
+            -H "Authorization: Bearer $NODE_AUTH_TOKEN" -H 'Content-Type: application/json' \
+            --data '{"_id":"'"$PWD"'","name":"'"$(node -p "require('./package.json').name")"'","dist-tags":{"probe":"0.0.0"}}' \
+            "https://registry.npmjs.org/$(node -p "require('./package.json').name")")"
+          echo "写权限探测 HTTP $put"
+          if [ "$put" = "401" ] || grep -q "one-time pass" /tmp/put.txt; then
+            echo "::error::该 token 仍要求 OTP。请到 npmjs.com → Access Tokens 生成类型为 Automation 的新 token，并替换 secrets.NPM_TOKEN。"
+            exit 1
+          fi
+
       - name: 发布到 npm
-        run: npm publish --access public
+        run: |
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
