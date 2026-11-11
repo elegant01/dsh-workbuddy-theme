@@ -1,0 +1,67 @@
+name: publish
+
+# 打 tag（形如 v0.1.2）即发布：先校验 tag 与 package.json 版本一致，再发 npm、建 GitHub Release。
+# 发布信息只有一个来源——package.json；tag 只是触发器。
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # 建 Release 需要
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          # 不缓存 npm 依赖：本包零依赖，缓存只会多一次失败机会
+
+      # tag 与 package.json 必须一致，否则发出去的版本号和 tag 对不上，
+      # 事后谁也说不清 v0.1.2 到底对应哪份代码。
+      - name: 校验 tag 与 package.json 版本一致
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          echo "tag=$tag package=$pkg"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag v$tag 与 package.json 的 $pkg 不一致。改 package.json 后重新打 tag。"
+            exit 1
+          fi
+
+      # 装机前的健全性检查：这几项错了，包装上也是坏的（都是真踩过的坑）
+      - name: 校验插件清单
+        run: |
+          node -e '
+            const j = require("./package.json");
+            const fs = require("fs");
+            if (!j.dsh?.bundle?.patch) { console.error("缺少 dsh.bundle.patch —— 这样的包装不上"); process.exit(1); }
+            if (!fs.existsSync(j.dsh.bundle.patch)) { console.error("dsh.bundle.patch 指向的文件不存在"); process.exit(1); }
+            if (!j.main || !fs.existsSync(j.main)) { console.error("main 指向的文件不存在"); process.exit(1); }
+            const m = fs.readFileSync("index.js", "utf8");
+            if (!/^export const name\b/m.test(m) || !/^export function apply\b/m.test(m)) {
+              console.error("index.js 必须具名导出 name 与 apply（default 导出会让加载器挂不上）");
+              process.exit(1);
+            }
+            console.log("清单 OK:", j.name, j.version);
+          '
+
+      - name: 发布到 npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 建 GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+        run: |
+          gh release create "$tag" \
+            --title "$tag" \
+            --generate-notes \
+            "dsh-workbuddy-theme-*.tgz" 2>/dev/null || \
+          gh release create "$tag" --title "$tag" --generate-notes
