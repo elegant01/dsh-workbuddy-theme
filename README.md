@@ -70,6 +70,25 @@ CSS 分三层，从稳到脆：
 2. **覆盖组件类名**（约占 30%）——`.wtg9ga_*` / `.GRgSLq_*` / `.hKdVjq_*`，类名带构建哈希，大版本升级后可能要重新对
 3. **不打 DOM 补丁**——不重写结构、不注入元素
 
+## 发版流程
+
+打 `v*` tag 即触发 GitHub Actions（`.github/workflows/publish.yml`）：校验 tag 与 `package.json` 版本一致、
+校验插件清单（`dsh.bundle.patch` / `main` / `index.js` 具名导出）、`npm pack` 冒烟测试，最后建 Release。
+
+```bash
+# 1. 改版本号
+npm version 0.1.3 --no-git-tag-version
+# 2. 发布到 npm（需要 OTP，见下）
+npm publish --registry=https://registry.npmjs.org/ --otp=<6位验证码>
+# 3. 提交并打 tag，触发 CI
+git commit -am "release: 0.1.3" && git tag -a v0.1.3 -m "0.1.3" && git push origin main --follow-tags
+```
+
+**为什么 CI 不自动发布**：npm 账号开启两步验证（`auth-and-writes` / `auth-only`）之后，
+**任何 token 发布都会要求 OTP**——Automation token 也不例外（2026-11 实测：用 Automation token 发布
+返回 `EOTP`，携带任意 OTP 返回同样的 `EOTP`）。OTP 只存在于你的验证器里，CI 拿不到。
+所以发布这一步只能在本机交互完成，CI 负责其余全部校验。
+
 ## 已知取舍
 
 - DSH 前端类名是 CSS Modules 生成哈希（如 `.wtg9ga_panelRow`）。插件里的选择器**直接写了这些类名**，
