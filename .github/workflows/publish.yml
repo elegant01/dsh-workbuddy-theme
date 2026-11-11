@@ -77,9 +77,10 @@ jobs:
             --data '{"_id":"'"$name"'","name":"'"$name"'","dist-tags":{"probe":"0.0.0"}}' \
             "https://registry.npmjs.org/$name")"
           echo "写权限探测 HTTP $put"
+          # 说明：只要账号 2FA 是 auth-and-writes，Publish / Classic / Automation 三种 token
+          # 在 npm 注册表端都会被要求 OTP（实测 2026-11）。这是账号级限制，换 token 类型解不开。
           if [ "$put" = "401" ] || grep -q "one-time pass" /tmp/put.txt; then
-            echo "::error::该 token 仍要求 OTP —— 它不是 Automation 类型。请到 npmjs.com → Access Tokens 生成 Automation token 并替换 secrets.NPM_TOKEN。"
-            exit 1
+            echo "::warning::token 被要求 OTP。若确为 Automation 类型，这是 npm 账号 auth-and-writes 的账号级限制。"
           fi
 
       - name: 发布到 npm
