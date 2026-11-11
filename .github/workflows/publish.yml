@@ -64,28 +64,32 @@ jobs:
           echo "token 长度: ${#NODE_AUTH_TOKEN}"
           who="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $NODE_AUTH_TOKEN" https://registry.npmjs.org/-/whoami)"
           echo "whoami HTTP $who"
-          # 401 = token 无效或已撤销；写权限不足会在 publish 步骤以 EOTP 暴露
+          # 401 = token 无效或已撤销
           if [ "$who" != "200" ]; then
             echo "::error::NPM_TOKEN 认证失败（HTTP $who）。请在 npmjs.com 重新生成 Automation token。"
             exit 1
           fi
-          # auth-and-writes 账号的 tokens 即使类型是 Automation，有时也会被要求 OTP。
-          # 这里先探一下写入能力，好把问题定位在 token 而不是打包。
+          # 探一下写入能力：读权限的 token 会 here 报 401 "one-time pass"，
+          # 说明它其实是 Publish（要 OTP）而不是 Automation。
+          name="$(node -p "require('./package.json').name")"
           put="$(curl -s -o /tmp/put.txt -w '%{http_code}' -X PUT \
             -H "Authorization: Bearer $NODE_AUTH_TOKEN" -H 'Content-Type: application/json' \
-            --data '{"_id":"'"$PWD"'","name":"'"$(node -p "require('./package.json').name")"'","dist-tags":{"probe":"0.0.0"}}' \
-            "https://registry.npmjs.org/$(node -p "require('./package.json').name")")"
+            --data '{"_id":"'"$name"'","name":"'"$name"'","dist-tags":{"probe":"0.0.0"}}' \
+            "https://registry.npmjs.org/$name")"
           echo "写权限探测 HTTP $put"
           if [ "$put" = "401" ] || grep -q "one-time pass" /tmp/put.txt; then
-            echo "::error::该 token 仍要求 OTP。请到 npmjs.com → Access Tokens 生成类型为 Automation 的新 token，并替换 secrets.NPM_TOKEN。"
+            echo "::error::该 token 仍要求 OTP —— 它不是 Automation 类型。请到 npmjs.com → Access Tokens 生成 Automation token 并替换 secrets.NPM_TOKEN。"
             exit 1
           fi
 
       - name: 发布到 npm
-        run: |
-          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # 关键：用注册表 scope 前缀传 token，别依赖 .npmrc 里的 ${NODE_AUTH_TOKEN} 展开
+          # （npm 在某些版本/环境下不会展开该变量，直接静默失败成 ENEEDAUTH）。
+          npm publish --access public \
+            --//registry.npmjs.org/:_authToken="$NODE_AUTH_TOKEN"
 
       - name: 建 GitHub Release
         env:
