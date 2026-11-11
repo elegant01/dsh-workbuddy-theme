@@ -1,0 +1,45 @@
+{
+  "name": "dsh-workbuddy-theme",
+  "version": "0.1.1",
+  "description": "WorkBuddy 主题 for DSH Web GUI — 薄荷绿品牌色、灰阶侧栏、24px 输入框、无框助手消息",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "theme",
+    "workbuddy",
+    "deepseek-harness"
+  ],
+  "license": "MIT",
+  "author": "elegant01",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elegant01/dsh-workbuddy-theme.git"
+  },
+  "homepage": "https://github.com/elegant01/dsh-workbuddy-theme#readme",
+  "bugs": {
+    "url": "https://github.com/elegant01/dsh-workbuddy-theme/issues"
+  },
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    }
+  }
+}
