@@ -1,4 +1,7 @@
 node_modules/
 *.tgz
+*.bak
+*.bak2-*
+*.bak-*
 .DS_Store
 Thumbs.db

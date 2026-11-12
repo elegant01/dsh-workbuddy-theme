@@ -60,15 +60,27 @@ dsh plugin --profile <你的 profile> add file:/path/to/dsh-workbuddy-theme
 
 ```
 index.js          宿主端，只有一个空 apply()，作用是让加载器把插件挂进插件集合
-client.js         全部效果所在：一段 CSS（约 350 行）
+client.js         全部效果所在：一段 CSS（约 300 行，含注释）
 cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 ```
 
 CSS 分三层，从稳到脆：
 
-1. **改设计令牌**（约占 70%）——覆盖 `--dsw-alias-*` / `--dsw-static-*`，DSH 升级后基本不会坏
-2. **覆盖组件类名**（约占 30%）——`.wtg9ga_*` / `.GRgSLq_*` / `.hKdVjq_*`，类名带构建哈希，大版本升级后可能要重新对
+1. **改设计令牌**（约占 70%）——覆盖 `--dsw-alias-*` / `--dsw-static-*` / `--dsw-font-*`，DSH 升级后基本不会坏
+2. **覆盖组件选择器**（约占 30%）——**优先用宿主发布的 `data-*` 属性**
+   （`[data-composer-card]` / `[data-message-bubble]` / `[data-tool]`），
+   只有没有属性的地方才退回带哈希的类名（`.wtg9ga_*` / `.GRgSLq_*` / `.hKdVjq_*`）
 3. **不打 DOM 补丁**——不重写结构、不注入元素
+
+侧栏定制带**探测门控**：插件加载时找不到 `.wtg9ga_*`（DSH 升级改了类名）就整段跳过并在控制台告警，
+不会把错位的样式硬套上去。配色与字体不受影响。
+
+字体与正文排版也走令牌（`--dsh-font-family-text-default` / `--dsw-font-markdown-base`），
+不是锁类名，所以标题、代码、表格的字体栈会一起跟着变。
+
+## 更新日志
+
+见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 发版流程
 
@@ -77,11 +89,11 @@ CSS 分三层，从稳到脆：
 
 ```bash
 # 1. 改版本号
-npm version 0.1.3 --no-git-tag-version
+npm version 0.2.1 --no-git-tag-version
 # 2. 发布到 npm（需要 OTP，见下）
 npm publish --registry=https://registry.npmjs.org/ --otp=<6位验证码>
 # 3. 提交并打 tag，触发 CI
-git commit -am "release: 0.1.3" && git tag -a v0.1.3 -m "0.1.3" && git push origin main --follow-tags
+git commit -am "release: 0.2.1" && git tag -a v0.2.1 -m "0.2.1" && git push origin main --follow-tags
 ```
 
 **为什么 CI 不自动发布**：npm 账号开启两步验证（`auth-and-writes` / `auth-only`）之后，

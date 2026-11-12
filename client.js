@@ -114,6 +114,20 @@ html body:not(#dsh-wb-never-match) {
   --dsw-specific-bubble: var(--wb-gray-3);
   --dsw-alias-markdown-code-block: #fafafa;
   --dsw-radius-panel: 24px;
+
+  /* ---- 字体栈与正文排版 ----
+     DSH 的正文字体、字号、行高全部由令牌驱动（dsh-client-ui-theme 的
+     design_platform_css_default），改令牌比锁类名稳定得多：
+       --dsw-font-family          ← --dsh-font-family-text-default
+       --dsw-font-markdown-base   ← var(--dsh-content-font-size,14px) / calc(24px + delta)
+     WorkBuddy 正文 = PingFang SC 栈 + 14px / 22px + 0.1px 字距；
+     DSH 默认行高是 24px，比 WorkBuddy 松 2px（9%），肉眼能看出密度差异。 */
+  --dsh-font-family-text-default: "PingFang SC", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --dsw-font-family: var(--dsh-font-family-text-default);
+  --dsw-font-markdown-base: var(--dsh-content-font-size, 14px) /
+    calc(22px + var(--dsh-content-font-delta)) var(--dsw-font-family);
+  --dsw-font-markdown-base-line-height: calc(22px + var(--dsh-content-font-delta));
 }
 
 body, button, input, textarea, select {
@@ -121,15 +135,18 @@ body, button, input, textarea, select {
   -webkit-font-smoothing: antialiased;
 }
 
-/* DSH 侧栏真实类名（SidebarRoot_module_css_default，前缀 wtg9ga）—— 上面那些
-   [class*="sidebar"] 模糊匹配在 DSH 里一个都匹配不到（类名里根本没有 sidebar 字样），
-   所以侧栏一直没变色。这里按真实类名精确覆盖。 */
-.wtg9ga_root {
+/* ============ 2. 侧栏（WorkBuddy --wb-sidebar-bg）
+   选择器策略（v4）：
+     · 宿主主动发布的 data-* 属性优先（升级不易失效）；
+     · 侧栏项宿主没发属性，只能锁类名 SidebarRoot_module_css_default（前缀 wtg9ga），
+       并通过 <html data-dsh-wb-*> 探测失败时整段跳过，避免升级后「套上但错位」。
+   DSH 0.2.2-rc.1 实测前缀 wtg9ga。 */
+html[data-dsh-wb-sidebar="on"] .wtg9ga_root {
   background: var(--wb-gray-2);
   padding: 6px 8px;
 }
 /* 导航项：WorkBuddy 高 40px、8px 圆角、左右 8px 内边距、14px/22px、字重 400 */
-.wtg9ga_panelRow {
+html[data-dsh-wb-sidebar="on"] .wtg9ga_panelRow {
   min-height: 40px;
   border-radius: 8px;
   padding: 9px 8px;
@@ -139,86 +156,48 @@ body, button, input, textarea, select {
   font-weight: 400;
   color: #000;
 }
-.wtg9ga_panelRow:hover { background-color: var(--wb-gray-4); }
+html[data-dsh-wb-sidebar="on"] .wtg9ga_panelRow:hover { background-color: var(--wb-gray-4); }
 /* 选中态：WorkBuddy 用灰阶（gray-4），不用品牌绿 */
-.wtg9ga_panelRow.wtg9ga_panelActive,
-.wtg9ga_panelRow[aria-expanded="true"] { background-color: var(--wb-gray-4); color: #000; }
-.wtg9ga_panelRow:focus-visible { outline-color: var(--wb-brand); outline-offset: -2px; }
+html[data-dsh-wb-sidebar="on"] .wtg9ga_panelRow.wtg9ga_panelActive,
+html[data-dsh-wb-sidebar="on"] .wtg9ga_panelRow[aria-expanded="true"] { background-color: var(--wb-gray-4); color: #000; }
+html[data-dsh-wb-sidebar="on"] .wtg9ga_panelRow:focus-visible { outline-color: var(--wb-brand); outline-offset: -2px; }
 
-/* 会话列表项（另一处：会话条目用 aria-current / data-active 标记） */
-.wtg9ga_regionArea [class*="conversation"] [aria-current="true"],
-.wtg9ga_regionArea [role="treeitem"][aria-selected="true"] {
+/* 会话列表项：宿主在 regionArea 里用 aria-current / aria-selected 标记选中，
+   这里用属性选择器（稳定）而不是类名。 */
+html[data-dsh-wb-sidebar="on"] .wtg9ga_regionArea [aria-current="true"],
+html[data-dsh-wb-sidebar="on"] .wtg9ga_regionArea [role="treeitem"][aria-selected="true"] {
   background: var(--wb-gray-4);
   border-radius: 8px;
 }
-/* ============ 2. 侧栏（WorkBuddy --wb-sidebar-bg / --wb-sidebar-border） ============
-   注意：下面这几条 [class*="sidebar"] 模糊匹配在 DSH 里【完全不命中】——
-   DSH 侧栏真实类名是 wtg9ga_*（SidebarRoot_module_css_default），不含 sidebar 字样。
-   保留它们只是为了万一 DSH 改了类名约定后能兜底，真正生效的是上面的 .wtg9ga_*。 */
-[class*="sidebar"], [class*="Sidebar"], nav[class*="nav"], [class*="sessionList"] {
-  --wb-sidebar-bg: var(--wb-gray-2);
-  --wb-sidebar-border: var(--wb-gray-4);
-}
 
-[class*="sidebar"], [class*="Sidebar"] {
-  background: var(--wb-gray-2);
-  border-right: 1px solid var(--wb-gray-4);
-}
-
-/* 会话项：WorkBuddy .im-conversation-item —— 8px 圆角、40px 高、8px 内边距、14px/22px 正文 */
-[class*="sidebar"] [class*="item"], [class*="sidebar"] [class*="row"],
-[class*="sessionList"] [class*="item"], [class*="sessionList"] [class*="row"] {
-  border-radius: 8px;
-  min-height: 36px;
-  font-size: var(--wb-fs-body);
-  line-height: var(--wb-lh-body);
-  font-weight: 400;
-  color: var(--wb-text-strong);
-  transition: background-color 0.16s ease;
-}
-
-[class*="sidebar"] [class*="item"]:hover, [class*="sidebar"] [class*="row"]:hover,
-[class*="sessionList"] [class*="item"]:hover, [class*="sessionList"] [class*="row"]:hover {
-  background: var(--wb-gray-4);
-}
-
-/* 选中态：WorkBuddy 用 gray-5，不用品牌色块 */
-[class*="sidebar"] [class*="item"][aria-current],
-[class*="sidebar"] [class*="item"][data-active="true"],
-[class*="sidebar"] [class*="item"][class*="active"],
-[class*="sessionList"] [class*="item"][aria-current] {
-  background: var(--wb-gray-4);
-  font-weight: 500;
-}
-
-/* 侧栏分区小标题：WorkBuddy 12px/一致 tertiary 色 */
-[class*="sidebar"] [class*="groupTitle"], [class*="sidebar"] [class*="sectionTitle"],
-[class*="sidebar"] [class*="header"] {
-  font-size: var(--wb-fs-small);
-  color: var(--wb-text-weak);
-  font-weight: 500;
-  letter-spacing: 0.2px;
-}
-
-/* ============ 3. 对话区 ============ */
-.prose, .markdown-body, [class*="messageContent"], [class*="markdown"] {
-  font-size: var(--wb-fs-body);
-  line-height: var(--wb-lh-body);
+/* ============ 3. 对话区 ============
+   正文排版（字体栈 / 14px / 22px 行高）走上面的 --dsw-font-markdown-base 令牌，
+   这里只补字距。
+   注意：.prose / .markdown-body 是 GitHub Markdown 的类名约定，DSH 并不使用，
+   写了也不生效（v1~v3 这条一直没命中）。DSH 真正的正文类是 ._markdown_rve47_5，
+   由 --dsw-font-markdown-base 驱动，所以无需也不应再锁类名。 */
+[class*="_markdown_"] {
   letter-spacing: 0.1px;
-  color: var(--wb-text-strong);
 }
 
-[class*="chatContainer"], [class*="messagesContainer"], [class*="conversation"] > div {
-  max-width: var(--wb-chat-max);
-  margin-left: auto;
-  margin-right: auto;
-}
+/* 宿主对话区属性（ConversationRoot_module_css_default 发布）：
+   data-conversation-content / data-conversation-scroll
+   ⚠️ 对话区宽度【不能】用 max-width + 居中来做：
+   宿主的滚动容器是满宽、消息列靠内部 padding 居中，
+   给滚动容器套 max-width 会把「可滚动区域」本身缩窄，
+   表现为"对话范围变小、滚动条缩到中间"。
+   WorkBuddy 的 848px 居中栏，宿主已经有等价实现：
+   --dsh-chat-content-width = clamp(680px, 列宽*0.64, 920px)，
+   由用户在对话区拖拽宽度手柄调节。这里不改它。 */
 @media (min-width: 1681px) {
   :root { --wb-chat-max: 1008px; }
 }
 
-/* 用户消息气泡（来源：dsh-web-frontend 全局样式 ./_bubble_1sgyj_1 规则）：DSH 全局 _bubble_1sgyj_1 是 --dsw-specific-bubble(淡蓝 #f0f6ff) + 20px 圆角，
-   WorkBuddy 用户消息是 12px 圆角 + gray-3 #f2f2f2。 */
+/* 用户消息气泡：宿主在 UserMessageBubble 上发布 data-message-bubble（稳定属性），
+   优先用它；._bubble_1sgyj_1 是 dsh-web-frontend 全局样式类名，仅作兜底。
+   DSH 默认 = --dsw-specific-bubble（淡蓝）+ 20px 圆角；
+   WorkBuddy 用户消息 = 12px 圆角 + gray-3 #f2f2f2。 */
+[data-message-bubble],
 ._bubble_1sgyj_1 {
   background: var(--wb-gray-3);
   border-radius: var(--wb-radius);
@@ -228,24 +207,31 @@ body, button, input, textarea, select {
 /* 助手消息：无框无底色，纯留白（WorkBuddy 原样） */
 
 /* ============ 4. 输入框 ============
-   来源：@deepseek-ai/dsh-client-ui-conversation → InputBar_module_css_default（前缀 GRgSLq）。
-   DSH 升级后类名前缀可能变化，届时按「组件名 InputBar → 新前缀」重新对一遍]。
-   DSH 的输入卡是 .GRgSLq_card（InputBar 模块），它本来没有 border，
-   视觉框来自 --dsw-elevation-stroke = 0 0 0 .5px 描边（内容盒内侧），
-   加上 --dsw-elevation-soft 的柔光。WorkBuddy .wb-cb-chat.light 是
-   单层 1px 实边、不向外发光、聚焦不改描边，所以这里只换 box-shadow。 */
-[class*="GRgSLq_card"] {
+   选择器策略（v4）：宿主在 dsh-client-ui-conversation 里主动发布了一组 data-* 属性，
+   升级时不受类名 hash 影响，因此优先使用：
+     [data-composer-card]   输入卡（InputBar_module_css_default.card）
+     [data-composer-input]  可编辑输入行
+     [data-composer-seat]   输入区容器（ConversationRoot…composerSeat）
+     [data-composer-dock]   底部工具条 dock
+   只有「发送按钮 / 加号按钮」没有属性，仍按 InputBar 模块类名兜底。
+
+   DSH 输入卡本来没有 border，视觉框来自 --dsw-elevation-stroke
+   (0 0 0 .5px，内容盒内侧) + --dsw-elevation-soft 柔光。
+   WorkBuddy .wb-cb-chat.light 是单层 1px 实边、不外发光、聚焦不改描边，
+   所以这里只换 box-shadow，不引入 border。 */
+[data-composer-card] {
   background: #fff;
   border: 0;
   border-radius: var(--wb-input-radius);
   box-shadow: 0 0 0 1px var(--wb-gray-5), 0 2px 4px -4px #0000000f;
   transition: box-shadow 0.18s ease;
 }
-[class*="GRgSLq_card"]:focus-within {
+/* 聚焦：WorkBuddy 聚焦不改描边，这里显式压回同款，抵消宿主的 focus-within 更色 */
+[data-composer-card]:focus-within {
   box-shadow: 0 0 0 1px var(--wb-gray-5), 0 2px 4px -4px #0000000f;
 }
-/* 占位文字与输入行 */
-[class*="GRgSLq_input"] {
+/* 输入行：14px / 22px，光标品牌绿 */
+[data-composer-input] {
   font-size: var(--wb-fs-body);
   line-height: var(--wb-lh-body);
   color: var(--wb-text-strong);
@@ -263,7 +249,7 @@ body, button, input, textarea, select {
   border-radius: 8px;
 }
 [class*="GRgSLq_add"]:hover:not(:disabled) { background: var(--wb-gray-3); }
-/* 发送按钮：品牌薄荷绿实心圆，34px */
+/* 发送按钮：品牌薄荷绿实心圆，34px（宿主未发布 data-*，按类名兜底） */
 [class*="GRgSLq_primary"] {
   background: var(--wb-brand);
   color: #fff;
@@ -272,49 +258,25 @@ body, button, input, textarea, select {
 [class*="GRgSLq_primary"]:active:not(:disabled) { background: var(--wb-brand-9); }
 [class*="GRgSLq_primary"]:disabled { background: var(--wb-gray-4); color: var(--wb-text-hint); }
 
-[class*="composer"] textarea, [class*="inputArea"] textarea {
-  font-size: var(--wb-fs-body);
-  line-height: var(--wb-lh-body);
-  background: transparent;
-  border: none;
-  resize: none;
-}
-[class*="composer"] ::placeholder, [class*="inputArea"] ::placeholder,
-textarea::placeholder {
-  color: var(--wb-text-hint);
-}
-
-/* 发送按钮：品牌色实心圆角 */
-[class*="sendButton"], [class*="sendBtn"], button[class*="submit"] {
-  background: var(--wb-brand);
-  color: #fff;
-  border: none;
-  border-radius: 9999px;
-  transition: background-color 0.16s ease, transform 0.1s ease;
-}
-[class*="sendButton"]:hover, [class*="sendBtn"]:hover, button[class*="submit"]:hover {
-  background: var(--wb-brand-7);
-}
-[class*="sendButton"]:active, [class*="sendBtn"]:active {
-  background: var(--wb-brand-9);
-  transform: scale(0.97);
-}
-[class*="sendButton"]:disabled, [class*="sendBtn"]:disabled {
-  background: var(--wb-gray-4);
+/* 占位文字 */
+[data-composer-placeholder], textarea::placeholder {
   color: var(--wb-text-hint);
 }
 
 /* ============ 5. 工具行与工具卡 ============
-   DSH 的执行行 .hKdVjq_row 无底色、13px 三分灰；WorkBuddy 工具卡是 8px 圆角、
-   图标行 16px20px 盒、悬停换 4% 黑底。这里只加悬停底和图标间距，不改结构。 */
-[class*="hKdVjq_row"] {
+   宿主在 ToolRow 根节点发布 data-tool（工具名）+ data-state + data-variant（稳定属性），
+   优先用它；hKdVjq_* 前缀仅在没有属性可用时兜底。
+   WorkBuddy 工具卡是 8px 圆角、悬停换 4% 黑底，这里只加悬停底，不改结构。 */
+[data-tool] {
   border-radius: 6px;
   transition: background-color 0.12s ease;
 }
-[class*="hKdVjq_root"]:has(> [class*="hKdVjq_row"]:hover) [class*="hKdVjq_row"] {
+/* 悬停：整个工具行的根（data-tool 的父级）悬浮时给行上淡底 */
+[data-tool]:hover {
   background: var(--wb-border-weak);
 }
-/* 工具展开体（ioCard / terminalBody）：WorkBuddy 用纯白 + 4% 描边，不用淡蓝 */
+/* 工具展开体（ioCard / terminalBody）：宿主只给了类名，没有 data-*。
+   WorkBuddy 用纯白 + 4% 描边，不用淡蓝。 */
 [class*="hKdVjq_ioCard"], [class*="hKdVjq_terminalBody"] {
   background: #fff;
   border: 1px solid var(--wb-border-weak);
@@ -365,7 +327,51 @@ pre {
         document.head.appendChild(el)
       }
       el.textContent = CSS
+      probe()
       return () => el.remove()
+    }
+
+    /**
+     * 宿主兼容性探测（Fail-Closed）。
+     * DSH 的侧栏项类名带构建 hash 前缀（SidebarRoot_module_css_default → wtg9ga_*），
+     * 宿主升级后前缀可能变化。CSS 里侧栏规则全部挂在 html[data-dsh-wb-sidebar="on"] 上，
+     * 探测不到就「整段不生效」，而不是错误地套上别的东西。
+     * 探测结果用 MutationObserver 兜住「插件先于侧栏挂载」的时序问题。
+     */
+    function probe() {
+      const root = document.documentElement
+      let warned = false
+      const check = () => {
+        const ok = !!document.querySelector('.wtg9ga_panelRow, .wtg9ga_root')
+        if (ok) {
+          if (root.getAttribute('data-dsh-wb-sidebar') !== 'on') {
+            root.setAttribute('data-dsh-wb-sidebar', 'on')
+          }
+          if (mo) { mo.disconnect(); mo = null }
+          return true
+        }
+        if (!warned) {
+          warned = true
+          try {
+            console.warn(
+              '[dsh-workbuddy-theme] 未找到 DSH 侧栏节点（.wtg9ga_*），' +
+              '侧栏定制已跳过；主题配色与字体不受影响。' +
+              '若 DSH 已升级，请查看插件是否有新版本。'
+            )
+          } catch {}
+        }
+        return false
+      }
+      if (check()) return
+      // 侧栏可能还没挂载：观察 DOM，一旦出现就补上
+      let mo = typeof MutationObserver === 'function'
+        ? new MutationObserver(() => { if (check()) { mo.disconnect(); mo = null } })
+        : null
+      if (mo) {
+        mo.observe(document.documentElement, { childList: true, subtree: true })
+        // 最多观察 10 秒，避免长期占用
+        setTimeout(() => { if (mo) { mo.disconnect(); mo = null } }, 10000)
+      }
     }
 
     /** 只依赖 DOM，不需要任何 client 服务，所以 inject 为空、apply 直接在文档上生效。 */
