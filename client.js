@@ -329,12 +329,14 @@ window.__ModuleLoader__.load({
 [data-dsh-wb] [class*="_markdown_"] blockquote p:last-child { margin-bottom: 0; }
 
 /* ============ 10. 表格 ============
-   DSH 默认无外框。WorkBuddy 是「圆角外框 + 表头淡底 + 行分隔线」。 */
+   DSH 默认无外框。WorkBuddy 是「圆角外框 + 表头淡底 + 行分隔线」。
+   注意：宿主表格的横向滚动条是逐行滚动条方案（.md-table-wide 用
+   overflow-x:hidden + padding-bottom 模拟），这里**不能**写 overflow:hidden，
+   否则会把横向滚动条和右侧超出部分一起裁掉。 */
 [data-dsh-wb] [class*="_tableScroll_rve47"] {
   margin: 16px 0;
   border: 1px solid var(--dsw-alias-border-l2);
   border-radius: 8px;
-  overflow: hidden;
 }
 [data-dsh-wb] [class*="_tableScroll_rve47"] table {
   border-collapse: separate;
@@ -355,6 +357,11 @@ window.__ModuleLoader__.load({
 [data-dsh-wb] [class*="_tableScroll_rve47"] th:first-child,
 [data-dsh-wb] [class*="_tableScroll_rve47"] td:first-child { padding-left: 14px; }
 [data-dsh-wb] [class*="_tableScroll_rve47"] td:last-child { padding-right: 14px; }
+/* 表格撑满圆角外框的四个角：首行上圆角、末行下圆角 */
+[data-dsh-wb] [class*="_tableScroll_rve47"] thead tr:first-child th:first-child { border-top-left-radius: 7px; }
+[data-dsh-wb] [class*="_tableScroll_rve47"] thead tr:first-child th:last-child { border-top-right-radius: 7px; }
+[data-dsh-wb] [class*="_tableScroll_rve47"] tbody tr:last-child td:first-child { border-bottom-left-radius: 7px; }
+[data-dsh-wb] [class*="_tableScroll_rve47"] tbody tr:last-child td:last-child { border-bottom-right-radius: 7px; }
 
 /* ============ 11. 列表 ============
    WorkBuddy 项目符号是中性灰小圆点，行间距 6px。 */
@@ -405,6 +412,222 @@ window.__ModuleLoader__.load({
 [data-dsh-wb] [class*="_markdown_"] a:hover {
   text-decoration: underline dotted;
   text-underline-offset: 3px;
+}
+
+/* ============ 17. 自动化任务列表 ============
+   照 WorkBuddy 定时任务卡片的观感，但保持 DSH 的单列列表结构（不动布局）。
+   来源：WorkBuddy /renderer/assets/automation-Osg-EzsL.css 的 .atm-task-card
+
+   宿主行结构（dsh-client-ui-schedule，TaskManagerPage_module_css_default）：
+     ul.olCj9W_listRows > li > button.olCj9W_row
+       > svg.olCj9W_rowGlyph
+       + span.olCj9W_rowContent
+           > span.olCj9W_rowTitle
+           + span.olCj9W_rowSummary > span.olCj9W_metadata × 1~3
+             顺序（由 TaskManagerPage.jsx 决定）：
+               非 active 任务：  [状态] [频率]              （1~2 段）
+               active 任务：     [频率] [下次运行]           （2 段）
+             即「频率」永远存在且永远不是最后一段之外的东西，
+             最后一段永远是「下次运行」；非 active 时第一段是状态。
+
+   本节的思路：
+     1. 卡片外观（描边 / 16px 圆角 / 20px 内边距）照搬 WorkBuddy。
+     2. WorkBuddy 底部是「🕐 排期 …… 状态」，DSH 的元数据是一串用 · 分隔的 span。
+        用 flex + :last-child 把最后一段（下次运行）推到右边，前面几段（状态/频率）留在左边，
+        视觉上就等价于 WorkBuddy 的 __foot。 */
+
+/* 行与行之间从 2px 缝隙改成 16px，对应 WorkBuddy .atm-task-card-grid 的 gap */
+[data-dsh-wb] .olCj9W_listRows {
+  gap: 16px;
+}
+
+/* 一行 = 一张卡片：16px 圆角、20px 内边距。
+   高度不强制 154px：WorkBuddy 卡片的 154px 是「名字 + 两行描述(prompt)」撑出来的，
+   而 DSH 的列表行里没有描述字段，照搬定高只会空出一大块。 */
+[data-dsh-wb] .olCj9W_row {
+  box-sizing: border-box;
+  border-radius: 16px;
+  outline: 1px solid var(--wb-border);
+  outline-offset: -1px;
+  padding: 16px 20px;
+  gap: 12px;
+  align-items: flex-start;
+  transition: background-color 0.15s;
+}
+
+/* 选中态：WorkBuddy 卡片被点开时描边加深，底色不变（宿主用 hover 态底色，这里保留） */
+[data-dsh-wb] .olCj9W_row.olCj9W_selectedRow {
+  outline-color: var(--dsw-alias-border-l3);
+}
+
+/* 图标改为 WorkBuddy __foot 里的 14px 时钟观感（宿主是 16×20） */
+[data-dsh-wb] .olCj9W_rowGlyph {
+  width: 16px;
+  height: 16px;
+  margin-top: 0;
+  align-self: flex-start;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+/* 内容区竖向铺满卡片高度：标题在上、元数据贴底 */
+[data-dsh-wb] .olCj9W_rowContent {
+  gap: 0;
+}
+
+/* 标题 16px / 600，与 WorkBuddy 的 .atm-task-card__name 一致 */
+[data-dsh-wb] .olCj9W_rowTitle {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+/* 元数据条 = WorkBuddy 的 __foot：居中于卡片下半区，上下留白，贴底 */
+[data-dsh-wb] .olCj9W_rowSummary {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--dsw-alias-border-l2);
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--dsw-alias-label-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+/* 把「下次运行」推到右边，等价于 WorkBuddy 的左排期右状态 */
+[data-dsh-wb] .olCj9W_rowSummary .olCj9W_metadata {
+  font-size: 14px;
+  line-height: 22px;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+[data-dsh-wb] .olCj9W_rowSummary .olCj9W_metadata:last-child {
+  margin-left: auto;
+  flex: none;
+  max-width: 55%;
+}
+/* 段之间的 · 分隔符：flex 布局下宿主用 ::before 加的「 · 」会紧贴，改成小间隔 */
+[data-dsh-wb] .olCj9W_rowSummary .olCj9W_metadata + .olCj9W_metadata:before {
+  content: "";
+  padding: 0;
+}
+[data-dsh-wb] .olCj9W_rowSummary .olCj9W_metadata + .olCj9W_metadata {
+  position: relative;
+}
+
+/* 已结束的任务：标题降一级灰（对应 WorkBuddy --paused / --expired 的观感） */
+[data-dsh-wb] .olCj9W_endedRow .olCj9W_rowTitle {
+  color: var(--dsw-alias-label-tertiary);
+}
+
+/* 列表底部留一点呼吸 */
+[data-dsh-wb] .olCj9W_listPane {
+  padding-bottom: 8px;
+}
+
+/* ============ 18. 表单控件 ============
+   DSH 默认的主色体系是蓝，开关/复选框都是「宿主默认蓝 + accent-color」。
+   这里统一到 WorkBuddy 的品牌绿，并让所有交互控件的手感一致。
+
+   类名来源（index-lh_YM6sT.css）：
+     ._switch_1ik0f_5      开关轨道 36×20，背景 var(--dsw-alias-border-l3)
+     ._thumb_1ik0f_33      开关滑块 16×16，选中时 translate(16px)
+     ._checkbox_1wz3s_1    复选框，input 用 accent-color
+   复选框的 accent-color 已经指向 --dsw-alias-brand-primary，
+   只需要把那个令牌指到品牌绿（已在令牌层完成），这里只管开关。 */
+
+/* 开关关闭态：WorkBuddy 用更浅的灰，边缘更柔和 */
+[data-dsh-wb] ._switch_1ik0f_5 {
+  background-color: var(--dsw-static-neutral-bluish-200);
+  transition: background-color 0.15s ease;
+}
+
+/* 开关打开态：品牌绿轨道。
+   宿主 Switch 的 DOM 是 <button role="switch" aria-checked={checked} class="_switch_1ik0f_5">，
+   打开态只体现在 aria-checked 上，没有 data-state。 */
+[data-dsh-wb] ._switch_1ik0f_5[aria-checked="true"] {
+  background-color: var(--dsw-static-deepseek-500);
+}
+
+/* 滑块保持白色圆点，不加阴影（WorkBuddy 的 --wb-switch-thumb-shadow: none） */
+[data-dsh-wb] ._thumb_1ik0f_33 {
+  box-shadow: none;
+}
+
+/* 复选框与单选按钮：用 accent-color 统一到品牌绿。
+   **不要改成 appearance:none 自己画**：宿主的复选框不止一种 DOM
+   （设置页列表用的不是 ._checkbox_1wz3s_1，模型选择页那种也没有稳定类名），
+   自己画会让没匹配到的那些复选框变成空框、勾选状态看不见。
+   accent-color 的勾色由浏览器按填充色亮度决定，中间亮度会出来黑勾——
+   这是可接受的取舍，好过丢功能。 */
+[data-dsh-wb] ._checkbox_1wz3s_1 input[type="checkbox"],
+[data-dsh-wb] input[type="checkbox"] {
+  accent-color: var(--dsw-static-deepseek-500);
+}
+
+[data-dsh-wb] input[type="radio"] {
+  accent-color: var(--dsw-static-deepseek-500);
+}
+
+/* ============ 19. 对话框 ============
+   宿主对话框是 --dsw-radius-panel = 28px，WorkBuddy 的弹窗是 16px。
+   来源：._dialog_14mp3_33 / ._confirmation_cjd8z_1
+   只改圆角，不改宽高、padding 与阴影（那些宿主调得比 WorkBuddy 细）。 */
+[data-dsh-wb] ._dialog_14mp3_33 {
+  border-radius: 16px;
+}
+
+/* 对话框标题 16px/500 宿主已经是了，保持不动；这里让关闭按钮更贴合圆角 */
+[data-dsh-wb] ._close_14mp3_87 {
+  border-radius: 6px;
+}
+
+/* ============ 20. 提示框与悬停卡片 ============
+   WorkBuddy 的 tooltip：深底、12px 圆角、12px 字号。
+   来源：._tooltip_38b9q_20（11px/14px）、._keys_38b9q_1（12px）、
+         ._card_bgejw_9（悬停卡 244px 宽、12px 圆角、#2C2C2E 底） */
+[data-dsh-wb] ._tooltip_38b9q_20 {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* 悬停卡片圆角统一到 12px */
+[data-dsh-wb] ._card_bgejw_9 {
+  border-radius: 12px;
+}
+
+/* ============ 21. 菜单 ============
+   宿主菜单 padding 4px、项目高度靠 padding 撑（4px 7px）。
+   WorkBuddy 的上下文菜单：项目 min-height 32px、10px 圆角、悬停淡灰。
+   来源：._menu_3oazc_581 / ._menuItem_3oazc_595 / .js5r2G_item */
+
+[data-dsh-wb] ._menu_3oazc_581 {
+  border-radius: 10px;
+  padding: 4px;
+}
+
+[data-dsh-wb] ._menuItem_3oazc_595 {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+[data-dsh-wb] .js5r2G_item {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* ============ 22. 输入框占位文字 ============
+   WorkBuddy 的 placeholder 是 30% 黑（--wb-color-text-primary 的 4d）。
+   宿主用 --dsw-alias-label-dimmed，这里统一到同一档。 */
+[data-dsh-wb] ._input_14sgc_25::placeholder {
+  color: var(--dsw-alias-label-dimmed);
 }
 `
 
