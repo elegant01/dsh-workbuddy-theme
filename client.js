@@ -41,6 +41,10 @@ window.__ModuleLoader__.load({
     const CODE_FONT =
       '"Cascadia Code", "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "PingFang SC", monospace'
 
+    /** WorkBuddy 的品牌绿。只在「交互色」上用：按钮、开关、选中、光标。 */
+    const BRAND = { light: '#00c29a', dark: '#2dd4b0' }
+    const BRAND_HOVER = { light: '#40d1b3', dark: '#4fe0c0' }
+
     /** 字体也走 overrideTokens —— 与 dsh-fonttune 同一做法，
      *  这样切主题时它和配色一起被宿主重新发布，不会出现「切走了字体还在」。 */
     const FONT_TOKENS = {
@@ -59,6 +63,12 @@ window.__ModuleLoader__.load({
       /* 预览与令牌校验脚本会引用到它；真实环境里 body 的 font-family 已是 DSH 的
          --dsw-font-family（我们在 FONT_TOKENS 里给了值），这里给一份兜底即可。 */
       '--dsw-font-family': { light: UI_FONT, dark: UI_FONT },
+      /* 开关轨道、复选框、发送按钮、光标全部走 --dsw-alias-brand-primary，
+         而它指向 neutral-bluish-1000。那个档位必须是「正文色」（深灰），不能是品牌绿，
+         否则整个界面的交互色会一起变绿、并且正文也就没了层次。
+         这里把交互色单独拆出来，供第 18 节的自绘控件使用。 */
+      '--wb-control-on': { light: BRAND.light, dark: BRAND.dark },
+      '--wb-control-on-hover': { light: BRAND_HOVER.light, dark: BRAND_HOVER.dark },
     }
 
     /* 静态色阶：WorkBuddy 调色板重排后的 DSH --dsw-static-* 全套。
@@ -79,15 +89,15 @@ window.__ModuleLoader__.load({
       "--dsw-static-neutral-bluish-310": { light: "#d4d4d4", dark: "#cad2db" },
       "--dsw-static-neutral-bluish-400": { light: "#b3b3b3", dark: "#adb2b8" },
       "--dsw-static-neutral-bluish-500": { light: "#8c8c8c", dark: "#979da6" },
-      "--dsw-static-neutral-bluish-600": { light: "#737373", dark: "#81858c" },
-      "--dsw-static-neutral-bluish-700": { light: "#595959", dark: "#61666b" },
+      "--dsw-static-neutral-bluish-600": { light: "#5c5c5c", dark: "#81858c" },
+      "--dsw-static-neutral-bluish-700": { light: "#474747", dark: "#61666b" },
       "--dsw-static-neutral-bluish-750": { light: "#4a4a4a", dark: "#46484c" },
       "--dsw-static-neutral-bluish-800": { light: "#3d3d3d", dark: "#36383b" },
       "--dsw-static-neutral-bluish-850": { light: "#333333", dark: "#2b2c2e" },
       "--dsw-static-neutral-bluish-875": { light: "#2b2b2b", dark: "#232426" },
-      "--dsw-static-neutral-bluish-900": { light: "#242424", dark: "#1c1c1e" },
-      "--dsw-static-neutral-bluish-950": { light: "#141414", dark: "#161617" },
-      "--dsw-static-neutral-bluish-1000": { light: "#000000", dark: "#0f1115" },
+      "--dsw-static-neutral-bluish-900": { light: "#141414", dark: "#1c1c1e" },
+      "--dsw-static-neutral-bluish-950": { light: "#1a1a1a", dark: "#161617" },
+      "--dsw-static-neutral-bluish-1000": { light: "#1a1a1a", dark: "#0f1115" },
       "--dsw-static-neutral-00": { light: "#ffffff", dark: "#ffffff" },
       "--dsw-static-neutral-50": { light: "#fafafa", dark: "#fafafa" },
       "--dsw-static-neutral-100": { light: "#f5f5f5", dark: "#f5f5f5" },
@@ -114,9 +124,9 @@ window.__ModuleLoader__.load({
       "--dsw-static-blue-75": { light: "#e3ecff", dark: "#222731" },
       "--dsw-static-blue-100": { light: "#dae6ff", dark: "#262e3c" },
       "--dsw-static-blue-300": { light: "#93b3fc", dark: "#4e6898" },
-      "--dsw-static-blue-400": { light: "#7099f8", dark: "#6488ca" },
-      "--dsw-static-blue-450": { light: "#5f8bf6", dark: "#6f98e4" },
-      "--dsw-static-blue-500": { light: "#4f7df3", dark: "#7aa9ff" },
+      "--dsw-static-blue-400": { light: "#009979", dark: "#2dd4b0" },
+      "--dsw-static-blue-450": { light: "#00ad89", dark: "#4dd8b6" },
+      "--dsw-static-blue-500": { light: "#00c29a", dark: "#2dd4b0" },
       "--dsw-static-blue-600": { light: "#3e63c4", dark: "#6b95e1" },
       "--dsw-static-blue-800": { light: "#1e346c", dark: "#4e6da8" },
       "--dsw-static-blue-900": { light: "#101e44", dark: "#405b8c" },
@@ -125,7 +135,7 @@ window.__ModuleLoader__.load({
       "--dsw-static-deepseek-100": { light: "#dbf3ea", dark: "#21352f" },
       "--dsw-static-deepseek-200": { light: "#b6e7d6", dark: "#2a594c" },
       "--dsw-static-deepseek-300": { light: "#8edbc1", dark: "#30806c" },
-      "--dsw-static-deepseek-400": { light: "#60cfae", dark: "#31a98d" },
+      "--dsw-static-deepseek-400": { light: "#00a885", dark: "#2dd4b0" },
       "--dsw-static-deepseek-450": { light: "#42c8a4", dark: "#30be9e" },
       "--dsw-static-deepseek-500": { light: "#00c29a", dark: "#2dd4b0" },
       "--dsw-static-deepseek-600": { light: "#009c7b", dark: "#26bb9b" },
@@ -551,7 +561,7 @@ window.__ModuleLoader__.load({
    宿主 Switch 的 DOM 是 <button role="switch" aria-checked={checked} class="_switch_1ik0f_5">，
    打开态只体现在 aria-checked 上，没有 data-state。 */
 [data-dsh-wb] ._switch_1ik0f_5[aria-checked="true"] {
-  background-color: var(--dsw-static-deepseek-500);
+  background-color: var(--wb-control-on);
 }
 
 /* 滑块保持白色圆点，不加阴影（WorkBuddy 的 --wb-switch-thumb-shadow: none） */
@@ -564,14 +574,18 @@ window.__ModuleLoader__.load({
    （设置页列表用的不是 ._checkbox_1wz3s_1，模型选择页那种也没有稳定类名），
    自己画会让没匹配到的那些复选框变成空框、勾选状态看不见。
    accent-color 的勾色由浏览器按填充色亮度决定，中间亮度会出来黑勾——
-   这是可接受的取舍，好过丢功能。 */
+   这是可接受的取舍，好过丢功能。
+
+   颜色来源很关键：宿主的 ._checkbox_1wz3s_1 input 用的是
+   --dsw-alias-brand-primary，那条别名指向中性档位（正文色），
+   所以不在这里直接指定就会是黑框。这里直接吃 --wb-control-on。 */
 [data-dsh-wb] ._checkbox_1wz3s_1 input[type="checkbox"],
 [data-dsh-wb] input[type="checkbox"] {
-  accent-color: var(--dsw-static-deepseek-500);
+  accent-color: var(--wb-control-on);
 }
 
 [data-dsh-wb] input[type="radio"] {
-  accent-color: var(--dsw-static-deepseek-500);
+  accent-color: var(--wb-control-on);
 }
 
 /* ============ 19. 对话框 ============
@@ -629,6 +643,173 @@ window.__ModuleLoader__.load({
 [data-dsh-wb] ._input_14sgc_25::placeholder {
   color: var(--dsw-alias-label-dimmed);
 }
+/* ============ 23. 对话栏宽度（P0）============
+   WorkBuddy 的对话栏是固定 848px，窗口宽于 1681px 时提到 1008px。
+   宿主 .an3WzG_body 的 --dsh-chat-content-width 有三级来源：
+     1. var(--dsh-chat-user-width)：用户拖拽宽度手柄时 JS 写进内联样式
+     2. clamp(680px, 列宽*0.64, 920px)：没拖过时的默认值
+   我们在 2 上做文章：给 fallback 换成分档常量。
+   拖拽优先（1 在 2 前面），所以用户手感不变，只是「没设过」时的默认值变成 WorkBuddy 的档位。
+
+   绝对不要给 [data-conversation-scroll] 加 max-width —— 它是满宽滚动容器，
+   缩它会连可滚动区域一起缩窄（0.2.0 就是这么把对话区弄小的）。 */
+[data-dsh-wb] .an3WzG_body {
+  --dsh-chat-content-width: var(--dsh-chat-user-width, 848px);
+  --dsh-composer-card-max-width: calc(var(--dsh-chat-content-width) + 32px);
+}
+@media (min-width: 1681px) {
+  [data-dsh-wb] .an3WzG_body { --dsh-chat-content-width: var(--dsh-chat-user-width, 1008px); }
+}
+/* 窄窗口下 848px 会把两侧留白挤没，退回宿主的流式算式：
+   列宽 * .86，夹在 560px 到 848px 之间。 */
+@media (max-width: 1080px) {
+  [data-dsh-wb] .an3WzG_body {
+    --dsh-chat-content-width: var(--dsh-chat-user-width, clamp(560px, calc(var(--dsh-conversation-column-width, 0px) * .86), 848px));
+  }
+}
+
+/* ============ 24. 输入卡内部分区（P0）============
+   WorkBuddy 输入卡的纵向节奏：
+     顶部留 8px → 正文（14/22，左右 14/8）→ 与底部工具条间距 12px → 工具条 padding 2 10 8
+   宿主是 padding-top:8px、gap:12px、input min-height 36px、row padding 2 8 6，
+   差得不多，只把左右对齐到 10px、点号按钮留 6px 呼吸空间。 */
+[data-dsh-wb] [data-composer-card] { padding-top: 8px; }
+[data-dsh-wb] [data-composer-input] { padding: 4px 8px 0 14px; min-height: 36px; }
+[data-dsh-wb] [class*="GRgSLq_row"] { padding: 2px 10px 8px; gap: 10px; }
+/* 输入区最大高度 336px（宿主值），这里不改，只确保内滚动条用我们的细模式 */
+
+/* ============ 25. 工具卡展开态高度上限（P0）============
+   WorkBuddy 展开体 320px 封顶；宿主 .hKdVjq_bodyScroll 是 260px。
+   取 320px，并保证它跟着光标/字号一起缩放不出格。 */
+[data-dsh-wb] [class*="hKdVjq_bodyScroll"] { max-height: 320px; }
+
+/* ============ 26. 设置页排版（P2 支撑）============
+   新设置页（settings.section: workbuddy）的样式。
+   WorkBuddy 的设置项是一行标题 + 一行说明 + 右侧控件，行间距 24px。 */
+.dsh-wb-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 24px 24px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--dsw-alias-label-primary);
+}
+.dsh-wb-panel-title {
+  margin: 22px 0 8px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary);
+}
+.dsh-wb-panel-title:first-child { margin-top: 8px; }
+.dsh-wb-panel-hint {
+  margin: -4px 0 8px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-tertiary);
+}
+.dsh-wb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: .5px solid var(--dsw-alias-border-l2);
+}
+.dsh-wb-row:last-child { border-bottom: 0; }
+.dsh-wb-row-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dsh-wb-row-label { font-size: 14px; line-height: 22px; color: var(--dsw-alias-label-primary); }
+.dsh-wb-row-desc { font-size: 12px; line-height: 20px; color: var(--dsw-alias-label-tertiary); }
+.dsh-wb-segmented {
+  display: inline-flex;
+  flex: none;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background-color: var(--dsw-alias-interactive-bg-hover);
+}
+.dsh-wb-segmented > button {
+  border: 0;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+.dsh-wb-segmented > button[aria-pressed="true"] {
+  color: var(--dsw-alias-label-primary);
+  background-color: var(--dsw-alias-bg-base);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+.dsh-wb-segmented > button:disabled { opacity: .45; cursor: default; }
+
+/* ============ 28. 会话行徽标（P2）============
+   挂在 sidebar.session.row.trailing（list，inline: true），
+   渲染在时间戳右边、行 hover 时随 .rowResting 一起隐藏。
+   WorkBuddy 的会话行右边是一个小圆点 + 极小的状态字。 */
+.dsh-wb-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--dsw-alias-label-tertiary);
+  opacity: .55;
+}
+
+/* ============ 29. 会话头统计（P2）============
+   挂在 conversation.session.header.utilities（list，scope: session）。
+   宿主容器本身 gap 8px、margin-left 20px，这里只定义胶囊本身。 */
+.dsh-wb-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dsw-alias-label-tertiary);
+  background-color: var(--dsw-alias-interactive-bg-hover);
+  white-space: nowrap;
+  cursor: default;
+}
+.dsh-wb-stat-label { color: var(--dsw-alias-label-tertiary); }
+.dsh-wb-stat-value { color: var(--dsw-alias-label-secondary); }
+
+/* ============ 27. 输入框上方的快捷条（P2）============
+   挂在 conversation.input.dock（list，scope: session），位于输入卡正上方。
+   WorkBuddy 的同类条：浅灰胶囊、12px 字号、6px 圆角、横排可换行。 */
+.dsh-wb-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 2px 2px;
+}
+.dsh-wb-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: .5px solid var(--dsw-alias-border-l3);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-secondary);
+  background-color: var(--dsw-alias-bg-layer-1);
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.dsh-wb-action:hover {
+  color: var(--dsw-alias-label-primary);
+  background-color: var(--dsw-alias-interactive-bg-hover);
+}
+.dsh-wb-action[disabled] { opacity: .45; cursor: default; }
+
 `
 
     /* ---------------- 应用与回收 ---------------- */
@@ -809,6 +990,130 @@ window.__ModuleLoader__.load({
       }
     }
 
+    /* ---------------- P2：槽位组件 ---------------- */
+
+    /** 会话行右侧的小圆点。
+     *  宿主 ownProps 里给的是 { sessionId }，只用来做 key 的稳定来源。 */
+    function makeTrailing(React) {
+      return function WorkBuddyTrailing() {
+        return React.createElement('span', { className: 'dsh-wb-dot', 'aria-hidden': 'true' })
+      }
+    }
+
+    /** 会话头右侧的统计胶囊。
+     *  宿主 ownProps 给的是 sessionId；attachedMessages 之类的计数拿不到稳定契约，
+     *  所以这里只显示「当前会话」这个无害信息，不猜数字。 */
+    function makeUtility(React) {
+      return function WorkBuddyUtility() {
+        return React.createElement('span', {
+          className: 'dsh-wb-stat',
+          title: 'WorkBuddy 主题已启用（设置 → 通用 可关闭）',
+        },
+          React.createElement('span', { className: 'dsh-wb-stat-value' }, 'WorkBuddy'),
+        )
+      }
+    }
+
+    /** 输入卡上方的快捷条。
+     *  zone.session 拿得到 cwd，据此显示工作区名；点击没有任何副作用。 */
+    function makeDock(React) {
+      return function WorkBuddyDock(props) {
+        const cwd = props && props.session ? props.session.cwd : undefined
+        const name = typeof cwd === 'string' && cwd !== ''
+          ? cwd.replace(/[\\/]+$/, '').split(/[\\/]/).pop()
+          : '当前工作区'
+        return React.createElement('div', { className: 'dsh-wb-actions' },
+          React.createElement('span', { className: 'dsh-wb-action', title: cwd ?? '' }, name),
+        )
+      }
+    }
+
+    /** 完整的一页设置。
+     *  label 必须是函数：宿主的 SettingsPanel 用 resolveSlotLabel 取值，
+     *  而且 nav 列表只在 locale / slot 变化时重建。 */
+    function makeSection(React) {
+      const h = React.createElement
+
+      function Row(props) {
+        return h('div', { className: 'dsh-wb-row' },
+          h('div', { className: 'dsh-wb-row-main' },
+            h('div', { className: 'dsh-wb-row-label' }, props.label),
+            props.desc ? h('div', { className: 'dsh-wb-row-desc' }, props.desc) : null,
+          ),
+          props.control ?? null,
+        )
+      }
+
+      function Segmented(props) {
+        return h('div', { className: 'dsh-wb-segmented' },
+          props.options.map((o) => h('button', {
+            key: o.id,
+            type: 'button',
+            'aria-pressed': props.value === o.id ? 'true' : 'false',
+            disabled: o.disabled === true,
+            onClick: () => { if (o.disabled !== true) props.onChange(o.id) },
+          }, o.label)),
+        )
+      }
+
+      return function WorkBuddySection() {
+        const [on, setOn] = React.useState(isEnabled)
+        return h('div', { className: 'dsh-wb-panel' },
+          h('div', { className: 'dsh-wb-panel-title' }, 'WorkBuddy 外观'),
+          h('div', { className: 'dsh-wb-panel-hint' }, '复刻自 WorkBuddy 的设计令牌：中性灰底 + 薄荷绿交互色，正文 14/22，对话栏 848px。'),
+          h(Row, {
+            label: '启用 WorkBuddy 主题',
+            desc: '关闭后立即回到 DSH 默认配色与字体，开关状态记在本机。',
+            control: h(Segmented, {
+              value: on ? 'on' : 'off',
+              options: [{ id: 'on', label: '开' }, { id: 'off', label: '关' }],
+              onChange: (id) => {
+                const next = id === 'on'
+                try {
+                  ON_SWITCH.call(next)
+                } catch (error) {
+                  console.warn('[dsh-workbuddy-theme] 切换主题失败：', error)
+                }
+                setOn(next)
+              },
+            }),
+          }),
+          h(Row, { label: '配色', desc: '由 --dsw-static-* 静态色阶整体重排，明暗两态各自成对。', control: h('span', { className: 'dsh-wb-row-label' }, '浅色 / 跟随系统') }),
+          h(Row, { label: '字体', desc: '界面用系统中文栈（PingFang SC → 微软雅黑），代码用等宽栈。' }),
+          h(Row, { label: '对话栏宽度', desc: '默认 848px；窗口宽于 1681px 时 1008px；仍可用宽度手柄拖拽覆盖。' }),
+          h(Row, { label: '已知取舍', desc: '中性 14 档明暗同值；深色是「跟随」而非逐档复刻。' }),
+        )
+      }
+    }
+
+    /** 一次性把 P2 的四个槽位挂上。任何一个槽位未声明都不影响其它几项。 */
+    function registerSurfaces(slots, React, note) {
+      const offs = []
+      const attach = (slot, spec, component) => {
+        try {
+          offs.push(slots.inject(slot, () => slots.register({ ...spec, name: slot }, component)))
+          note('已挂到 ' + slot)
+        } catch (error) {
+          note('挂 ' + slot + ' 失败：' + String(error && error.message))
+        }
+      }
+
+      if (React !== null && React !== undefined) {
+        attach('sidebar.session.row.trailing', { id: 'workbuddy-dot', order: 10 }, makeTrailing(React))
+        attach('conversation.session.header.utilities', { id: 'workbuddy-stat', order: 10 }, makeUtility(React))
+        attach('conversation.input.dock', { id: 'workbuddy-actions', order: 30 }, makeDock(React))
+      }
+
+      // 整页设置：order 18 排在 agent-presets(20) 之前、plugins(15) 之后
+      attach('settings.section', {
+        id: 'workbuddy',
+        order: 18,
+        label: () => 'WorkBuddy 外观',
+      }, makeSection(React))
+
+      return () => { for (const off of offs) { try { off() } catch { /* 忽略 */ } } }
+    }
+
     /** 结构层：装 CSS + 探测侧栏。返回清理函数。 */
     function installStructure() {
       const removeStyle = installStyle()
@@ -900,6 +1205,9 @@ window.__ModuleLoader__.load({
       }
 
       track(registerRow())
+
+      // P2：会话行徽标 / 会话头统计 / 输入卡上方快捷条 / 独立设置页
+      track(registerSurfaces(slots, React, note))
 
       // 把本轮的全部清理登记交给宿主：插件被卸载 / 禁用 / 热重载时，
       // cordis 会调用 apply 的返回值。没有这一句，令牌层与结构 CSS 就会

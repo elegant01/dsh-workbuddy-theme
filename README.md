@@ -60,7 +60,7 @@ dsh plugin --profile <你的 profile> add file:/path/to/dsh-workbuddy-theme
 
 ```
 index.js          宿主端，只有一个空 apply()，作用是让加载器把插件挂进插件集合
-client.js         全部效果所在：令牌叠加 + 一段结构 CSS + 设置页的一行
+client.js         全部效果所在：令牌叠加 + 一段结构 CSS + 几个槽位上的小部件 + 设置页
 cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 ```
 
@@ -87,6 +87,28 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 字体与正文排版也走令牌（`--dsh-font-family-text-default` / `--dsw-font-markdown-base`），
 不是锁类名，所以标题、代码、表格的字体栈会一起跟着变。
 
+**第三件：四个宿主槽位上的小部件**（`slots.inject` + `slots.register`，走宿主声明的正门）：
+
+| 槽位 | 内容 |
+| --- | --- |
+| `settings.section`（order 18） | 设置左侧导航新增一页「WorkBuddy 外观」，含启用开关与已知取舍 |
+| `settings.general.item`（order 9.5） | 「通用」页里紧挨「外观」上面的一行主题开关 |
+| `sidebar.session.row.trailing` | 会话行时间戳旁一个 6px 低对比圆点 |
+| `conversation.session.header.utilities` | 会话标题栏右上角的 WorkBuddy 小胶囊 |
+| `conversation.input.dock` | 输入卡上方一条工作区快捷条 |
+
+每个槽位注册都包在 try/catch 里：宿主改版、槽位未声明、条目渲染出错时只跳过该部件，
+配色与字体不受影响。设置页与开关只依赖 `theme` 与 `slots` 两个服务，不声明 `store` / `inject`——
+宿主对行组件的 `useStore` / `actions` 契约一旦不满足会抛错，行会被错误边界吃掉只剩一个空 div。
+
+## 布局相关
+
+- **对话栏宽度**：覆盖 `.an3WzG_body` 上的 `--dsh-chat-content-width` 兜底值，常规 848px、
+  窗口 ≥1681px 时 1008px、≤1080px 时按栏宽 86% 流式收窄。用户拖过的宽度写在
+  `--dsh-chat-user-width`，插件不覆盖，拖拽手感不变。
+- **输入卡内部分区**：顶部 8px、输入区 `4px 8px 0 14px`、底部工具条 `2px 10px 8px`、间距 10px。
+- **工具卡展开态**：展开体最大高度 260px → 320px。
+
 ## 更新日志
 
 见 [CHANGELOG.md](CHANGELOG.md)。
@@ -103,6 +125,9 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
   只用浅色时无影响；若将来认真做深色，这一族需要重新给暗色档位。
 - 开关存在 `localStorage`（`dsh-workbuddy-theme:enabled`），默认开启，不用宿主的 configForms ——
   那需要宿主侧声明 schema，而本插件宿主端是故意空的。
+- 开关与复选框的勾色由浏览器按填充色亮度自动挑（`accent-color` 只定填充）。填充是品牌薄荷绿，
+  中间亮度，勾是黑色。改用 `appearance: none` 自绘白勾试过，但宿主的复选框不止一种 DOM 结构，
+  漏掉的那些会变成空框、连勾选态都看不出来，所以宁可保留黑勾。
 - 只针对 DSH Web GUI；DSH TUI / headless 不受影响。
 
 ## 许可
