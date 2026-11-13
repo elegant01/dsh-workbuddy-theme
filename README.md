@@ -93,22 +93,28 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 
 ## 发版流程
 
-打 `v*` tag 即触发 GitHub Actions（`.github/workflows/publish.yml`）：校验 tag 与 `package.json` 版本一致、
-校验插件清单（`dsh.bundle.patch` / `main` / `index.js` 具名导出）、`npm pack` 冒烟测试，最后建 Release。
+发版靠 **npm Trusted Publisher（OIDC）**：CI 用 GitHub 的 OIDC 令牌换一次性发布凭证，
+**不需要任何 npm token，也不会被两步验证卡住**。
+
+一次性前置：在 <https://www.npmjs.com/package/dsh-workbuddy-theme/access> 的 Trusted Publisher 绑
+`GitHub Actions / elegant01 / dsh-workbuddy-theme / publish.yml`。
+**`Workflow filename` 必须与仓库里的文件名一字不差**，对不上时 CI 会报成看起来像没登录的 `ENEEDAUTH`。
+
+之后三步：
 
 ```bash
-# 1. 改版本号
+# 1. 改版本号并提交
 npm version 0.4.0 --no-git-tag-version
-# 2. 发布到 npm（需要 OTP，见下）
-npm publish --registry=https://registry.npmjs.org/ --otp=<6位验证码>
-# 3. 提交并打 tag，触发 CI
-git commit -am "release: 0.4.0" && git tag -a v0.4.0 -m "0.4.0" && git push origin main --follow-tags
+git commit -am "release: 0.4.0"
+# 2. 打 tag 推上去，CI 自动：校验 → npm publish --provenance → 建 Release
+git tag -a v0.4.0 -m "0.4.0" && git push origin main --follow-tags
 ```
 
-**为什么 CI 不自动发布**：npm 账号开启两步验证（`auth-and-writes` / `auth-only`）之后，
-**任何 token 发布都会要求 OTP**——Automation token 也不例外（2026-11 实测：用 Automation token 发布
-返回 `EOTP`，携带任意 OTP 返回同样的 `EOTP`）。OTP 只存在于你的验证器里，CI 拿不到。
-所以发布这一步只能在本机交互完成，CI 负责其余全部校验。
+`publish.yml` 里有一道幂等判断：版本已在 npm 上就跳过 `npm publish`，
+所以补建 Release、或重复触发都不会出现误报失败。
+
+> 历史备注：2026-11 起 npm 已下线 Classic Automation token，Granular token 即使勾了
+> 「Bypass 2FA」也只能发布 staged 版本。免 token 的正规路子就是 Trusted Publisher。
 
 ## 已知取舍
 
@@ -118,7 +124,9 @@ git commit -am "release: 0.4.0" && git tag -a v0.4.0 -m "0.4.0" && git push orig
 - DSH 若把 `--dsw-*` 令牌改名，令牌覆盖会失效 —— 页面只是回到原主题，不会坏。
 - 深色模式：配色与字体**自动跟随**（同一层同时给了 light / dark 两个值）；
   结构 CSS 的几张卡片（侧栏行高、输入卡圆角、气泡圆角）是形状，不分明暗，两态共用。
-- 开关存在 `localStorage`（`dsh-workbuddy-theme:enabled`），不用宿主的 configForms ——
+- `--dsw-static-neutral-*` 一族共 14 档明暗两值相同 —— WorkBuddy 的灰阶只设计了浅色。
+  只用浅色时无影响；若将来认真做深色，这一族需要重新给暗色档位。
+- 开关存在 `localStorage`（`dsh-workbuddy-theme:enabled`），默认开启，不用宿主的 configForms ——
   那需要宿主侧声明 schema，而本插件宿主端是故意空的。
 - 只针对 DSH Web GUI；DSH TUI / headless 不受影响。
 
