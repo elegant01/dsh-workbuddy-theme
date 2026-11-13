@@ -91,31 +91,6 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 
 见 [CHANGELOG.md](CHANGELOG.md)。
 
-## 发版流程
-
-发版靠 **npm Trusted Publisher（OIDC）**：CI 用 GitHub 的 OIDC 令牌换一次性发布凭证，
-**不需要任何 npm token，也不会被两步验证卡住**。
-
-一次性前置：在 <https://www.npmjs.com/package/dsh-workbuddy-theme/access> 的 Trusted Publisher 绑
-`GitHub Actions / elegant01 / dsh-workbuddy-theme / publish.yml`。
-**`Workflow filename` 必须与仓库里的文件名一字不差**，对不上时 CI 会报成看起来像没登录的 `ENEEDAUTH`。
-
-之后三步：
-
-```bash
-# 1. 改版本号并提交
-npm version 0.4.0 --no-git-tag-version
-git commit -am "release: 0.4.0"
-# 2. 打 tag 推上去，CI 自动：校验 → npm publish --provenance → 建 Release
-git tag -a v0.4.0 -m "0.4.0" && git push origin main --follow-tags
-```
-
-`publish.yml` 里有一道幂等判断：版本已在 npm 上就跳过 `npm publish`，
-所以补建 Release、或重复触发都不会出现误报失败。
-
-> 历史备注：2026-11 起 npm 已下线 Classic Automation token，Granular token 即使勾了
-> 「Bypass 2FA」也只能发布 staged 版本。免 token 的正规路子就是 Trusted Publisher。
-
 ## 已知取舍
 
 - DSH 前端类名是 CSS Modules 生成哈希（如 `.wtg9ga_panelRow`）。插件里的选择器**直接写了这些类名**，
