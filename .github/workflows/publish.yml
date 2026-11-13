@@ -1,33 +1,35 @@
 name: publish
 
-# 打 tag（形如 v0.1.2）触发：校验 tag 与 package.json 版本、校验插件清单、构建冒烟测试、
-# 建 GitHub Release。
+# 发布 dsh-workbuddy-theme。
+#   - npmjs：用 npm Trusted Publisher（OIDC）发布，免 token、免 OTP
+#   - GitHub：建 Release
+# 触发：GitHub Release 发布，或打 tag v*，或手动 workflow_dispatch。
 #
-# 注意：这里**不**执行 npm publish。
-# npm 账号开启 2FA 后（auth-and-writes / auth-only），任何 token —— 包括 Automation ——
-# 发布会一律要求 OTP，CI 里拿不到。发布请在本机执行：
-#     npm publish --registry=https://registry.npmjs.org/ --otp=<6位验证码>
+# 前置（一次性，已在 npmjs.com 包设置页完成）：
+#   Trusted Publisher = GitHub Actions / elegant01 / dsh-workbuddy-theme / publish.yml
+#   —— 所以本文件的文件名不能改，改了 OIDC 就对不上。
 on:
+  release:
+    types: [published]
   push:
     tags:
       - 'v*'
-  workflow_dispatch: # 允许在 Actions 页面手动跑
-
-permissions:
-  contents: write # 建 Release 需要
+  workflow_dispatch:
 
 jobs:
-  verify-and-release:
+  verify:
+    name: Verify package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '24'
 
-      # tag 与 package.json 必须一致，否则事后说不清 v0.1.2 到底对应哪份代码。
+      # tag 与 package.json 必须一致，否则事后说不清 v0.3.0 到底对应哪份代码。
       - name: 校验 tag 与 package.json 版本一致
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           tag="${GITHUB_REF_NAME#v}"
           pkg="$(node -p "require('./package.json').version")"
@@ -65,7 +67,40 @@ jobs:
             console.log("宿主端导出 OK:", m.name);
           '
 
-      - name: 建 GitHub Release
+  publish-npmjs:
+    name: Publish to npmjs (OIDC)
+    needs: verify
+    # npm Trusted Publisher（OIDC）：workflow 必须有 id-token: write，
+    # npm CLI 自动检测 OIDC 环境并换取一次性发布凭证，无需任何 npm token。
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC 必需
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 注意：不设 registry-url —— OIDC 握手由 npm CLI 自动完成，
+          # 显式 .npmrc 认证反而会干扰 trusted publisher 流程。
+          node-version: '24' # 内置 npm >= 11，满足 OIDC/trusted publishing 要求
+
+      - name: Publish with provenance
+        run: npm publish --provenance --access public
+
+  release:
+    name: Create GitHub Release
+    needs: publish-npmjs
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name != 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Create release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
