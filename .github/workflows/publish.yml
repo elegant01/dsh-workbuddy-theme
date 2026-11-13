@@ -85,7 +85,21 @@ jobs:
           # 显式 .npmrc 认证反而会干扰 trusted publisher 流程。
           node-version: '24' # 内置 npm >= 11，满足 OIDC/trusted publishing 要求
 
+      # 版本可能已经由手动 workflow_dispatch 发布过（例如先在 Actions 页跑通、
+      # 再补建 Release）。这种情况下直接跳过，别让 workflow 红灯。
+      - name: 检查该版本是否已发布
+        id: exists
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          if npm view "dsh-workbuddy-theme@$v" version >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "dsh-workbuddy-theme@$v 已在 npm 上，跳过发布。"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish with provenance
+        if: steps.exists.outputs.skip != 'true'
         run: npm publish --provenance --access public
 
   release:
