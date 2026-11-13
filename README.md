@@ -56,18 +56,27 @@ dsh plugin --profile <你的 profile> add file:/path/to/dsh-workbuddy-theme
 
 ## 它做了什么
 
-插件本质上只有一件事：往页面 `<head>` 注入一段 `<style id="dsh-workbuddy-theme-css">`。
+两件事，各自走宿主提供的正门：
 
 ```
 index.js          宿主端，只有一个空 apply()，作用是让加载器把插件挂进插件集合
-client.js         全部效果所在：一段 CSS（约 300 行，含注释）
+client.js         全部效果所在：令牌叠加 + 一段结构 CSS + 设置页的一行
 cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 ```
 
-CSS 分三层，从稳到脆：
+**第一件：配色与字体走 `theme.overrideTokens()`**（约 82 个 `--dsw-static-*` 色阶 +
+两个字体令牌，每条都同时给 light / dark 两个值）。
 
-1. **改设计令牌**（约占 70%）——覆盖 `--dsw-alias-*` / `--dsw-static-*` / `--dsw-font-*`，DSH 升级后基本不会坏
-2. **覆盖组件选择器**（约占 30%）——**优先用宿主发布的 `data-*` 属性**
+这是 DSH 的官方扩展点，宿主把令牌写成 `<body>` 的内联样式，优先级高于任何 `<style>` 标签。
+好处是结构上的：一个令牌同时管明暗，切换配色自动跟随；切走 / 禁用 / 热重载时整层一起回收。
+`dsh-theme-native`、`@hmkk/dsh-appearance`、`dsh-fonttune` 三家市场插件都是这么做的。
+
+**第二件：结构与细节靠一段自己的 CSS**（`<style id="dsh-workbuddy-theme-css">`），
+因为宿主没有为形状留扩展点。这段 CSS 的值全部引用上面的令牌，所以它随明暗自动切换。
+选择器从稳到脆：
+
+1. **改设计令牌**——覆盖 `--dsw-alias-*` / `--dsw-static-*` / `--dsw-font-*`，DSH 升级后基本不会坏
+2. **覆盖组件选择器**——**优先用宿主发布的 `data-*` 属性**
    （`[data-composer-card]` / `[data-message-bubble]` / `[data-tool]`），
    只有没有属性的地方才退回带哈希的类名（`.wtg9ga_*` / `.GRgSLq_*` / `.hKdVjq_*`）
 3. **不打 DOM 补丁**——不重写结构、不注入元素
@@ -89,11 +98,11 @@ CSS 分三层，从稳到脆：
 
 ```bash
 # 1. 改版本号
-npm version 0.2.1 --no-git-tag-version
+npm version 0.4.0 --no-git-tag-version
 # 2. 发布到 npm（需要 OTP，见下）
 npm publish --registry=https://registry.npmjs.org/ --otp=<6位验证码>
 # 3. 提交并打 tag，触发 CI
-git commit -am "release: 0.2.1" && git tag -a v0.2.1 -m "0.2.1" && git push origin main --follow-tags
+git commit -am "release: 0.4.0" && git tag -a v0.4.0 -m "0.4.0" && git push origin main --follow-tags
 ```
 
 **为什么 CI 不自动发布**：npm 账号开启两步验证（`auth-and-writes` / `auth-only`）之后，
@@ -107,7 +116,10 @@ git commit -am "release: 0.2.1" && git tag -a v0.2.1 -m "0.2.1" && git push orig
   这样最精确、不会误伤；代价是 DSH 大版本升级后如果前缀变了，需要重新对一遍。
   文件里每段都标注了来源（`InputBar_module_css_default`、`SidebarRoot_module_css_default` 等），改起来有据可循。
 - DSH 若把 `--dsw-*` 令牌改名，令牌覆盖会失效 —— 页面只是回到原主题，不会坏。
-- 只做浅色。深色模式未实现（作者自己用不上）。
+- 深色模式：配色与字体**自动跟随**（同一层同时给了 light / dark 两个值）；
+  结构 CSS 的几张卡片（侧栏行高、输入卡圆角、气泡圆角）是形状，不分明暗，两态共用。
+- 开关存在 `localStorage`（`dsh-workbuddy-theme:enabled`），不用宿主的 configForms ——
+  那需要宿主侧声明 schema，而本插件宿主端是故意空的。
 - 只针对 DSH Web GUI；DSH TUI / headless 不受影响。
 
 ## 许可

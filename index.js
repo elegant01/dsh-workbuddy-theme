@@ -1,9 +1,11 @@
 // dsh-workbuddy-theme — 宿主端（node）。
 //
-// 与本文件同目录的 client.js 是全部效果所在：主题是一段注入到页面 <head> 的 CSS，
-// 不涉及任何服务端状态或传输。这里的存在只有一个目的——让加载器把本包挂起来，
-// 从而让 dsh-client-modules 提供 /plugins/dsh-workbuddy-theme/client.js。
-// 写法与官方 dsh-focus-notify 的宿主端一致：导出 name + 空 apply。
+// 效果全在 client.js：主题通过宿主公开的 ctx.theme.overrideTokens()
+// 叠加一层令牌覆盖（配色 + 字体），再注入一段只描述结构细节的 CSS。
+// 宿主端不持有任何状态，也不面向模型。
+//
+// 这里存在的唯一目的，是让加载器挂起本包，
+// 从而由 dsh-client-modules 提供 /plugins/dsh-workbuddy-theme/client.js。
 export const name = 'dsh-workbuddy-theme'
 
 /** 宿主端没有要挂载的东西。 */
