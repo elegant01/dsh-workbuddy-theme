@@ -56,6 +56,9 @@ window.__ModuleLoader__.load({
     const SEMANTIC_TOKENS = {
       '--wb-bubble-fill': { light: '#f2f2f2', dark: '#2c2c2e' },
       '--wb-border': { light: '#e6e6e6', dark: '#3a3a3c' },
+      /* 预览与令牌校验脚本会引用到它；真实环境里 body 的 font-family 已是 DSH 的
+         --dsw-font-family（我们在 FONT_TOKENS 里给了值），这里给一份兜底即可。 */
+      '--dsw-font-family': { light: UI_FONT, dark: UI_FONT },
     }
 
     /* 静态色阶：WorkBuddy 调色板重排后的 DSH --dsw-static-* 全套。
@@ -263,6 +266,146 @@ window.__ModuleLoader__.load({
 
 /* ============ 5. 代码块 ============ */
 [data-dsh-wb] [class*="_markdown_"] pre { border-radius: 8px; }
+
+/* ============ 6. 正文排版 ============ */
+/* WorkBuddy 正文行高 22px（DSH 是 24px），段间距 12px（DSH 16px），
+   整体更紧凑。用 --dsh-content-font-delta 联动设置里的字号调节。 */
+[data-dsh-wb] [class*="_markdown_"] {
+  letter-spacing: 0;
+}
+[data-dsh-wb] [class*="_markdown_"] p {
+  margin: 12px 0;
+}
+[data-dsh-wb] [class*="_markdown_"] :where(h1, h2, h3) {
+  margin: 24px 0 12px;
+}
+[data-dsh-wb] [class*="_markdown_"] :where(h4, h5, h6) {
+  margin: 16px 0 8px;
+}
+
+/* ============ 7. 行内代码 ============
+   DSH 默认是「。5px 边框 + 浅底方块」，WorkBuddy 是无边框、只靠底色区分，
+   圆角 4px。去掉边框让它更像文字而不是控件。 */
+[data-dsh-wb] [class*="_markdown_"] :not(pre) > code {
+  border: 0;
+  border-radius: 4px;
+  padding: 1px 5px;
+  background-color: var(--dsw-alias-markdown-inline-code);
+  font-size: .857em;
+}
+
+/* ============ 8. 代码块 ============
+   全部走宿主自己的 --dsl-code-block-* 变量，不改类名。
+   WorkBuddy 的代码块：8px 圆角、标题栏与正文同底色但有一条分隔线、
+   标题栏 12px、正文 13px/22px。 */
+[data-dsh-wb] [class*="_block_7gxqk"] {
+  --dsl-code-block-border-radius: 8px;
+  --dsl-code-block-banner-font: 12px/20px var(--dsw-font-family);
+}
+[data-dsh-wb] [class*="_block_7gxqk"] [class*="_banner_7gxqk"] {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+  color: var(--dsw-alias-label-secondary);
+}
+[data-dsh-wb] [class*="_block_7gxqk"] [class*="_infostring_7gxqk"] {
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+}
+[data-dsh-wb] [class*="_block_7gxqk"] pre {
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 22px;
+}
+
+/* ============ 9. 引用块 ============
+   WorkBuddy 用 3px 品牌色淡线（不是灰），文字降一档。 */
+[data-dsh-wb] [class*="_markdown_"] blockquote {
+  border-left: 3px solid var(--dsw-static-neutral-bluish-200);
+  padding: 2px 0 2px 14px;
+  margin: 16px 0;
+  color: var(--dsw-alias-label-secondary);
+}
+[data-dsh-wb] [class*="_markdown_"] blockquote p:first-child { margin-top: 0; }
+[data-dsh-wb] [class*="_markdown_"] blockquote p:last-child { margin-bottom: 0; }
+
+/* ============ 10. 表格 ============
+   DSH 默认无外框。WorkBuddy 是「圆角外框 + 表头淡底 + 行分隔线」。 */
+[data-dsh-wb] [class*="_tableScroll_rve47"] {
+  margin: 16px 0;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+[data-dsh-wb] [class*="_tableScroll_rve47"] table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+[data-dsh-wb] [class*="_tableScroll_rve47"] th {
+  background-color: var(--dsw-static-neutral-bluish-50);
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+  font-weight: 600;
+  color: var(--dsw-alias-label-primary);
+  padding: 10px 14px;
+}
+[data-dsh-wb] [class*="_tableScroll_rve47"] td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+}
+[data-dsh-wb] [class*="_tableScroll_rve47"] tr:last-child td { border-bottom: 0; }
+[data-dsh-wb] [class*="_tableScroll_rve47"] th:first-child,
+[data-dsh-wb] [class*="_tableScroll_rve47"] td:first-child { padding-left: 14px; }
+[data-dsh-wb] [class*="_tableScroll_rve47"] td:last-child { padding-right: 14px; }
+
+/* ============ 11. 列表 ============
+   WorkBuddy 项目符号是中性灰小圆点，行间距 6px。 */
+[data-dsh-wb] [class*="_markdown_"] :where(ul, ol) { margin: 12px 0; padding-left: 20px; }
+[data-dsh-wb] [class*="_markdown_"] li::marker { color: var(--dsw-alias-label-tertiary); }
+
+/* ============ 12. 分隔线 ============ */
+[data-dsh-wb] [class*="_markdown_"] hr {
+  margin: 24px 0;
+  height: 1px;
+  background: var(--dsw-alias-border-l2);
+}
+
+/* ============ 13. 工具卡展开态 ============
+   WorkBuddy 展开体的标题是 14px，内容 13px/22px，内边距 12px 16px。 */
+[data-dsh-wb] [class*="hKdVjq_ioCard"] > *:first-child,
+[data-dsh-wb] [class*="hKdVjq_terminalBody"] > *:first-child {
+  font-size: 14px;
+}
+
+/* ============ 14. 滚动条 ============
+   WorkBuddy 滚动条很细、无轨道底、悬停才明显。 */
+[data-dsh-wb] ::-webkit-scrollbar { width: 8px; height: 8px; }
+[data-dsh-wb] ::-webkit-scrollbar-track { background: transparent; }
+[data-dsh-wb] ::-webkit-scrollbar-thumb {
+  background-color: var(--dsw-alias-scrollbar-bg-l1);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+[data-dsh-wb] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dsw-alias-scrollbar-hover-l1);
+}
+
+/* ============ 15. 选中文字 ============
+   默认是系统蓝，改成品牌色 20% 透明。 */
+[data-dsh-wb] ::selection {
+  background-color: rgb(0 194 154 / 20%);
+  color: var(--dsw-alias-label-primary);
+}
+
+/* ============ 16. 链接 ============
+   WorkBuddy 链接是品牌深绿 #009273，无下划线，悬停才加虚线。 */
+[data-dsh-wb] [class*="_markdown_"] a {
+  color: var(--dsw-alias-link);
+  text-decoration: none;
+}
+[data-dsh-wb] [class*="_markdown_"] a:hover {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
 `
 
     /* ---------------- 应用与回收 ---------------- */
