@@ -91,11 +91,15 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 
 | 槽位 | 内容 |
 | --- | --- |
-| `settings.section`（order 18） | 设置左侧导航新增一页「WorkBuddy 外观」，含启用开关与已知取舍 |
+| `settings.section`（order 18） | 设置左侧导航新增一页「WorkBuddy 外观」，含启用开关、已知取舍、**适配状态**与**控件预览**（复选框/单选/开关/色板/文字层级一页看全） |
 | `settings.general.item`（order 9.5） | 「通用」页里紧挨「外观」上面的一行主题开关 |
 | `sidebar.session.row.trailing` | 会话行时间戳旁一个 6px 低对比圆点 |
-| `conversation.session.header.utilities` | 会话标题栏右上角的 WorkBuddy 小胶囊 |
+| `conversation.session.header.utilities` | 会话标题栏右上角的 WorkBuddy 小胶囊；宿主升级改了类名时变成琥珀色「适配失效」告警 |
 | `conversation.input.dock` | 输入卡上方一条工作区快捷条 |
+
+**适配哨兵**：侧栏类名（`.wtg9ga_*`）探测 10 秒不命中即判定宿主漂移——结构层自动停用、
+配色不受影响，同时会话头胶囊与设置页「适配状态」行变黄提示更新插件，
+把静默失效变成一眼可见。
 
 每个槽位注册都包在 try/catch 里：宿主改版、槽位未声明、条目渲染出错时只跳过该部件，
 配色与字体不受影响。设置页与开关只依赖 `theme` 与 `slots` 两个服务，不声明 `store` / `inject`——

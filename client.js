@@ -858,6 +858,35 @@ window.__ModuleLoader__.load({
   background-color: var(--dsw-alias-interactive-bg-hover);
 }
 .dsh-wb-action[disabled] { opacity: .45; cursor: default; }
+
+/* ============ 30. 控件预览与适配告警 ============
+   设置页底部的控件全家福：一格一件，主题生效时按主题渲染、
+   关闭时回落宿主原生，哪格不对就说明哪处坏了。
+   琥珀色告警（#b45309/#d97706）在明暗两态都成立。 */
+.dsh-wb-stat-warn {
+  color: #b45309;
+  background-color: transparent;
+  border: .5px solid #d97706;
+}
+.dsh-wb-stat-warn .dsh-wb-stat-value { color: inherit; }
+
+.dsh-wb-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  border: .5px solid var(--dsw-alias-border-l2);
+  border-radius: 12px;
+}
+.dsh-wb-preview-item { display: flex; flex-direction: column; gap: 6px; }
+.dsh-wb-preview-label { font-size: 12px; line-height: 18px; color: var(--dsw-alias-label-tertiary); }
+.dsh-wb-preview-row { display: flex; align-items: center; gap: 10px; min-height: 24px; }
+.dsh-wb-swatch {
+  width: 24px;
+  height: 16px;
+  border-radius: 4px;
+  border: .5px solid rgb(128 128 128 / 30%);
+}
 `
 
     function installWidgetStyle() {
@@ -886,6 +915,18 @@ window.__ModuleLoader__.load({
       }
     }
 
+    /** 适配漂移信号：宿主升级改了类名时 probe() 把它置真，
+     *  会话头胶囊与设置页「适配状态」行订阅它变黄——把静默失效变成一眼可见。 */
+    const DRIFT = { active: false, listeners: new Set() }
+
+    function setDrift(active) {
+      if (DRIFT.active === active) return
+      DRIFT.active = active
+      for (const fn of DRIFT.listeners) {
+        try { fn(active) } catch { /* 忽略 */ }
+      }
+    }
+
     /**
      * 侧栏探测：.wtg9ga_* 命中才给 <html> 挂 data-dsh-wb，否则整个结构层不生效。
      * 这样 DSH 升级改名时，最坏结果是「只剩配色和字体」，而不是留下半套错位样式。
@@ -905,6 +946,7 @@ window.__ModuleLoader__.load({
       const check = () => {
         if (document.querySelector('.wtg9ga_panelRow, .wtg9ga_root') === null) return false
         root.setAttribute('data-dsh-wb', '')
+        setDrift(false)
         stop()
         return true
       }
@@ -915,8 +957,16 @@ window.__ModuleLoader__.load({
         const current = new MutationObserver(() => { check() })
         observer = current
         current.observe(root, { childList: true, subtree: true })
-        // 侧栏 10 秒内没出现就不再等（超长会话仍在首次渲染时，交给热重载重试）
-        setTimeout(stop, 10000)
+        // 侧栏 10 秒内没出现就不再等：视为宿主类名漂移，告警置位
+        setTimeout(() => {
+          stop()
+          if (root.hasAttribute('data-dsh-wb')) return
+          setDrift(true)
+          console.warn(
+            '[dsh-workbuddy-theme] 侧栏节点 10 秒未出现：宿主类名疑似漂移，结构层已停用，' +
+            '配色与字体不受影响。请更新 dsh-workbuddy-theme 到最新版。',
+          )
+        }, 10000)
       }
 
       console.info(
@@ -1046,14 +1096,22 @@ window.__ModuleLoader__.load({
 
     /** 会话头右侧的统计胶囊。
      *  宿主 ownProps 给的是 sessionId；attachedMessages 之类的计数拿不到稳定契约，
-     *  所以这里只显示「当前会话」这个无害信息，不猜数字。 */
+     *  所以这里只显示「当前会话」这个无害信息，不猜数字。
+     *  适配漂移（probe 超时）时变成琥珀色告警：主题结构层已被停用，提示更新插件。 */
     function makeUtility(React) {
       return function WorkBuddyUtility() {
+        const [drift, setDriftState] = React.useState(DRIFT.active)
+        React.useEffect(() => {
+          DRIFT.listeners.add(setDriftState)
+          return () => DRIFT.listeners.delete(setDriftState)
+        }, [])
         return React.createElement('span', {
-          className: 'dsh-wb-stat',
-          title: 'WorkBuddy 主题已启用（设置 → 通用 可关闭）',
+          className: 'dsh-wb-stat' + (drift ? ' dsh-wb-stat-warn' : ''),
+          title: drift
+            ? 'DSH 升级改了类名，主题结构层已停用（配色不受影响）。请更新 dsh-workbuddy-theme。'
+            : 'WorkBuddy 主题已启用（设置 → 通用 可关闭）',
         },
-          React.createElement('span', { className: 'dsh-wb-stat-value' }, 'WorkBuddy'),
+          React.createElement('span', { className: 'dsh-wb-stat-value' }, drift ? 'WorkBuddy · 适配失效' : 'WorkBuddy'),
         )
       }
     }
@@ -1099,8 +1157,34 @@ window.__ModuleLoader__.load({
         )
       }
 
+      function PreviewItem(props) {
+        return h('div', { className: 'dsh-wb-preview-item' },
+          h('div', { className: 'dsh-wb-preview-label' }, props.label),
+          h('div', { className: 'dsh-wb-preview-row' }, props.children),
+        )
+      }
+
+      function SwitchReplica(props) {
+        return h('button', {
+          type: 'button',
+          role: 'switch',
+          'aria-checked': props.on ? 'true' : 'false',
+          className: '_switch_1ik0f_5',
+          tabIndex: -1,
+        }, h('span', { className: '_thumb_1ik0f_33' }))
+      }
+
+      function Swatch(props) {
+        return h('span', { className: 'dsh-wb-swatch', style: { background: props.fill } })
+      }
+
       return function WorkBuddySection() {
         const [on, setOn] = React.useState(isEnabled)
+        const [drift, setDriftState] = React.useState(DRIFT.active)
+        React.useEffect(() => {
+          DRIFT.listeners.add(setDriftState)
+          return () => DRIFT.listeners.delete(setDriftState)
+        }, [])
         return h('div', { className: 'dsh-wb-panel' },
           h('div', { className: 'dsh-wb-panel-title' }, 'WorkBuddy 外观'),
           h('div', { className: 'dsh-wb-panel-hint' }, '复刻自 WorkBuddy 的设计令牌：中性灰底 + 薄荷绿交互色，正文 14/22，对话栏 848px。'),
@@ -1125,6 +1209,37 @@ window.__ModuleLoader__.load({
           h(Row, { label: '字体', desc: '界面用系统中文栈（PingFang SC → 微软雅黑），代码用等宽栈。' }),
           h(Row, { label: '对话栏宽度', desc: '默认 848px；窗口宽于 1681px 时 1008px；仍可用宽度手柄拖拽覆盖。' }),
           h(Row, { label: '已知取舍', desc: '中性 14 档明暗同值；深色是「跟随」而非逐档复刻。' }),
+          h(Row, {
+            label: '适配状态',
+            desc: '宿主升级改了类名时，结构层自动停用并在这里与会话头胶囊提示；配色不受影响。',
+            control: h('span', {
+              className: 'dsh-wb-row-label',
+              style: drift ? { color: '#d97706' } : undefined,
+            }, drift ? '适配失效 · 请更新插件' : '正常'),
+          }),
+          h('div', { className: 'dsh-wb-panel-title', style: { marginTop: 14 } }, '控件预览'),
+          h('div', { className: 'dsh-wb-panel-hint' }, '主题当前实际生效的效果；哪一项看着不对，就是那一处坏了。'),
+          h('div', { className: 'dsh-wb-preview' },
+            h(PreviewItem, { label: '复选框' },
+              h('input', { type: 'checkbox', defaultChecked: true }),
+              h('input', { type: 'checkbox' }),
+            ),
+            h(PreviewItem, { label: '单选框' },
+              h('input', { type: 'radio', defaultChecked: true }),
+              h('input', { type: 'radio' }),
+            ),
+            h(PreviewItem, { label: '开关' },
+              h(SwitchReplica, { on: true }),
+              h(SwitchReplica, { on: false }),
+            ),
+            h(PreviewItem, { label: '交互色' }, h(Swatch, { fill: 'var(--wb-control-on)' })),
+            h(PreviewItem, { label: '用户气泡' }, h(Swatch, { fill: 'var(--wb-bubble-fill)' })),
+            h(PreviewItem, { label: '文字层级' },
+              h('span', { style: { color: 'var(--dsw-alias-label-primary)' } }, '一'),
+              h('span', { style: { color: 'var(--dsw-alias-label-secondary)' } }, '二'),
+              h('span', { style: { color: 'var(--dsw-alias-label-tertiary)' } }, '三'),
+            ),
+          ),
         )
       }
     }
