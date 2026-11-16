@@ -34,6 +34,7 @@ window.__ModuleLoader__.load({
     /** 覆盖层来源标识（同名再调用即整层替换并置顶）。 */
     const SOURCE = 'dsh-workbuddy-theme'
     const STYLE_ID = 'dsh-workbuddy-theme-css'
+    const WIDGET_STYLE_ID = 'dsh-workbuddy-theme-widget-css'
 
     /** WorkBuddy 字体栈：中文 UI 字体不随包发布，只声明机器上有的。 */
     const UI_FONT =
@@ -547,9 +548,9 @@ window.__ModuleLoader__.load({
    类名来源（index-lh_YM6sT.css）：
      ._switch_1ik0f_5      开关轨道 36×20，背景 var(--dsw-alias-border-l3)
      ._thumb_1ik0f_33      开关滑块 16×16，选中时 translate(16px)
-     ._checkbox_1wz3s_1    复选框，input 用 accent-color
-   复选框的 accent-color 已经指向 --dsw-alias-brand-primary，
-   只需要把那个令牌指到品牌绿（已在令牌层完成），这里只管开关。 */
+     ._checkbox_1wz3s_1    复选框，input 16×16，accent-color
+   原生 accent-color 的勾色固定按填充亮度走（亮绿=黑勾），所以复选框
+   在下面改成自绘绿底白勾；开关仍用 accent-color 的思路，直接上品牌绿。 */
 
 /* 开关关闭态：WorkBuddy 用更浅的灰，边缘更柔和 */
 [data-dsh-wb] ._switch_1ik0f_5 {
@@ -569,19 +570,41 @@ window.__ModuleLoader__.load({
   box-shadow: none;
 }
 
-/* 复选框与单选按钮：用 accent-color 统一到品牌绿。
-   **不要改成 appearance:none 自己画**：宿主的复选框不止一种 DOM
-   （设置页列表用的不是 ._checkbox_1wz3s_1，模型选择页那种也没有稳定类名），
-   自己画会让没匹配到的那些复选框变成空框、勾选状态看不见。
-   accent-color 的勾色由浏览器按填充色亮度决定，中间亮度会出来黑勾——
-   这是可接受的取舍，好过丢功能。
-
-   颜色来源很关键：宿主的 ._checkbox_1wz3s_1 input 用的是
-   --dsw-alias-brand-primary，那条别名指向中性档位（正文色），
-   所以不在这里直接指定就会是黑框。这里直接吃 --wb-control-on。 */
+/* 复选框：自绘绿底白勾。
+   accent-color 的勾色由浏览器按填充色亮度决定，#00c29a 属中亮度，勾必是黑的，
+   勾色无法单独改，所以对真实 input 关掉原生外观自己画。
+   未勾态描边用 border-l3（与开关关闭态轨道同档），勾选态底色吃 --wb-control-on。
+   宿主 ._checkbox_1wz3s_1 input 是 16×16 裸 input，尺寸仍由宿主管，
+   这里只管外观；勾的 SVG 用百分比缩放，非 16px 的框也不会变形。
+   没匹配到真实 input 的 DOM（宿主自绘的假复选框）不受影响，维持原状。 */
 [data-dsh-wb] ._checkbox_1wz3s_1 input[type="checkbox"],
 [data-dsh-wb] input[type="checkbox"] {
-  accent-color: var(--wb-control-on);
+  appearance: none;
+  margin: 0;
+  /* 无类名的裸 input（如 dsh-codebuddy-cli 的勾选行）尺寸全靠原生外观撑着，
+     关掉 appearance 会塌成 0 宽、描边挤成一条竖线。用 min 兜底：
+     宿主 ._checkbox_1wz3s_1 的显式 16px 仍然优先。 */
+  min-width: 13px;
+  min-height: 13px;
+  flex: none;
+  border: 1px solid var(--dsw-alias-border-l3);
+  border-radius: 3px;
+  background: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 62.5%;
+  cursor: inherit;
+}
+
+[data-dsh-wb] input[type="checkbox"]:checked {
+  border-color: var(--wb-control-on);
+  background-color: var(--wb-control-on);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+[data-dsh-wb] input[type="checkbox"]:focus-visible {
+  outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
+  outline-offset: 2px;
 }
 
 [data-dsh-wb] input[type="radio"] {
@@ -683,6 +706,32 @@ window.__ModuleLoader__.load({
    取 320px，并保证它跟着光标/字号一起缩放不出格。 */
 [data-dsh-wb] [class*="hKdVjq_bodyScroll"] { max-height: 320px; }
 
+`
+
+
+    /* ---------------- 应用与回收 ---------------- */
+
+    /** 各 effect 的清理函数。模块级，热重载时先清上一轮，避免叠加。 */
+    let dispose = []
+
+    function track(fn) {
+      if (typeof fn === 'function') dispose.push(fn)
+    }
+
+    function teardown() {
+      for (const fn of dispose.reverse()) {
+        try { fn() } catch (error) { console.warn('[dsh-workbuddy-theme] cleanup failed', error) }
+      }
+      dispose = []
+    }
+
+    /** 装 CSS。返回清理函数。 */
+    /* 常驻小部件层：设置页与四个槽位小部件的样式，只覆盖 .dsh-wb-* 命名空间类名。
+       不受主题开关控制 —— 否则开关一关，结构层整个撤掉，设置页自己的
+       分段按钮就退化成裸的原生 button（鸡生蛋：关主题关掉了关主题的界面）。
+       颜色全走宿主原生 --dsw-alias-* 别名：关掉时自动回落成宿主灰，
+       开着时被令牌层重排成 WorkBuddy 色，两层互不干扰。 */
+    const WIDGET_CSS = `
 /* ============ 26. 设置页排版（P2 支撑）============
    新设置页（settings.section: workbuddy）的样式。
    WorkBuddy 的设置项是一行标题 + 一行说明 + 右侧控件，行间距 24px。 */
@@ -809,26 +858,21 @@ window.__ModuleLoader__.load({
   background-color: var(--dsw-alias-interactive-bg-hover);
 }
 .dsh-wb-action[disabled] { opacity: .45; cursor: default; }
-
 `
 
-    /* ---------------- 应用与回收 ---------------- */
-
-    /** 各 effect 的清理函数。模块级，热重载时先清上一轮，避免叠加。 */
-    let dispose = []
-
-    function track(fn) {
-      if (typeof fn === 'function') dispose.push(fn)
-    }
-
-    function teardown() {
-      for (const fn of dispose.reverse()) {
-        try { fn() } catch (error) { console.warn('[dsh-workbuddy-theme] cleanup failed', error) }
+    function installWidgetStyle() {
+      const existing = document.getElementById(WIDGET_STYLE_ID)
+      if (existing !== null) existing.remove()
+      const tag = document.createElement('style')
+      tag.id = WIDGET_STYLE_ID
+      tag.textContent = WIDGET_CSS
+      document.head.appendChild(tag)
+      return () => {
+        const node = document.getElementById(WIDGET_STYLE_ID)
+        if (node !== null) node.remove()
       }
-      dispose = []
     }
 
-    /** 装 CSS。返回清理函数。 */
     function installStyle() {
       const existing = document.getElementById(STYLE_ID)
       if (existing !== null) existing.remove()
@@ -1019,9 +1063,8 @@ window.__ModuleLoader__.load({
     function makeDock(React) {
       return function WorkBuddyDock(props) {
         const cwd = props && props.session ? props.session.cwd : undefined
-        const name = typeof cwd === 'string' && cwd !== ''
-          ? cwd.replace(/[\\/]+$/, '').split(/[\\/]/).pop()
-          : '当前工作区'
+        if (typeof cwd !== 'string' || cwd === '') return null
+        const name = cwd.replace(/[\\/]+$/, '').split(/[\\/]/).pop()
         return React.createElement('div', { className: 'dsh-wb-actions' },
           React.createElement('span', { className: 'dsh-wb-action', title: cwd ?? '' }, name),
         )
@@ -1130,6 +1173,9 @@ window.__ModuleLoader__.load({
     function apply(ctx) {
       teardown()
 
+      // 3'. 常驻小部件层：不随主题开关装卸（见 WIDGET_CSS 顶部说明）。
+      track(installWidgetStyle())
+
       const theme = ctx.get('theme')
       if (theme === null || theme === undefined || typeof theme.overrideTokens !== 'function') {
         console.warn('[dsh-workbuddy-theme] 宿主没有提供 theme 服务，主题未启用')
@@ -1146,6 +1192,7 @@ window.__ModuleLoader__.load({
       //   令牌层 —— 配色与字体，宿主写成 body 内联样式，随明暗自动切；
       //   结构层 —— 自己的 CSS，只管侧栏 / 输入卡 / 气泡 / 工具行的形状。
       //   开关关掉时两层都撤，页面立即回到 DSH 原样。
+      //   （设置页/小部件的 .dsh-wb-* 样式在常驻层 WIDGET_CSS，见顶部说明。）
       // 用对象持有两个句柄：setWorkbuddy 重建两层后句柄会更新，
       // 而 track 出去的清理函数通过闭包读的是对象的最新值，
       // 不会像捕获变量那样指向已经失效的旧函数。
