@@ -46,6 +46,45 @@ window.__ModuleLoader__.load({
     const BRAND = { light: '#00c29a', dark: '#2dd4b0' }
     const BRAND_HOVER = { light: '#40d1b3', dark: '#4fe0c0' }
 
+    /** 交互色三档：薄荷绿是 WorkBuddy 原版；靛蓝与琥珀是同饱和度的换肤。
+     *  每档给 9 个令牌（含 deepseek/blue 静态档，发送按钮、选中色、光标都吃它们），
+     *  buildTokens() 用选中的档覆盖 STATIC_TOKENS 里的薄荷绿字面量。 */
+    const ACCENTS = {
+      mint: {
+        '--wb-control-on': { light: '#00c29a', dark: '#2dd4b0' },
+        '--wb-control-on-hover': { light: '#40d1b3', dark: '#4fe0c0' },
+        '--dsw-static-deepseek-500': { light: '#00c29a', dark: '#2dd4b0' },
+        '--dsw-static-deepseek-450': { light: '#42c8a4', dark: '#30be9e' },
+        '--dsw-static-deepseek-400': { light: '#00a885', dark: '#2dd4b0' },
+        '--dsw-static-blue-500': { light: '#00c29a', dark: '#2dd4b0' },
+        '--dsw-static-blue-450': { light: '#00ad89', dark: '#4dd8b6' },
+        '--dsw-static-blue-400': { light: '#009979', dark: '#2dd4b0' },
+        '--dsw-static-deepseek-50': { light: '#edf9f5', dark: '#1b2421' },
+      },
+      indigo: {
+        '--wb-control-on': { light: '#4f6ef7', dark: '#8b9dfc' },
+        '--wb-control-on-hover': { light: '#6f86f9', dark: '#a5b3fd' },
+        '--dsw-static-deepseek-500': { light: '#4f6ef7', dark: '#8b9dfc' },
+        '--dsw-static-deepseek-450': { light: '#6d84f8', dark: '#7e93f6' },
+        '--dsw-static-deepseek-400': { light: '#3f5fe0', dark: '#8b9dfc' },
+        '--dsw-static-blue-500': { light: '#4f6ef7', dark: '#8b9dfc' },
+        '--dsw-static-blue-450': { light: '#5d77f7', dark: '#93a5fd' },
+        '--dsw-static-blue-400': { light: '#4a63e0', dark: '#8b9dfc' },
+        '--dsw-static-deepseek-50': { light: '#eef1fe', dark: '#1e2233' },
+      },
+      amber: {
+        '--wb-control-on': { light: '#d97706', dark: '#f0a04b' },
+        '--wb-control-on-hover': { light: '#e79a3a', dark: '#f5b56a' },
+        '--dsw-static-deepseek-500': { light: '#d97706', dark: '#f0a04b' },
+        '--dsw-static-deepseek-450': { light: '#e08a24', dark: '#e99a3d' },
+        '--dsw-static-deepseek-400': { light: '#c76a05', dark: '#f0a04b' },
+        '--dsw-static-blue-500': { light: '#d97706', dark: '#f0a04b' },
+        '--dsw-static-blue-450': { light: '#dd8223', dark: '#f3ab5c' },
+        '--dsw-static-blue-400': { light: '#cc6f04', dark: '#f0a04b' },
+        '--dsw-static-deepseek-50': { light: '#fdf3e5', dark: '#2a221a' },
+      },
+    }
+
     /** 字体也走 overrideTokens —— 与 dsh-fonttune 同一做法，
      *  这样切主题时它和配色一起被宿主重新发布，不会出现「切走了字体还在」。 */
     const FONT_TOKENS = {
@@ -174,6 +213,11 @@ window.__ModuleLoader__.load({
   --wb-lh-body: calc(22px + var(--dsh-content-font-delta, 0px));
 }
 
+/* 字号密度档：data-dsh-wb-density 由设置页写入。
+   标准档不动，继续跟随宿主设置里的字号调节（--dsh-content-font-*）。 */
+[data-dsh-wb][data-dsh-wb-density="compact"] { --wb-fs-body: 13px; --wb-lh-body: 21px; }
+[data-dsh-wb][data-dsh-wb-density="roomy"] { --wb-fs-body: 15px; --wb-lh-body: 23px; }
+
 /* ============ 1. 对话区正文 ============ */
 [class*="_markdown_"] { letter-spacing: 0.1px; }
 
@@ -263,8 +307,8 @@ window.__ModuleLoader__.load({
   min-height: 40px;
   border-radius: 8px;
   padding: 9px 8px;
-  font-size: 14px;
-  line-height: 22px;
+  font-size: var(--wb-fs-body);
+  line-height: var(--wb-lh-body);
   font-weight: 400;
   color: var(--dsw-alias-label-primary);
 }
@@ -283,6 +327,8 @@ window.__ModuleLoader__.load({
    整体更紧凑。用 --dsh-content-font-delta 联动设置里的字号调节。 */
 [data-dsh-wb] [class*="_markdown_"] {
   letter-spacing: 0;
+  font-size: var(--wb-fs-body);
+  line-height: var(--wb-lh-body);
 }
 [data-dsh-wb] [class*="_markdown_"] p {
   margin: 12px 0;
@@ -859,7 +905,13 @@ window.__ModuleLoader__.load({
 }
 .dsh-wb-action[disabled] { opacity: .45; cursor: default; }
 
-/* ============ 30. 控件预览与适配告警 ============
+/* ============ 30. 切换淡入淡出 ============
+   主题开关与交互色/密度切换都走 document.startViewTransition，
+   这里把默认 ~250ms 收到 200ms。不支持的宿主直接跳过动画、即时切换。 */
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: .2s; }
+
+/* ============ 31. 控件预览与适配告警 ============
    设置页底部的控件全家福：一格一件，主题生效时按主题渲染、
    关闭时回落宿主原生，哪格不对就说明哪处坏了。
    琥珀色告警（#b45309/#d97706）在明暗两态都成立。 */
@@ -1014,6 +1066,9 @@ window.__ModuleLoader__.load({
     /** apply() 每次挂载时把开关函数写到 .call 上，行组件用它。
      *  用对象包一层是因为 apply 可能被重载，组件自身 instance 不变。 */
     const ON_SWITCH = { call: () => {} }
+
+    /** 交互色/密度切换的落点，apply 每次挂载时写入（同 ON_SWITCH 模式）。 */
+    const REAPPLY = { call: () => {} }
 
     /** 组件自包含：不用 store、不用 inject，开关状态只在自己 useState 里。
      *  宿主的 slot 机制对 store / inject 的约定很细（store 必须带 .actions、
@@ -1180,6 +1235,8 @@ window.__ModuleLoader__.load({
 
       return function WorkBuddySection() {
         const [on, setOn] = React.useState(isEnabled)
+        const [accent, setAccent] = React.useState(accentChoice)
+        const [density, setDensity] = React.useState(densityChoice)
         const [drift, setDriftState] = React.useState(DRIFT.active)
         React.useEffect(() => {
           DRIFT.listeners.add(setDriftState)
@@ -1202,6 +1259,40 @@ window.__ModuleLoader__.load({
                   console.warn('[dsh-workbuddy-theme] 切换主题失败：', error)
                 }
                 setOn(next)
+              },
+            }),
+          }),
+          h(Row, {
+            label: '交互色',
+            desc: '按钮、开关、复选框、发送键、光标与选中色共用；切换时 200ms 淡入。',
+            control: h(Segmented, {
+              value: accent,
+              options: [{ id: 'mint', label: '薄荷绿' }, { id: 'indigo', label: '靛蓝' }, { id: 'amber', label: '琥珀' }],
+              onChange: (id) => {
+                writeAccent(id)
+                try {
+                  REAPPLY.call()
+                } catch (error) {
+                  console.warn('[dsh-workbuddy-theme] 切换交互色失败：', error)
+                }
+                setAccent(id)
+              },
+            }),
+          }),
+          h(Row, {
+            label: '字号密度',
+            desc: '紧凑 13px / 宽松 15px；标准档跟随宿主设置里的字号调节。',
+            control: h(Segmented, {
+              value: density,
+              options: [{ id: 'compact', label: '紧凑' }, { id: 'standard', label: '标准' }, { id: 'roomy', label: '宽松' }],
+              onChange: (id) => {
+                writeDensity(id)
+                try {
+                  REAPPLY.call()
+                } catch (error) {
+                  console.warn('[dsh-workbuddy-theme] 切换字号密度失败：', error)
+                }
+                setDensity(id)
               },
             }),
           }),
@@ -1280,7 +1371,66 @@ window.__ModuleLoader__.load({
         stopProbe()
         removeStyle()
         document.documentElement.removeAttribute('data-dsh-wb')
+        document.documentElement.removeAttribute('data-dsh-wb-density')
       }
+    }
+
+    /** 交互色档位：读 localStorage，脏值一律回落薄荷绿。 */
+    const ACCENT_KEY = 'dsh-workbuddy-theme:accent'
+
+    function accentChoice() {
+      try {
+        const v = localStorage.getItem(ACCENT_KEY)
+        return v === 'indigo' || v === 'amber' ? v : 'mint'
+      } catch { return 'mint' }
+    }
+
+    function writeAccent(id) {
+      try {
+        if (id === 'mint') localStorage.removeItem(ACCENT_KEY)
+        else localStorage.setItem(ACCENT_KEY, id)
+      } catch { /* 隐私模式写不了，忽略 */ }
+    }
+
+    /** 字号密度档：compact/roomy 写属性到 <html>，结构 CSS 里按属性切换字号变量；
+     *  标准档不写，跟随宿主自己的字号设置。 */
+    const DENSITY_KEY = 'dsh-workbuddy-theme:density'
+
+    function densityChoice() {
+      try {
+        const v = localStorage.getItem(DENSITY_KEY)
+        return v === 'compact' || v === 'roomy' ? v : 'standard'
+      } catch { return 'standard' }
+    }
+
+    function writeDensity(id) {
+      try {
+        if (id === 'standard') localStorage.removeItem(DENSITY_KEY)
+        else localStorage.setItem(DENSITY_KEY, id)
+      } catch { /* 隐私模式写不了，忽略 */ }
+    }
+
+    /** 令牌负载：WorkBuddy 静态色阶 + 字体栈 + 插件自用的语义色，全部明暗成对。
+     *  交互色按当前档位覆盖 STATIC_TOKENS 里的薄荷绿字面量。 */
+    function buildTokens() {
+      const tokens = {}
+      for (const [name, pair] of Object.entries(STATIC_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
+      for (const [name, pair] of Object.entries(FONT_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
+      for (const [name, pair] of Object.entries(SEMANTIC_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
+      for (const [name, pair] of Object.entries(ACCENTS[accentChoice()])) tokens[name] = { light: pair.light, dark: pair.dark }
+      return tokens
+    }
+
+    /** 切换动效：View Transition 截新旧两帧做 200ms 交叉淡化；
+     *  宿主不支持就退化成即时切换。 */
+    function withFade(fn) {
+      if (typeof document.startViewTransition === 'function') {
+        try {
+          document.startViewTransition(fn)
+          return
+        } catch { /* 不支持或被中断，落回直接换 */ }
+      }
+      fn()
     }
 
     /** ---------------- 插件入口 ---------------- */
@@ -1297,12 +1447,6 @@ window.__ModuleLoader__.load({
         return teardown
       }
 
-      // 令牌负载：WorkBuddy 静态色阶 + 字体栈 + 插件自用的语义色，全部明暗成对。
-      const tokens = {}
-      for (const [name, pair] of Object.entries(STATIC_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
-      for (const [name, pair] of Object.entries(FONT_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
-      for (const [name, pair] of Object.entries(SEMANTIC_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
-
       // 1+2. 两层效果：
       //   令牌层 —— 配色与字体，宿主写成 body 内联样式，随明暗自动切；
       //   结构层 —— 自己的 CSS，只管侧栏 / 输入卡 / 气泡 / 工具行的形状。
@@ -1316,18 +1460,32 @@ window.__ModuleLoader__.load({
       /** 设置页开关的落点：apply 每次挂载时把当前实例的切换函数挂到这里，
        *  行组件通过 ON_SWITCH 拿到它 —— 避免把闭包塞进组件 props。 */
       ON_SWITCH.call = (next) => {
-        writeEnabled(next)
-        handles.structure()
-        handles.tokens()
-        handles.structure = () => {}
-        handles.tokens = () => {}
-        applyTheme()
+        withFade(() => {
+          writeEnabled(next)
+          handles.structure()
+          handles.tokens()
+          handles.structure = () => {}
+          handles.tokens = () => {}
+          applyTheme()
+        })
+      }
+
+      /** 交互色/密度切换的落点：不动开关状态，只按新档位重铺令牌与密度属性。 */
+      REAPPLY.call = () => {
+        if (!isEnabled()) return
+        withFade(() => {
+          handles.tokens()
+          handles.tokens = () => {}
+          handles.tokens = theme.overrideTokens(SOURCE, buildTokens())
+          document.documentElement.setAttribute('data-dsh-wb-density', densityChoice())
+        })
       }
 
       const applyTheme = () => {
         if (!isEnabled()) return
-        handles.tokens = theme.overrideTokens(SOURCE, tokens)
+        handles.tokens = theme.overrideTokens(SOURCE, buildTokens())
         handles.structure = installStructure()
+        document.documentElement.setAttribute('data-dsh-wb-density', densityChoice())
       }
 
       track(() => handles.structure())
