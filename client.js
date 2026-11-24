@@ -1455,6 +1455,16 @@ window.__ModuleLoader__.load({
   line-height: 16px;
   text-align: center;
 }
+.dsh-wb-pet-chip { display: inline-flex; align-items: center; gap: 8px; }
+.dsh-wb-pet-thumb {
+  flex: none;
+  width: 30px;
+  height: 33px;
+  border-radius: 6px;
+  background-color: var(--dsw-alias-interactive-bg-hover);
+  background-repeat: no-repeat;
+}
+.dsh-wb-pet-name { font-size: 13px; line-height: 20px; color: var(--dsw-alias-label-primary); }
 
 /* ============ 28. 会话行徽标（P2）============
    挂在 sidebar.session.row.trailing（list，inline: true），
@@ -1493,6 +1503,7 @@ window.__ModuleLoader__.load({
    挂在 conversation.input.dock（list，scope: session），位于输入卡正上方。
    WorkBuddy 的同类条：浅灰胶囊、12px 字号、6px 圆角、横排可换行。 */
 .dsh-wb-actions {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -1553,6 +1564,32 @@ window.__ModuleLoader__.load({
   border-radius: 4px;
   border: .5px solid rgb(128 128 128 / 30%);
 }
+
+/* ============ 32. 宠物联动（dsh-codex-pet）============
+   浮宠颜色派生自宿主令牌，主题生效即跟随；这里补两处：
+   1) 新会话（composerHero 布局）把宠物摆在输入卡右上角，脚踩边框；
+   2) 宠物气泡换成 WorkBuddy 风格：14px 圆角、细描边、elevation 阴影。
+   宠物插件未安装时两条规则都遇不到目标元素。 */
+.dsh-wb-perch {
+  display: none;
+  position: absolute;
+  right: 18px;
+  bottom: 100%;
+  margin-bottom: -10px;
+  width: 72px;
+  height: 78px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 12%));
+}
+html[data-dsh-wb-pet="on"] .an3WzG_composerHero .dsh-wb-perch { display: block; }
+html[data-dsh-wb-pet="on"] .dcp .dcp-bubble {
+  border-radius: 14px !important;
+  border-color: var(--dsw-alias-border-l2) !important;
+  background: var(--dsw-alias-bg-layer-3) !important;
+  box-shadow: var(--dsw-elevation-panel) !important;
+}
+html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-label-primary); }
 `
 
     function installWidgetStyle() {
@@ -1786,14 +1823,29 @@ window.__ModuleLoader__.load({
     }
 
     /** 输入卡上方的快捷条。
-     *  zone.session 拿得到 cwd，据此显示工作区名；点击没有任何副作用。 */
+     *  zone.session 拿得到 cwd，据此显示工作区名；点击没有任何副作用。
+     *  新会话（composerHero）时在右端追加当前宠物，脚踩输入卡边框（CSS 门控显示）。 */
     function makeDock(React) {
       return function WorkBuddyDock(props) {
+        const [pet, setPet] = React.useState(null)
+        React.useEffect(() => {
+          let live = true
+          petInfo().then((info) => { if (live) setPet(selectedPet(info)) })
+          return () => { live = false }
+        }, [])
         const cwd = props && props.session ? props.session.cwd : undefined
-        if (typeof cwd !== 'string' || cwd === '') return null
-        const name = cwd.replace(/[\\/]+$/, '').split(/[\\/]/).pop()
+        const hasCwd = typeof cwd === 'string' && cwd !== ''
+        // 新会话还没有 session（也就没有 cwd），但宠物要能爬到输入卡上，所以这里不整体返回 null。
+        if (!hasCwd && pet === null) return null
+        const name = hasCwd ? cwd.replace(/[\\/]+$/, '').split(/[\\/]/).pop() : null
         return React.createElement('div', { className: 'dsh-wb-actions' },
-          React.createElement('span', { className: 'dsh-wb-action', title: cwd ?? '' }, name),
+          hasCwd ? React.createElement('span', { className: 'dsh-wb-action', title: cwd }, name) : null,
+          pet === null ? null : React.createElement('span', {
+            className: 'dsh-wb-perch',
+            'aria-hidden': 'true',
+            title: pet.name,
+            style: petFrameStyle(pet, 72),
+          }),
         )
       }
     }
@@ -1899,9 +1951,16 @@ window.__ModuleLoader__.load({
         const [density, setDensity] = React.useState(densityChoice)
         const [skin, setSkin] = React.useState(skinChoice)
         const [drift, setDriftState] = React.useState(DRIFT.active)
+        const [pet, setPetState] = React.useState(null)
+        const [petOn, setPetOn] = React.useState(petEnabled)
         React.useEffect(() => {
           DRIFT.listeners.add(setDriftState)
           return () => DRIFT.listeners.delete(setDriftState)
+        }, [])
+        React.useEffect(() => {
+          let live = true
+          petInfo().then((info) => { if (live) setPetState(selectedPet(info)) })
+          return () => { live = false }
         }, [])
         function pickSkin(id) {
           writeSkin(id)
@@ -1963,6 +2022,28 @@ window.__ModuleLoader__.load({
               })),
             ),
           ),
+          pet === null ? null : h(Row, {
+            label: '宠物联动',
+            desc: !petOn
+              ? '已关闭：新会话不显示宠物，宠物气泡保持插件原样。'
+              : (pet.source === 'plugin' ? '来源 dsh-codex-pet；' : '来源 ~/.codex/pets；')
+                + (skin === '' ? '浮宠卡片、气泡与强调色跟随宿主配色。' : '当前皮肤已带到浮宠的卡片、气泡、文字与强调色。'),
+            control: h('span', { className: 'dsh-wb-pet-control' },
+              h('span', { className: 'dsh-wb-pet-chip' },
+                h('span', { className: 'dsh-wb-pet-thumb', style: petFrameStyle(pet, 30) }),
+                h('span', { className: 'dsh-wb-pet-name' }, pet.name),
+              ),
+              h(Segmented, {
+                value: petOn ? 'on' : 'off',
+                options: [{ id: 'on', label: '开' }, { id: 'off', label: '关' }],
+                onChange: (id) => {
+                  const next = id === 'on'
+                  writePetEnabled(next)
+                  setPetOn(next)
+                },
+              }),
+            ),
+          }),
           h(Row, {
             label: '交互色',
             desc: skin === ''
@@ -2141,6 +2222,71 @@ window.__ModuleLoader__.load({
       } catch { /* 隐私模式写不了，忽略 */ }
     }
 
+    /** 宠物联动：优先用运行中的 dsh-codex-pet（含它选中的宠物与内置套），
+     *  没有该插件时退回宿主端直接读 ~/.codex/pets（Codex 原生宠物目录）。
+     *  贴图是 8 列 × 9/11 行的精灵表，静态预览取第 0 帧（idle 第一格）。 */
+    const PET_PLUGIN_API = '/dsh-codex-pet/api/state'
+    const PET_OWN_API = '/dsh-workbuddy-theme/pet/state'
+    const PET_SWITCH_KEY = 'dsh-workbuddy-theme:pet'
+    const PET_ID_KEY = 'dsh-workbuddy-theme:pet-id'
+    let petRequest = null
+    function jsonOrNull(url) {
+      return fetch(url).then((response) => (response.ok ? response.json() : null)).catch(() => null)
+    }
+    function petPackOk(info) {
+      return info !== null && info !== undefined && Array.isArray(info.pets) && info.pets.length > 0
+    }
+    function petInfo() {
+      if (petRequest === null) {
+        petRequest = jsonOrNull(PET_PLUGIN_API).then((info) => {
+          if (petPackOk(info)) return { source: 'plugin', info }
+          return jsonOrNull(PET_OWN_API).then((own) => (petPackOk(own) ? { source: 'codex', info: own } : null))
+        }).then((pack) => {
+          // 宿主刚启动时接口可能还没挂上，失败不缓存，下次挂载再试一次。
+          if (pack === null) petRequest = null
+          return pack
+        })
+      }
+      return petRequest
+    }
+    function petEnabled() {
+      try { return localStorage.getItem(PET_SWITCH_KEY) !== '0' } catch { return true }
+    }
+    function writePetEnabled(on) {
+      try { localStorage.setItem(PET_SWITCH_KEY, on ? '1' : '0') } catch { /* 隐私模式写不了，忽略 */ }
+      applyPetGate()
+    }
+    /** 宠物样式属于主题的一部分：主题总开关关闭时一并收起，避免只残留一只浮宠。 */
+    function applyPetGate() {
+      document.documentElement.setAttribute('data-dsh-wb-pet', isEnabled() && petEnabled() ? 'on' : 'off')
+    }
+    function selectedPet(pack) {
+      if (!pack) return null
+      const list = pack.info.pets
+      let id = pack.info.config && pack.info.config.selected
+      if (typeof id !== 'string' || id === '') {
+        try { id = localStorage.getItem(PET_ID_KEY) } catch { id = null }
+      }
+      const pet = list.find((item) => item.id === id) ?? list[0]
+      if (!pet || typeof pet.url !== 'string' || pet.url === '') return null
+      return {
+        id: pet.id,
+        name: pet.name || pet.id,
+        url: pet.url,
+        version: Number(pet.version) || 1,
+        source: pack.source,
+      }
+    }
+    function petFrameStyle(pet, width) {
+      const rows = pet.version >= 2 ? 11 : 9
+      const cell = width * 208 / 192
+      return {
+        backgroundImage: 'url("' + pet.url + '")',
+        backgroundSize: (width * 8) + 'px ' + (cell * rows) + 'px',
+        backgroundPosition: '0 0',
+      }
+    }
+
     /** 皮肤只覆盖浅色：选择器带 :not([data-ds-dark-theme])，
      *  深色下这条规则整条不命中，界面回到插件默认深色，不需要另配一套深色皮肤。
      *  用样式层而不是 overrideTokens，是因为宿主要求每个令牌成对给明暗两值，
@@ -2244,6 +2390,7 @@ window.__ModuleLoader__.load({
           handles.tokens = () => {}
           handles.skin = () => {}
           applyTheme()
+          applyPetGate()
         })
       }
 
@@ -2271,6 +2418,7 @@ window.__ModuleLoader__.load({
       track(() => handles.structure())
       track(() => handles.tokens())
       track(() => handles.skin())
+      applyPetGate()
       applyTheme()
 
       // 3. 设置页那一行：用 enabled 决定是否叠加令牌层，而不是靠点主题。

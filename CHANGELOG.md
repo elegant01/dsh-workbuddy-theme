@@ -17,8 +17,13 @@
 - **皮肤色板补全**：除背景/侧栏/气泡/主色外，滚动条（`--dsw-alias-scrollbar-*`）、
   弹层/提示/选择项底色（`--dsw-specific-menu|tip|selector`）、细边框（l1 取皮肤最浅档）
   与整套 `--dsw-elevation-*` 弹层阴影（双层阴影 + popover 描边色）也跟皮肤走；深色不受影响。
-- **与 dsh-codex-pet 联动**：浮宠的卡片/气泡/边框/文字本就派生自宿主令牌，皮肤下自动跟随；
-  其强调色（`--dsw-alias-brand-primary`）由本插件在 `.dcp` 作用域补成皮肤主色，切回系统即撤销。
+- **宠物联动与内置开关**：装了 `dsh-codex-pet` 直接读它的状态接口（含自定义宠物与当前选中项）；
+  没装时宿主端读 Codex 原生目录 `~/.codex/pets`（回退 `~/.dsh/codex-pet/pets`），
+  新接口 `/dsh-workbuddy-theme/pet/state`、`/pet/asset/<id>`（`index.js` 改动，需重启一次）。
+  设置页「宠物联动」行显示来源与当前宠物缩略图，并带开/关分段；关掉或关主题总开关时，
+  新会话浮宠、气泡样式一并收起。新会话（hero 空态）当前宠物站在输入卡右上角。
+- **浮宠气泡换肤**：`.dcp-bubble` 换成 14px 圆角、细描边 + elevation 阴影；
+  浮宠卡片/边框/文字随宿主令牌派生，皮肤下自动跟随，强调色在 `.dcp` 作用域补成皮肤主色。
 - **`scripts/build-skins.mjs`**（本地用，不进发布包）：从本机 WorkBuddy 的
   CacheStorage 缓存解出皮肤 ZIP 与 `skin.css`，把 `--wb-*` / `--cr-*` 变量映射成
   DSH 令牌，重写 `client.js` 里的 `SKIN_PRESETS` 标记区块，WorkBuddy 新增皮肤时重跑即可。
