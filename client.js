@@ -1281,18 +1281,119 @@ window.__ModuleLoader__.load({
   box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
 }
 .dsh-wb-segmented > button:disabled { opacity: .45; cursor: default; }
-.dsh-wb-select {
-  min-width: 180px;
-  max-width: 280px;
-  padding: 5px 10px;
-  border: .5px solid var(--dsw-alias-border-l3);
-  border-radius: 8px;
+.dsh-wb-row-stack { flex-direction: column; align-items: stretch; gap: 12px; }
+.dsh-wb-skins {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.dsh-wb-skin-card {
+  position: relative;
+  display: block;
+  padding: 0;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 10px;
+  overflow: hidden;
   background-color: var(--dsw-alias-bg-layer-1);
   color: var(--dsw-alias-label-primary);
   font: inherit;
-  font-size: 13px;
-  line-height: 20px;
+  text-align: left;
   cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.dsh-wb-skin-card:hover { border-color: var(--dsw-alias-border-l3); box-shadow: 0 2px 8px rgb(0 0 0 / 7%); }
+.dsh-wb-skin-card.is-on { border-color: var(--bk-accent); box-shadow: inset 0 0 0 1px var(--bk-accent); }
+.dsh-wb-skin-thumb {
+  height: 104px;
+  padding: 9px;
+  box-sizing: border-box;
+  background-color: var(--bk-bg);
+}
+.dsh-wb-skin-win {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--bk-line);
+  border-radius: 6px;
+  background-color: var(--bk-card);
+  box-shadow: 0 1px 3px rgb(20 30 50 / 8%);
+}
+.dsh-wb-skin-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 12px;
+  padding: 0 6px;
+  border-bottom: 1px solid var(--bk-line);
+}
+.dsh-wb-skin-bar i { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .28; }
+.dsh-wb-skin-body { flex: 1; display: flex; min-height: 0; }
+.dsh-wb-skin-side {
+  flex: none;
+  width: 36px;
+  padding: 7px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: var(--bk-side);
+}
+.dsh-wb-skin-side i { display: block; height: 3px; border-radius: 2px; background: currentColor; opacity: .18; }
+.dsh-wb-skin-ava { width: 9px; height: 9px; margin-bottom: 1px; border-radius: 50%; background-color: var(--bk-accent); opacity: .85; }
+.dsh-wb-skin-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 7px 8px 6px;
+}
+.dsh-wb-skin-main > i { height: 3px; border-radius: 2px; background: currentColor; opacity: .16; }
+.dsh-wb-skin-main > i.l1 { width: 78%; }
+.dsh-wb-skin-main > i.l2 { width: 56%; }
+.dsh-wb-skin-bub {
+  align-self: flex-end;
+  width: 58%;
+  height: 13px;
+  box-sizing: border-box;
+  border: 1px solid var(--bk-line);
+  border-radius: 5px 5px 2px 5px;
+  background-color: var(--bk-bubble);
+}
+.dsh-wb-skin-composer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 14px;
+  padding: 0 3px;
+  border: 1px solid var(--bk-line);
+  border-radius: 5px;
+  background-color: var(--bk-card);
+}
+.dsh-wb-skin-composer span { width: 12px; height: 7px; border-radius: 3.5px; background-color: var(--bk-accent); }
+.dsh-wb-skin-cap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px 8px;
+  border-top: 1px solid var(--dsw-alias-border-l2);
+}
+.dsh-wb-skin-name { font-size: 12px; line-height: 18px; color: var(--dsw-alias-label-primary); }
+.dsh-wb-skin-sub { margin-left: auto; font-size: 11px; line-height: 16px; color: var(--dsw-alias-label-tertiary); }
+.dsh-wb-skin-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--bk-accent);
+  color: #fff;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
 }
 
 /* ============ 28. 会话行徽标（P2）============
@@ -1686,6 +1787,52 @@ window.__ModuleLoader__.load({
         return h('span', { className: 'dsh-wb-swatch', style: { background: props.fill } })
       }
 
+      function SkinCard(props) {
+        return h('button', {
+          type: 'button',
+          role: 'radio',
+          className: 'dsh-wb-skin-card' + (props.selected ? ' is-on' : ''),
+          'aria-checked': props.selected ? 'true' : 'false',
+          style: props.vars,
+          onClick: props.onSelect,
+        },
+          h('div', { className: 'dsh-wb-skin-thumb' },
+            h('div', { className: 'dsh-wb-skin-win' },
+              h('div', { className: 'dsh-wb-skin-bar' }, h('i'), h('i'), h('i')),
+              h('div', { className: 'dsh-wb-skin-body' },
+                h('div', { className: 'dsh-wb-skin-side' },
+                  h('span', { className: 'dsh-wb-skin-ava' }),
+                  h('i'), h('i'), h('i'),
+                ),
+                h('div', { className: 'dsh-wb-skin-main' },
+                  h('div', { className: 'dsh-wb-skin-bub' }),
+                  h('i', { className: 'l1' }),
+                  h('i', { className: 'l2' }),
+                  h('div', { className: 'dsh-wb-skin-composer' }, h('span')),
+                ),
+              ),
+            ),
+          ),
+          h('div', { className: 'dsh-wb-skin-cap' },
+            h('span', { className: 'dsh-wb-skin-name' }, props.name),
+            props.sub ? h('span', { className: 'dsh-wb-skin-sub' }, props.sub) : null,
+          ),
+          props.selected ? h('span', { className: 'dsh-wb-skin-check' }, '✓') : null,
+        )
+      }
+
+      function skinPreviewVars(preset) {
+        const surface = preset.surface ?? {}
+        return {
+          '--bk-bg': surface['--dsw-alias-bg-base'] ?? '#ffffff',
+          '--bk-side': surface['--dsw-specific-sidebar-fill'] ?? '#f7f7f7',
+          '--bk-card': surface['--dsw-alias-bg-layer-1'] ?? '#ffffff',
+          '--bk-bubble': preset.bubble?.light ?? '#f2f2f2',
+          '--bk-line': preset.border?.light ?? '#e6e6e6',
+          '--bk-accent': preset.accent?.['--wb-control-on']?.light ?? '#00c29a',
+        }
+      }
+
       return function WorkBuddySection() {
         const [on, setOn] = React.useState(isEnabled)
         const [accent, setAccent] = React.useState(accentChoice)
@@ -1696,6 +1843,15 @@ window.__ModuleLoader__.load({
           DRIFT.listeners.add(setDriftState)
           return () => DRIFT.listeners.delete(setDriftState)
         }, [])
+        function pickSkin(id) {
+          writeSkin(id)
+          try {
+            REAPPLY.call()
+          } catch (error) {
+            console.warn('[dsh-workbuddy-theme] 切换皮肤失败：', error)
+          }
+          setSkin(id)
+        }
         return h('div', { className: 'dsh-wb-panel' },
           h('div', { className: 'dsh-wb-panel-title' }, 'WorkBuddy 外观'),
           h('div', { className: 'dsh-wb-panel-hint' }, '复刻自 WorkBuddy 的设计令牌：中性灰底 + 薄荷绿交互色，正文 14/22，对话栏 848px。'),
@@ -1716,29 +1872,37 @@ window.__ModuleLoader__.load({
               },
             }),
           }),
-          h(Row, {
-            label: '外观皮肤',
-            desc: skin === ''
-              ? '默认使用系统外观（WorkBuddy 薄荷绿）；选自 WorkBuddy 皮肤后整套色板与主色一起切换。'
-              : '当前皮肤为浅色设计：浅色生效，深色下只沿用它的主色。',
-            control: h('select', {
-              className: 'dsh-wb-select',
-              value: skin,
-              onChange: (event) => {
-                const id = event.target.value
-                writeSkin(id)
-                try {
-                  REAPPLY.call()
-                } catch (error) {
-                  console.warn('[dsh-workbuddy-theme] 切换皮肤失败：', error)
-                }
-                setSkin(id)
-              },
-            },
-              h('option', { value: '' }, '系统（默认）'),
-              SKIN_PRESETS.map((preset) => h('option', { key: preset.id, value: preset.id }, preset.name)),
+          h('div', { className: 'dsh-wb-row dsh-wb-row-stack' },
+            h('div', { className: 'dsh-wb-row-main' },
+              h('div', { className: 'dsh-wb-row-label' }, '外观皮肤'),
+              h('div', { className: 'dsh-wb-row-desc' }, '默认系统外观（WorkBuddy 薄荷绿）；选中皮肤后接管背景、侧栏、气泡、边框与主色，交互色三档随之禁用，仅作用于浅色主题。'),
             ),
-          }),
+            h('div', { className: 'dsh-wb-skins', role: 'radiogroup', 'aria-label': '外观皮肤' },
+              h(SkinCard, {
+                key: 'system',
+                name: '系统（默认）',
+                sub: '薄荷绿',
+                selected: skin === '',
+                vars: {
+                  '--bk-bg': 'var(--dsw-alias-bg-base)',
+                  '--bk-side': 'var(--dsw-specific-sidebar-fill)',
+                  '--bk-card': 'var(--dsw-alias-bg-layer-1)',
+                  '--bk-bubble': 'var(--wb-bubble-fill)',
+                  '--bk-line': 'var(--wb-border)',
+                  '--bk-accent': (ACCENTS[accent] ?? ACCENTS.mint)['--wb-control-on'].light,
+                },
+                onSelect: () => pickSkin(''),
+              }),
+              SKIN_PRESETS.map((preset) => h(SkinCard, {
+                key: preset.id,
+                name: preset.name,
+                sub: '',
+                selected: skin === preset.id,
+                vars: skinPreviewVars(preset),
+                onSelect: () => pickSkin(preset.id),
+              })),
+            ),
+          ),
           h(Row, {
             label: '交互色',
             desc: skin === ''
