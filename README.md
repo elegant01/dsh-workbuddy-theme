@@ -91,7 +91,7 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 
 | 槽位 | 内容 |
 | --- | --- |
-| `settings.section`（order 18） | 设置左侧导航新增一页「WorkBuddy 外观」，含启用开关、**交互色三档**（薄荷绿/靛蓝/琥珀）、**字号密度三档**、已知取舍、**适配状态**与**控件预览**（复选框/单选/开关/色板/文字层级一页看全） |
+| `settings.section`（order 18） | 设置左侧导航新增一页「WorkBuddy 外观」，含启用开关、**外观皮肤**（系统默认 + 五套 WorkBuddy 皮肤）、**交互色三档**（薄荷绿/靛蓝/琥珀）、**字号密度三档**、已知取舍、**适配状态**与**控件预览**（复选框/单选/开关/色板/文字层级一页看全） |
 | `settings.general.item`（order 9.5） | 「通用」页里紧挨「外观」上面的一行主题开关 |
 | `sidebar.session.row.trailing` | 会话行时间戳旁一个 6px 低对比圆点 |
 | `conversation.session.header.utilities` | 会话标题栏右上角的 WorkBuddy 小胶囊；宿主升级改了类名时变成琥珀色「适配失效」告警 |
@@ -103,6 +103,18 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 
 **切换动效**：主题开关与交互色/密度切换走 `document.startViewTransition`，200ms 交叉淡化；
 宿主不支持则即时切换，不报错。
+
+**外观皮肤**：设置页「外观皮肤」下拉默认「系统（默认）」——即上面那套薄荷绿。
+另附五套从 WorkBuddy 客户端导出的皮肤（蓝紫 · Clear Sky / 晴空蓝 / 柔和蓝 / 森林绿 / 深海青），
+选中后接管背景、侧栏、气泡、边框、文字层级与主色共约 50 个令牌；主色由皮肤提供，
+三档交互色随之禁用（悬停提示「已由皮肤提供」）。皮肤只作用于浅色，深色仍跟随系统。
+皮肤色块放在一层 scoped `<style>`（`body:not([data-ds-dark-theme])`）里，
+换肤/关主题/切回「系统」时整层回收，不留残留。
+
+皮肤不是手抄的：`scripts/build-skins.mjs`（本地用，不进发布包）读取本机已登录
+WorkBuddy 的 CacheStorage 缓存，解出皮肤 ZIP 里的 `skin.css`，把 `--wb-*` / `--cr-*`
+变量映射成 DSH 令牌，重写 `client.js` 中 `SKIN_PRESETS` 标记区块。WorkBuddy 新增皮肤后
+重跑一次即可跟上。
 
 **本地回归**（不进发布包）：DSH 带 `--remote-debugging-port=9333` 启动后跑 `npm run regress`，
 连调试口量真实 DOM——三层样式、复选框尺寸外观、适配哨兵不误报，PASS/FAIL 表 + 退出码。

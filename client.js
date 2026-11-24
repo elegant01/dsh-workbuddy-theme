@@ -111,6 +111,446 @@ window.__ModuleLoader__.load({
       '--wb-control-on-hover': { light: BRAND_HOVER.light, dark: BRAND_HOVER.dark },
     }
 
+    // <dsh-workbuddy-skins:begin> 由 scripts/build-skins.mjs 生成，勿手改。
+    const SKIN_PRESETS = [
+      {
+        "id": "purple",
+        "name": "蓝紫 · Clear Sky",
+        "accent": {
+          "--wb-control-on": {
+            "light": "#5E67FA",
+            "dark": "#5E67FA"
+          },
+          "--wb-control-on-hover": {
+            "light": "#4C55ECe6",
+            "dark": "#4C55ECe6"
+          },
+          "--dsw-static-deepseek-500": {
+            "light": "#5E67FA",
+            "dark": "#5E67FA"
+          },
+          "--dsw-static-deepseek-450": {
+            "light": "#8E96FC",
+            "dark": "#8E96FC"
+          },
+          "--dsw-static-deepseek-400": {
+            "light": "#2C34C4",
+            "dark": "#2C34C4"
+          },
+          "--dsw-static-blue-500": {
+            "light": "#5E67FA",
+            "dark": "#5E67FA"
+          },
+          "--dsw-static-blue-450": {
+            "light": "#8E96FC",
+            "dark": "#8E96FC"
+          },
+          "--dsw-static-blue-400": {
+            "light": "#2C34C4",
+            "dark": "#2C34C4"
+          },
+          "--dsw-static-deepseek-50": {
+            "light": "#f4f7fd",
+            "dark": "#20233a"
+          }
+        },
+        "bubble": {
+          "light": "#E5EEFF",
+          "dark": "#2c2c2e"
+        },
+        "border": {
+          "light": "#e0eafe",
+          "dark": "#3a3a3c"
+        },
+        "surface": {
+          "--dsw-alias-bg-base": "#F7FAFF",
+          "--dsw-alias-bg-layer-1": "#ffffff",
+          "--dsw-alias-bg-layer-2": "#ffffff",
+          "--dsw-alias-bg-layer-3": "#ffffff",
+          "--dsw-alias-bg-module-platform": "#E5EEFF",
+          "--dsw-alias-bg-multi-select": "#EDF2FF",
+          "--dsw-alias-bg-overlay": "#d6e2ff",
+          "--dsw-alias-bg-skeleton": "#5E67FA1a",
+          "--dsw-alias-card-fill": "#ffffff",
+          "--dsw-alias-card-fill-hover": "#ebf1ff",
+          "--dsw-alias-interactive-bg-hover": "#DEE7FF",
+          "--dsw-alias-interactive-bg-active": "#EDF2FF",
+          "--dsw-alias-interactive-bg-hover-solid": "#ebf1ff",
+          "--dsw-alias-border-l1": "#e0eafe",
+          "--dsw-alias-border-l2": "#e0eafe",
+          "--dsw-alias-border-l3": "#c7daff",
+          "--dsw-alias-border-l4": "#c7daff",
+          "--dsw-alias-border-selected": "#5E67FA",
+          "--dsw-alias-label-primary": "#05082ee6",
+          "--dsw-alias-label-secondary": "#05082eb3",
+          "--dsw-alias-label-tertiary": "#05082e80",
+          "--dsw-alias-label-caption": "#05082e4d",
+          "--dsw-alias-label-dimmed": "#05082e4d",
+          "--dsw-alias-link": "#111cb1",
+          "--dsw-alias-button-info-fill": "#5E67FA",
+          "--dsw-alias-button-info-hover": "#8E96FC",
+          "--dsw-alias-button-primary-fill": "#5E67FA",
+          "--dsw-alias-button-primary-hover": "#2C34C4",
+          "--dsw-alias-markdown-inline-code": "#E5EEFF",
+          "--dsw-alias-markdown-code-block": "#E5EEFF",
+          "--dsw-alias-markdown-code-block-banner": "#E5EEFF",
+          "--dsw-alias-markdown-tag": "#d1e0ff",
+          "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-specific-sidebar-fill": "#E5EEFF",
+          "--dsw-specific-input-major": "#F0F4FF"
+        }
+      },
+      {
+        "id": "qqblue",
+        "name": "晴空蓝",
+        "accent": {
+          "--wb-control-on": {
+            "light": "#0099ff",
+            "dark": "#0099ff"
+          },
+          "--wb-control-on-hover": {
+            "light": "#0c8bdfe6",
+            "dark": "#0c8bdfe6"
+          },
+          "--dsw-static-deepseek-500": {
+            "light": "#0099ff",
+            "dark": "#0099ff"
+          },
+          "--dsw-static-deepseek-450": {
+            "light": "#42b4ff",
+            "dark": "#42b4ff"
+          },
+          "--dsw-static-deepseek-400": {
+            "light": "#0a78c2",
+            "dark": "#0a78c2"
+          },
+          "--dsw-static-blue-500": {
+            "light": "#0099ff",
+            "dark": "#0099ff"
+          },
+          "--dsw-static-blue-450": {
+            "light": "#42b4ff",
+            "dark": "#42b4ff"
+          },
+          "--dsw-static-blue-400": {
+            "light": "#0a78c2",
+            "dark": "#0a78c2"
+          },
+          "--dsw-static-deepseek-50": {
+            "light": "#f3fafe",
+            "dark": "#132a3b"
+          }
+        },
+        "bubble": {
+          "light": "#e6f4ff",
+          "dark": "#2c2c2e"
+        },
+        "border": {
+          "light": "#e0f2fe",
+          "dark": "#3a3a3c"
+        },
+        "surface": {
+          "--dsw-alias-bg-base": "#f7fcff",
+          "--dsw-alias-bg-layer-1": "#ffffff",
+          "--dsw-alias-bg-layer-2": "#ffffff",
+          "--dsw-alias-bg-layer-3": "#ffffff",
+          "--dsw-alias-bg-module-platform": "#ccebff",
+          "--dsw-alias-bg-multi-select": "#edf8ff",
+          "--dsw-alias-bg-overlay": "#d6efff",
+          "--dsw-alias-bg-skeleton": "#0099ff1a",
+          "--dsw-alias-card-fill": "#ffffff",
+          "--dsw-alias-card-fill-hover": "#ebf7ff",
+          "--dsw-alias-interactive-bg-hover": "#def2ff",
+          "--dsw-alias-interactive-bg-active": "#dbf1ff",
+          "--dsw-alias-interactive-bg-hover-solid": "#ebf7ff",
+          "--dsw-alias-border-l1": "#e0f2fe",
+          "--dsw-alias-border-l2": "#e0f2fe",
+          "--dsw-alias-border-l3": "#c2e7ff",
+          "--dsw-alias-border-l4": "#c2e7ff",
+          "--dsw-alias-border-selected": "#0099ff",
+          "--dsw-alias-label-primary": "#06263ce6",
+          "--dsw-alias-label-secondary": "#06263cb3",
+          "--dsw-alias-label-tertiary": "#06263c80",
+          "--dsw-alias-label-caption": "#06263c4d",
+          "--dsw-alias-label-dimmed": "#06263c4d",
+          "--dsw-alias-link": "#0966a5",
+          "--dsw-alias-button-info-fill": "#0099ff",
+          "--dsw-alias-button-info-hover": "#42b4ff",
+          "--dsw-alias-button-primary-fill": "#0099ff",
+          "--dsw-alias-button-primary-hover": "#0a78c2",
+          "--dsw-alias-markdown-inline-code": "#e6f4ff",
+          "--dsw-alias-markdown-code-block": "#e6f4ff",
+          "--dsw-alias-markdown-code-block-banner": "#e6f4ff",
+          "--dsw-alias-markdown-tag": "#d1edff",
+          "--dsw-alias-switch-thumb": "#f2f9fe",
+          "--dsw-specific-sidebar-fill": "#ccebff",
+          "--dsw-specific-input-major": "#f0f9ff"
+        }
+      },
+      {
+        "id": "blue-video-fallback",
+        "name": "柔和蓝",
+        "accent": {
+          "--wb-control-on": {
+            "light": "#3a66ac",
+            "dark": "#3a66ac"
+          },
+          "--wb-control-on-hover": {
+            "light": "#4e79bee6",
+            "dark": "#4e79bee6"
+          },
+          "--dsw-static-deepseek-500": {
+            "light": "#3a66ac",
+            "dark": "#3a66ac"
+          },
+          "--dsw-static-deepseek-450": {
+            "light": "#88a9db",
+            "dark": "#88a9db"
+          },
+          "--dsw-static-deepseek-400": {
+            "light": "#22406e",
+            "dark": "#22406e"
+          },
+          "--dsw-static-blue-500": {
+            "light": "#3a66ac",
+            "dark": "#3a66ac"
+          },
+          "--dsw-static-blue-450": {
+            "light": "#88a9db",
+            "dark": "#88a9db"
+          },
+          "--dsw-static-blue-400": {
+            "light": "#22406e",
+            "dark": "#22406e"
+          },
+          "--dsw-static-deepseek-50": {
+            "light": "#f4f8ff",
+            "dark": "#1b232f"
+          }
+        },
+        "bubble": {
+          "light": "#e6efff",
+          "dark": "#2c2c2e"
+        },
+        "border": {
+          "light": "#dce8ff",
+          "dark": "#3a3a3c"
+        },
+        "surface": {
+          "--dsw-alias-bg-base": "#f5f9ff",
+          "--dsw-alias-bg-layer-1": "#ffffff",
+          "--dsw-alias-bg-layer-2": "#ffffff",
+          "--dsw-alias-bg-layer-3": "#ffffff",
+          "--dsw-alias-bg-module-platform": "#A8C1F0",
+          "--dsw-alias-bg-multi-select": "#e6efff",
+          "--dsw-alias-bg-overlay": "#B9CFF6",
+          "--dsw-alias-bg-skeleton": "#3a66ac1a",
+          "--dsw-alias-card-fill": "#ffffff",
+          "--dsw-alias-card-fill-hover": "#e9f2ff",
+          "--dsw-alias-interactive-bg-hover": "#e3edff",
+          "--dsw-alias-interactive-bg-active": "#A8C1F0",
+          "--dsw-alias-interactive-bg-hover-solid": "#e9f2ff",
+          "--dsw-alias-border-l1": "#dce8ff",
+          "--dsw-alias-border-l2": "#dce8ff",
+          "--dsw-alias-border-l3": "#c4daf5",
+          "--dsw-alias-border-l4": "#c4daf5",
+          "--dsw-alias-border-selected": "#3a66ac",
+          "--dsw-alias-label-primary": "#001f4fe6",
+          "--dsw-alias-label-secondary": "#001f4fb3",
+          "--dsw-alias-label-tertiary": "#001f4f80",
+          "--dsw-alias-label-caption": "#001f4f4d",
+          "--dsw-alias-label-dimmed": "#001f4f4d",
+          "--dsw-alias-link": "#3a66ac",
+          "--dsw-alias-button-info-fill": "#3a66ac",
+          "--dsw-alias-button-info-hover": "#88a9db",
+          "--dsw-alias-button-primary-fill": "#3a66ac",
+          "--dsw-alias-button-primary-hover": "#22406e",
+          "--dsw-alias-markdown-inline-code": "#e6efff",
+          "--dsw-alias-markdown-code-block": "#e6efff",
+          "--dsw-alias-markdown-code-block-banner": "#e6efff",
+          "--dsw-alias-markdown-tag": "#d6e4fc",
+          "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-specific-sidebar-fill": "#e6efff",
+          "--dsw-specific-input-major": "#eef3ff"
+        }
+      },
+      {
+        "id": "green",
+        "name": "森林绿",
+        "accent": {
+          "--wb-control-on": {
+            "light": "#3c8c4e",
+            "dark": "#3c8c4e"
+          },
+          "--wb-control-on-hover": {
+            "light": "#358a49e6",
+            "dark": "#358a49e6"
+          },
+          "--dsw-static-deepseek-500": {
+            "light": "#3c8c4e",
+            "dark": "#3c8c4e"
+          },
+          "--dsw-static-deepseek-450": {
+            "light": "#88bd92",
+            "dark": "#88bd92"
+          },
+          "--dsw-static-deepseek-400": {
+            "light": "#256d37",
+            "dark": "#256d37"
+          },
+          "--dsw-static-blue-500": {
+            "light": "#3c8c4e",
+            "dark": "#3c8c4e"
+          },
+          "--dsw-static-blue-450": {
+            "light": "#88bd92",
+            "dark": "#88bd92"
+          },
+          "--dsw-static-blue-400": {
+            "light": "#256d37",
+            "dark": "#256d37"
+          },
+          "--dsw-static-deepseek-50": {
+            "light": "#f4f7f4",
+            "dark": "#1b2822"
+          }
+        },
+        "bubble": {
+          "light": "#e8f0e9",
+          "dark": "#2c2c2e"
+        },
+        "border": {
+          "light": "#dce7dd",
+          "dark": "#3a3a3c"
+        },
+        "surface": {
+          "--dsw-alias-bg-base": "#f6f8f5",
+          "--dsw-alias-bg-layer-1": "#ffffff",
+          "--dsw-alias-bg-layer-2": "#ffffff",
+          "--dsw-alias-bg-layer-3": "#ffffff",
+          "--dsw-alias-bg-module-platform": "#e8f0e9",
+          "--dsw-alias-bg-multi-select": "#edf2ed",
+          "--dsw-alias-bg-overlay": "#d8e4d9",
+          "--dsw-alias-bg-skeleton": "#3e8a4f1a",
+          "--dsw-alias-card-fill": "#ffffff",
+          "--dsw-alias-card-fill-hover": "#ecf2ec",
+          "--dsw-alias-interactive-bg-hover": "#dde8df",
+          "--dsw-alias-interactive-bg-active": "#edf2ed",
+          "--dsw-alias-interactive-bg-hover-solid": "#ecf2ec",
+          "--dsw-alias-border-l1": "#dce7dd",
+          "--dsw-alias-border-l2": "#dce7dd",
+          "--dsw-alias-border-l3": "#cde0ce",
+          "--dsw-alias-border-l4": "#cde0ce",
+          "--dsw-alias-border-selected": "#3c8c4e",
+          "--dsw-alias-label-primary": "#12261ae6",
+          "--dsw-alias-label-secondary": "#12261ab3",
+          "--dsw-alias-label-tertiary": "#12261a80",
+          "--dsw-alias-label-caption": "#12261a4d",
+          "--dsw-alias-label-dimmed": "#12261a4d",
+          "--dsw-alias-link": "#1f7237",
+          "--dsw-alias-button-info-fill": "#3c8c4e",
+          "--dsw-alias-button-info-hover": "#88bd92",
+          "--dsw-alias-button-primary-fill": "#3c8c4e",
+          "--dsw-alias-button-primary-hover": "#256d37",
+          "--dsw-alias-markdown-inline-code": "#e8f0e9",
+          "--dsw-alias-markdown-code-block": "#e8f0e9",
+          "--dsw-alias-markdown-code-block-banner": "#e8f0e9",
+          "--dsw-alias-markdown-tag": "#d5e5d6",
+          "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-specific-sidebar-fill": "#e8f0e9",
+          "--dsw-specific-input-major": "#f0f5f0"
+        }
+      },
+      {
+        "id": "mint",
+        "name": "深海青",
+        "accent": {
+          "--wb-control-on": {
+            "light": "#194253",
+            "dark": "#194253"
+          },
+          "--wb-control-on-hover": {
+            "light": "#2b7791e6",
+            "dark": "#2b7791e6"
+          },
+          "--dsw-static-deepseek-500": {
+            "light": "#194253",
+            "dark": "#194253"
+          },
+          "--dsw-static-deepseek-450": {
+            "light": "#74b4c8",
+            "dark": "#74b4c8"
+          },
+          "--dsw-static-deepseek-400": {
+            "light": "#0f2f3d",
+            "dark": "#0f2f3d"
+          },
+          "--dsw-static-blue-500": {
+            "light": "#194253",
+            "dark": "#194253"
+          },
+          "--dsw-static-blue-450": {
+            "light": "#74b4c8",
+            "dark": "#74b4c8"
+          },
+          "--dsw-static-blue-400": {
+            "light": "#0f2f3d",
+            "dark": "#0f2f3d"
+          },
+          "--dsw-static-deepseek-50": {
+            "light": "#f2fbfc",
+            "dark": "#161e23"
+          }
+        },
+        "bubble": {
+          "light": "#E5FAFF",
+          "dark": "#2c2c2e"
+        },
+        "border": {
+          "light": "#d5eef4",
+          "dark": "#3a3a3c"
+        },
+        "surface": {
+          "--dsw-alias-bg-base": "#F8FDFF",
+          "--dsw-alias-bg-layer-1": "#ffffff",
+          "--dsw-alias-bg-layer-2": "#ffffff",
+          "--dsw-alias-bg-layer-3": "#ffffff",
+          "--dsw-alias-bg-module-platform": "#E5FAFF",
+          "--dsw-alias-bg-multi-select": "#E5FAFF",
+          "--dsw-alias-bg-overlay": "#cdedf5",
+          "--dsw-alias-bg-skeleton": "#1942531a",
+          "--dsw-alias-card-fill": "#ffffff",
+          "--dsw-alias-card-fill-hover": "#e0f6fb",
+          "--dsw-alias-interactive-bg-hover": "#D6F0F6",
+          "--dsw-alias-interactive-bg-active": "#D2EEF4",
+          "--dsw-alias-interactive-bg-hover-solid": "#e0f6fb",
+          "--dsw-alias-border-l1": "#d5eef4",
+          "--dsw-alias-border-l2": "#d5eef4",
+          "--dsw-alias-border-l3": "#bce7ef",
+          "--dsw-alias-border-l4": "#bce7ef",
+          "--dsw-alias-border-selected": "#194253",
+          "--dsw-alias-label-primary": "#00232ce6",
+          "--dsw-alias-label-secondary": "#00232cb3",
+          "--dsw-alias-label-tertiary": "#00232c80",
+          "--dsw-alias-label-caption": "#00232c4d",
+          "--dsw-alias-label-dimmed": "#00232c4d",
+          "--dsw-alias-link": "#194253",
+          "--dsw-alias-button-info-fill": "#194253",
+          "--dsw-alias-button-info-hover": "#74b4c8",
+          "--dsw-alias-button-primary-fill": "#194253",
+          "--dsw-alias-button-primary-hover": "#0f2f3d",
+          "--dsw-alias-markdown-inline-code": "#E5FAFF",
+          "--dsw-alias-markdown-code-block": "#E5FAFF",
+          "--dsw-alias-markdown-code-block-banner": "#E5FAFF",
+          "--dsw-alias-markdown-tag": "#cdedf5",
+          "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-specific-sidebar-fill": "#E5FAFF",
+          "--dsw-specific-input-major": "#EAF7FA"
+        }
+      }
+    ]
+    // <dsh-workbuddy-skins:end>
+
     /* 静态色阶：WorkBuddy 调色板重排后的 DSH --dsw-static-* 全套。
        DSH 的 ~200 个别名令牌全部从这里派生，所以只要重排这一层，
        hover / border / elevation / 语法高亮等派生色自动跟上。
@@ -841,6 +1281,19 @@ window.__ModuleLoader__.load({
   box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
 }
 .dsh-wb-segmented > button:disabled { opacity: .45; cursor: default; }
+.dsh-wb-select {
+  min-width: 180px;
+  max-width: 280px;
+  padding: 5px 10px;
+  border: .5px solid var(--dsw-alias-border-l3);
+  border-radius: 8px;
+  background-color: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  cursor: pointer;
+}
 
 /* ============ 28. 会话行徽标（P2）============
    挂在 sidebar.session.row.trailing（list，inline: true），
@@ -1237,6 +1690,7 @@ window.__ModuleLoader__.load({
         const [on, setOn] = React.useState(isEnabled)
         const [accent, setAccent] = React.useState(accentChoice)
         const [density, setDensity] = React.useState(densityChoice)
+        const [skin, setSkin] = React.useState(skinChoice)
         const [drift, setDriftState] = React.useState(DRIFT.active)
         React.useEffect(() => {
           DRIFT.listeners.add(setDriftState)
@@ -1263,11 +1717,40 @@ window.__ModuleLoader__.load({
             }),
           }),
           h(Row, {
+            label: '外观皮肤',
+            desc: skin === ''
+              ? '默认使用系统外观（WorkBuddy 薄荷绿）；选自 WorkBuddy 皮肤后整套色板与主色一起切换。'
+              : '当前皮肤为浅色设计：浅色生效，深色下只沿用它的主色。',
+            control: h('select', {
+              className: 'dsh-wb-select',
+              value: skin,
+              onChange: (event) => {
+                const id = event.target.value
+                writeSkin(id)
+                try {
+                  REAPPLY.call()
+                } catch (error) {
+                  console.warn('[dsh-workbuddy-theme] 切换皮肤失败：', error)
+                }
+                setSkin(id)
+              },
+            },
+              h('option', { value: '' }, '系统（默认）'),
+              SKIN_PRESETS.map((preset) => h('option', { key: preset.id, value: preset.id }, preset.name)),
+            ),
+          }),
+          h(Row, {
             label: '交互色',
-            desc: '按钮、开关、复选框、发送键、光标与选中色共用；切换时 200ms 淡入。',
+            desc: skin === ''
+              ? '按钮、开关、复选框、发送键、光标与选中色共用；切换时 200ms 淡入。'
+              : '已由皮肤提供，切回「系统」后可手动选择。',
             control: h(Segmented, {
               value: accent,
-              options: [{ id: 'mint', label: '薄荷绿' }, { id: 'indigo', label: '靛蓝' }, { id: 'amber', label: '琥珀' }],
+              options: [
+                { id: 'mint', label: '薄荷绿', disabled: skin !== '' },
+                { id: 'indigo', label: '靛蓝', disabled: skin !== '' },
+                { id: 'amber', label: '琥珀', disabled: skin !== '' },
+              ],
               onChange: (id) => {
                 writeAccent(id)
                 try {
@@ -1410,14 +1893,67 @@ window.__ModuleLoader__.load({
       } catch { /* 隐私模式写不了，忽略 */ }
     }
 
+    /** 外观皮肤：空字符串 = 系统（插件默认的 WorkBuddy 外观）。 */
+    const SKIN_KEY = 'dsh-workbuddy-theme:skin'
+    const SKIN_STYLE_ID = 'dsh-workbuddy-skin-css'
+
+    function skinChoice() {
+      try {
+        const v = localStorage.getItem(SKIN_KEY)
+        if (v === null || v === '') return ''
+        return SKIN_PRESETS.some((p) => p.id === v) ? v : ''
+      } catch { return '' }
+    }
+
+    function currentSkin() {
+      const id = skinChoice()
+      return id === '' ? null : SKIN_PRESETS.find((p) => p.id === id) ?? null
+    }
+
+    function writeSkin(id) {
+      try {
+        if (id === '' || id === null || id === undefined) localStorage.removeItem(SKIN_KEY)
+        else localStorage.setItem(SKIN_KEY, id)
+      } catch { /* 隐私模式写不了，忽略 */ }
+    }
+
+    /** 皮肤只覆盖浅色：选择器带 :not([data-ds-dark-theme])，
+     *  深色下这条规则整条不命中，界面回到插件默认深色，不需要另配一套深色皮肤。
+     *  用样式层而不是 overrideTokens，是因为宿主要求每个令牌成对给明暗两值，
+     *  而皮肤只有浅色一份；样式层能让浅色生效、深色零改动。 */
+    function installSkinStyle() {
+      const existing = document.getElementById(SKIN_STYLE_ID)
+      if (existing !== null) existing.remove()
+      const skin = currentSkin()
+      if (skin === null) return () => {}
+      const body = Object.entries(skin.surface)
+        .map(([name, value]) => `  ${name}: ${value};`)
+        .join('\n')
+      const tag = document.createElement('style')
+      tag.id = SKIN_STYLE_ID
+      tag.textContent = `body:not([data-ds-dark-theme]) {\n${body}\n}\n`
+      document.head.appendChild(tag)
+      return () => {
+        const node = document.getElementById(SKIN_STYLE_ID)
+        if (node !== null) node.remove()
+      }
+    }
+
     /** 令牌负载：WorkBuddy 静态色阶 + 字体栈 + 插件自用的语义色，全部明暗成对。
-     *  交互色按当前档位覆盖 STATIC_TOKENS 里的薄荷绿字面量。 */
+     *  交互色按当前档位覆盖 STATIC_TOKENS 里的薄荷绿字面量；
+     *  选了皮肤时再用皮肤自带的主色与气泡色覆盖（皮肤优先于交互色档位）。 */
     function buildTokens() {
       const tokens = {}
       for (const [name, pair] of Object.entries(STATIC_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
       for (const [name, pair] of Object.entries(FONT_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
       for (const [name, pair] of Object.entries(SEMANTIC_TOKENS)) tokens[name] = { light: pair.light, dark: pair.dark }
       for (const [name, pair] of Object.entries(ACCENTS[accentChoice()])) tokens[name] = { light: pair.light, dark: pair.dark }
+      const skin = currentSkin()
+      if (skin !== null) {
+        for (const [name, pair] of Object.entries(skin.accent)) tokens[name] = { light: pair.light, dark: pair.dark }
+        tokens['--wb-bubble-fill'] = { light: skin.bubble.light, dark: skin.bubble.dark }
+        tokens['--wb-border'] = { light: skin.border.light, dark: skin.border.dark }
+      }
       return tokens
     }
 
@@ -1455,7 +1991,7 @@ window.__ModuleLoader__.load({
       // 用对象持有两个句柄：setWorkbuddy 重建两层后句柄会更新，
       // 而 track 出去的清理函数通过闭包读的是对象的最新值，
       // 不会像捕获变量那样指向已经失效的旧函数。
-      const handles = { tokens: () => {}, structure: () => {} }
+      const handles = { tokens: () => {}, structure: () => {}, skin: () => {} }
 
       /** 设置页开关的落点：apply 每次挂载时把当前实例的切换函数挂到这里，
        *  行组件通过 ON_SWITCH 拿到它 —— 避免把闭包塞进组件 props。 */
@@ -1464,13 +2000,15 @@ window.__ModuleLoader__.load({
           writeEnabled(next)
           handles.structure()
           handles.tokens()
+          handles.skin()
           handles.structure = () => {}
           handles.tokens = () => {}
+          handles.skin = () => {}
           applyTheme()
         })
       }
 
-      /** 交互色/密度切换的落点：不动开关状态，只按新档位重铺令牌与密度属性。 */
+      /** 交互色/密度/皮肤切换的落点：不动开关状态，只按新档位重铺令牌、密度属性与皮肤层。 */
       REAPPLY.call = () => {
         if (!isEnabled()) return
         withFade(() => {
@@ -1478,6 +2016,8 @@ window.__ModuleLoader__.load({
           handles.tokens = () => {}
           handles.tokens = theme.overrideTokens(SOURCE, buildTokens())
           document.documentElement.setAttribute('data-dsh-wb-density', densityChoice())
+          handles.skin()
+          handles.skin = installSkinStyle()
         })
       }
 
@@ -1485,11 +2025,13 @@ window.__ModuleLoader__.load({
         if (!isEnabled()) return
         handles.tokens = theme.overrideTokens(SOURCE, buildTokens())
         handles.structure = installStructure()
+        handles.skin = installSkinStyle()
         document.documentElement.setAttribute('data-dsh-wb-density', densityChoice())
       }
 
       track(() => handles.structure())
       track(() => handles.tokens())
+      track(() => handles.skin())
       applyTheme()
 
       // 3. 设置页那一行：用 enabled 决定是否叠加令牌层，而不是靠点主题。
