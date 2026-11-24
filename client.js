@@ -2026,7 +2026,7 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
             label: '宠物联动',
             desc: !petOn
               ? '已关闭：新会话不显示宠物，宠物气泡保持插件原样。'
-              : (pet.source === 'plugin' ? '来源 dsh-codex-pet；' : '来源 ~/.codex/pets；')
+              : petOriginLabel(pet)
                 + (skin === '' ? '浮宠卡片、气泡与强调色跟随宿主配色。' : '当前皮肤已带到浮宠的卡片、气泡、文字与强调色。'),
             control: h('span', { className: 'dsh-wb-pet-control' },
               h('span', { className: 'dsh-wb-pet-chip' },
@@ -2276,6 +2276,12 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
         version: Number(pet.version) || 1,
         source: pack.source,
       }
+    }
+    /** 来源按宠物本身判定：dsh-codex-pet 里的自定义宠物同样来自 ~/.codex/pets，
+     *  只有它自带的内置宠物才是插件自己的素材。 */
+    function petOriginLabel(pet) {
+      const custom = pet.source === 'codex' || pet.id.startsWith('custom:')
+      return custom ? '来源 ~/.codex/pets；' : '来源 dsh-codex-pet 内置；'
     }
     function petFrameStyle(pet, width) {
       const rows = pet.version >= 2 ? 11 : 9
