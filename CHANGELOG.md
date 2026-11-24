@@ -14,6 +14,9 @@
   用该皮肤真实色值画一座迷你界面预览，选中后接管背景、侧栏、气泡、边框、文字层级与
   主色共约 50 个令牌，主色由皮肤提供，三档交互色随之禁用。皮肤只作用于浅色，深色继续
   跟随系统；换肤/关主题/切回系统时皮肤样式层整层回收。选择记在本机（`dsh-workbuddy-theme:skin`）。
+- **皮肤色板补全**：除背景/侧栏/气泡/主色外，滚动条（`--dsw-alias-scrollbar-*`）、
+  弹层/提示/选择项底色（`--dsw-specific-menu|tip|selector`）、细边框（l1 取皮肤最浅档）
+  与整套 `--dsw-elevation-*` 弹层阴影（双层阴影 + popover 描边色）也跟皮肤走；深色不受影响。
 - **`scripts/build-skins.mjs`**（本地用，不进发布包）：从本机 WorkBuddy 的
   CacheStorage 缓存解出皮肤 ZIP 与 `skin.css`，把 `--wb-*` / `--cr-*` 变量映射成
   DSH 令牌，重写 `client.js` 里的 `SKIN_PRESETS` 标记区块，WorkBuddy 新增皮肤时重跑即可。

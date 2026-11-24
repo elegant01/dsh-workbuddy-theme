@@ -162,6 +162,10 @@ window.__ModuleLoader__.load({
           "light": "#e0eafe",
           "dark": "#3a3a3c"
         },
+        "shadow": {
+          "popover": "0 12px 24px -8px #05082e0f, 0 2px 4px -4px #05082e14",
+          "stroke": "#e0eafe"
+        },
         "surface": {
           "--dsw-alias-bg-base": "#F7FAFF",
           "--dsw-alias-bg-layer-1": "#ffffff",
@@ -176,7 +180,7 @@ window.__ModuleLoader__.load({
           "--dsw-alias-interactive-bg-hover": "#DEE7FF",
           "--dsw-alias-interactive-bg-active": "#EDF2FF",
           "--dsw-alias-interactive-bg-hover-solid": "#ebf1ff",
-          "--dsw-alias-border-l1": "#e0eafe",
+          "--dsw-alias-border-l1": "#05082e14",
           "--dsw-alias-border-l2": "#e0eafe",
           "--dsw-alias-border-l3": "#c7daff",
           "--dsw-alias-border-l4": "#c7daff",
@@ -196,8 +200,16 @@ window.__ModuleLoader__.load({
           "--dsw-alias-markdown-code-block-banner": "#E5EEFF",
           "--dsw-alias-markdown-tag": "#d1e0ff",
           "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-alias-scrollbar-bg-l1": "#05082e33",
+          "--dsw-alias-scrollbar-bg-l2": "#05082e1f",
+          "--dsw-alias-scrollbar-hover-l1": "#05082e4d",
+          "--dsw-alias-scrollbar-hover-l2": "#05082e4d",
           "--dsw-specific-sidebar-fill": "#E5EEFF",
-          "--dsw-specific-input-major": "#F0F4FF"
+          "--dsw-specific-input-major": "#F0F4FF",
+          "--dsw-specific-menu": "#ffffff",
+          "--dsw-specific-selector": "#EDF2FF",
+          "--dsw-specific-tip": "#05082ee6",
+          "--dsw-specific-login-input": "#F0F4FF"
         }
       },
       {
@@ -249,6 +261,10 @@ window.__ModuleLoader__.load({
           "light": "#e0f2fe",
           "dark": "#3a3a3c"
         },
+        "shadow": {
+          "popover": "0 12px 24px -8px #06263c0f, 0 2px 4px -4px #06263c14",
+          "stroke": "#e0f2fe"
+        },
         "surface": {
           "--dsw-alias-bg-base": "#f7fcff",
           "--dsw-alias-bg-layer-1": "#ffffff",
@@ -263,7 +279,7 @@ window.__ModuleLoader__.load({
           "--dsw-alias-interactive-bg-hover": "#def2ff",
           "--dsw-alias-interactive-bg-active": "#dbf1ff",
           "--dsw-alias-interactive-bg-hover-solid": "#ebf7ff",
-          "--dsw-alias-border-l1": "#e0f2fe",
+          "--dsw-alias-border-l1": "#06263c14",
           "--dsw-alias-border-l2": "#e0f2fe",
           "--dsw-alias-border-l3": "#c2e7ff",
           "--dsw-alias-border-l4": "#c2e7ff",
@@ -283,8 +299,16 @@ window.__ModuleLoader__.load({
           "--dsw-alias-markdown-code-block-banner": "#e6f4ff",
           "--dsw-alias-markdown-tag": "#d1edff",
           "--dsw-alias-switch-thumb": "#f2f9fe",
+          "--dsw-alias-scrollbar-bg-l1": "#06263c33",
+          "--dsw-alias-scrollbar-bg-l2": "#06263c1f",
+          "--dsw-alias-scrollbar-hover-l1": "#06263c4d",
+          "--dsw-alias-scrollbar-hover-l2": "#06263c4d",
           "--dsw-specific-sidebar-fill": "#ccebff",
-          "--dsw-specific-input-major": "#f0f9ff"
+          "--dsw-specific-input-major": "#f0f9ff",
+          "--dsw-specific-menu": "#ffffff",
+          "--dsw-specific-selector": "#edf8ff",
+          "--dsw-specific-tip": "#06263ce6",
+          "--dsw-specific-login-input": "#f0f9ff"
         }
       },
       {
@@ -336,6 +360,10 @@ window.__ModuleLoader__.load({
           "light": "#dce8ff",
           "dark": "#3a3a3c"
         },
+        "shadow": {
+          "popover": "0 12px 24px -8px #001f4f0f, 0 2px 4px -4px #001f4f14",
+          "stroke": "#dce8ff"
+        },
         "surface": {
           "--dsw-alias-bg-base": "#f5f9ff",
           "--dsw-alias-bg-layer-1": "#ffffff",
@@ -350,7 +378,7 @@ window.__ModuleLoader__.load({
           "--dsw-alias-interactive-bg-hover": "#e3edff",
           "--dsw-alias-interactive-bg-active": "#A8C1F0",
           "--dsw-alias-interactive-bg-hover-solid": "#e9f2ff",
-          "--dsw-alias-border-l1": "#dce8ff",
+          "--dsw-alias-border-l1": "#001f4f14",
           "--dsw-alias-border-l2": "#dce8ff",
           "--dsw-alias-border-l3": "#c4daf5",
           "--dsw-alias-border-l4": "#c4daf5",
@@ -370,8 +398,16 @@ window.__ModuleLoader__.load({
           "--dsw-alias-markdown-code-block-banner": "#e6efff",
           "--dsw-alias-markdown-tag": "#d6e4fc",
           "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-alias-scrollbar-bg-l1": "#001f4f33",
+          "--dsw-alias-scrollbar-bg-l2": "#001f4f1f",
+          "--dsw-alias-scrollbar-hover-l1": "#001f4f4d",
+          "--dsw-alias-scrollbar-hover-l2": "#001f4f4d",
           "--dsw-specific-sidebar-fill": "#e6efff",
-          "--dsw-specific-input-major": "#eef3ff"
+          "--dsw-specific-input-major": "#eef3ff",
+          "--dsw-specific-menu": "#ffffff",
+          "--dsw-specific-selector": "#e6efff",
+          "--dsw-specific-tip": "#001f4fe6",
+          "--dsw-specific-login-input": "#eef3ff"
         }
       },
       {
@@ -423,6 +459,10 @@ window.__ModuleLoader__.load({
           "light": "#dce7dd",
           "dark": "#3a3a3c"
         },
+        "shadow": {
+          "popover": "0 12px 24px -8px #12261a0f, 0 2px 4px -4px #12261a14",
+          "stroke": "#dce7dd"
+        },
         "surface": {
           "--dsw-alias-bg-base": "#f6f8f5",
           "--dsw-alias-bg-layer-1": "#ffffff",
@@ -437,7 +477,7 @@ window.__ModuleLoader__.load({
           "--dsw-alias-interactive-bg-hover": "#dde8df",
           "--dsw-alias-interactive-bg-active": "#edf2ed",
           "--dsw-alias-interactive-bg-hover-solid": "#ecf2ec",
-          "--dsw-alias-border-l1": "#dce7dd",
+          "--dsw-alias-border-l1": "#12261a14",
           "--dsw-alias-border-l2": "#dce7dd",
           "--dsw-alias-border-l3": "#cde0ce",
           "--dsw-alias-border-l4": "#cde0ce",
@@ -457,8 +497,16 @@ window.__ModuleLoader__.load({
           "--dsw-alias-markdown-code-block-banner": "#e8f0e9",
           "--dsw-alias-markdown-tag": "#d5e5d6",
           "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-alias-scrollbar-bg-l1": "#12261a33",
+          "--dsw-alias-scrollbar-bg-l2": "#12261a1f",
+          "--dsw-alias-scrollbar-hover-l1": "#12261a4d",
+          "--dsw-alias-scrollbar-hover-l2": "#12261a4d",
           "--dsw-specific-sidebar-fill": "#e8f0e9",
-          "--dsw-specific-input-major": "#f0f5f0"
+          "--dsw-specific-input-major": "#f0f5f0",
+          "--dsw-specific-menu": "#ffffff",
+          "--dsw-specific-selector": "#edf2ed",
+          "--dsw-specific-tip": "#12261ae6",
+          "--dsw-specific-login-input": "#f0f5f0"
         }
       },
       {
@@ -510,6 +558,10 @@ window.__ModuleLoader__.load({
           "light": "#d5eef4",
           "dark": "#3a3a3c"
         },
+        "shadow": {
+          "popover": "0 12px 24px -8px #00232c0f, 0 2px 4px -4px #00232c14",
+          "stroke": "#d5eef4"
+        },
         "surface": {
           "--dsw-alias-bg-base": "#F8FDFF",
           "--dsw-alias-bg-layer-1": "#ffffff",
@@ -524,7 +576,7 @@ window.__ModuleLoader__.load({
           "--dsw-alias-interactive-bg-hover": "#D6F0F6",
           "--dsw-alias-interactive-bg-active": "#D2EEF4",
           "--dsw-alias-interactive-bg-hover-solid": "#e0f6fb",
-          "--dsw-alias-border-l1": "#d5eef4",
+          "--dsw-alias-border-l1": "#00232c14",
           "--dsw-alias-border-l2": "#d5eef4",
           "--dsw-alias-border-l3": "#bce7ef",
           "--dsw-alias-border-l4": "#bce7ef",
@@ -544,8 +596,16 @@ window.__ModuleLoader__.load({
           "--dsw-alias-markdown-code-block-banner": "#E5FAFF",
           "--dsw-alias-markdown-tag": "#cdedf5",
           "--dsw-alias-switch-thumb": "#f7f8f9",
+          "--dsw-alias-scrollbar-bg-l1": "#00232c33",
+          "--dsw-alias-scrollbar-bg-l2": "#00232c1f",
+          "--dsw-alias-scrollbar-hover-l1": "#00232c4d",
+          "--dsw-alias-scrollbar-hover-l2": "#00232c4d",
           "--dsw-specific-sidebar-fill": "#E5FAFF",
-          "--dsw-specific-input-major": "#EAF7FA"
+          "--dsw-specific-input-major": "#EAF7FA",
+          "--dsw-specific-menu": "#ffffff",
+          "--dsw-specific-selector": "#E5FAFF",
+          "--dsw-specific-tip": "#00232ce6",
+          "--dsw-specific-login-input": "#EAF7FA"
         }
       }
     ]
@@ -2093,9 +2153,18 @@ window.__ModuleLoader__.load({
       const body = Object.entries(skin.surface)
         .map(([name, value]) => `  ${name}: ${value};`)
         .join('\n')
+      let css = `body:not([data-ds-dark-theme]) {\n${body}\n}\n`
+      if (skin.shadow) {
+        // 宿主的 --dsw-elevation-* 定义在 body 与每个元素上，必须同时覆盖元素级变量。
+        const elev = ['--dsw-elevation-panel', '--dsw-elevation-prominent', '--dsw-elevation-soft']
+          .map((name) => `  ${name}: var(--dsw-elevation-stroke), ${skin.shadow.popover};`)
+          .join('\n')
+        const stroke = skin.shadow.stroke ? `  --dsw-elevation-stroke-color: ${skin.shadow.stroke};\n` : ''
+        css += `body:not([data-ds-dark-theme]),\nbody:not([data-ds-dark-theme]) * {\n${stroke}${elev}\n}\n`
+      }
       const tag = document.createElement('style')
       tag.id = SKIN_STYLE_ID
-      tag.textContent = `body:not([data-ds-dark-theme]) {\n${body}\n}\n`
+      tag.textContent = css
       document.head.appendChild(tag)
       return () => {
         const node = document.getElementById(SKIN_STYLE_ID)

@@ -54,7 +54,7 @@ const SURFACE_MAP = {
   '--dsw-alias-interactive-bg-hover': 'cr-bg-hover',
   '--dsw-alias-interactive-bg-active': 'wb-bg-active',
   '--dsw-alias-interactive-bg-hover-solid': 'wb-bg-card-hover',
-  '--dsw-alias-border-l1': 'cr-border-default',
+  '--dsw-alias-border-l1': 'wb-border-default',
   '--dsw-alias-border-l2': 'cr-border-default',
   '--dsw-alias-border-l3': 'cr-border-strong',
   '--dsw-alias-border-l4': 'cr-border-strong',
@@ -74,12 +74,24 @@ const SURFACE_MAP = {
   '--dsw-alias-markdown-code-block-banner': 'cr-bg-code-header',
   '--dsw-alias-markdown-tag': 'cr-tag-bg',
   '--dsw-alias-switch-thumb': 'wb-control-selected-fg',
+  '--dsw-alias-scrollbar-bg-l1': 'wb-scrollbar-thumb',
+  '--dsw-alias-scrollbar-bg-l2': 'wb-scrollbar-thumb-bg',
+  '--dsw-alias-scrollbar-hover-l1': 'wb-scrollbar-thumb-hover',
+  '--dsw-alias-scrollbar-hover-l2': 'wb-scrollbar-thumb-hover',
   '--dsw-specific-sidebar-fill': 'cr-bg-secondary',
   '--dsw-specific-input-major': 'cr-bg-primary-default',
+  '--dsw-specific-menu': 'wb-bg-popover',
+  '--dsw-specific-selector': 'cr-item-selected-bg',
+  '--dsw-specific-tip': 'wb-bg-tooltip',
+  '--dsw-specific-login-input': 'cr-bg-primary-default',
 }
 
 const BUBBLE_VAR = 'cr-user-bubble-bg'
 const BORDER_VAR = 'cr-border-default'
+// 弹层阴影：宿主没有独立阴影令牌，但 --dsw-elevation-* 是纯 CSS 变量，
+// 皮肤包的 popover 双层阴影可以直接替换其主体部分。
+const SHADOW_VARS = ['cb-shadow-popover', 'wb-main-area-box-shadow']
+const SHADOW_STROKE_VARS = ['cr-popover-border', 'wb-border-popover']
 
 // 皮肤的 --wb-text-* 是 8 位十六进制（带 alpha），值本身可直用。
 function cacheDirs(arg) {
@@ -209,6 +221,8 @@ function buildPreset(slug, vars) {
   }
   const bubble = pick(BUBBLE_VAR) || '#f2f2f2'
   const border = pick(BORDER_VAR) || '#e6e6e6'
+  const shadowValue = SHADOW_VARS.map((n) => vars[n]).find((v) => typeof v === 'string' && v !== '') ?? null
+  const strokeValue = SHADOW_STROKE_VARS.map((n) => vars[n]).find((v) => typeof v === 'string' && v !== '') ?? null
   return {
     slug,
     preset: {
@@ -217,6 +231,7 @@ function buildPreset(slug, vars) {
       accent,
       bubble: { light: bubble, dark: '#2c2c2e' },
       border: { light: border, dark: '#3a3a3c' },
+      shadow: shadowValue === null ? null : { popover: shadowValue, stroke: strokeValue },
       surface,
     },
     missing,
