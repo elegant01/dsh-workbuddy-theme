@@ -2154,6 +2154,12 @@ window.__ModuleLoader__.load({
         .map(([name, value]) => `  ${name}: ${value};`)
         .join('\n')
       let css = `body:not([data-ds-dark-theme]) {\n${body}\n}\n`
+      // dsh-codex-pet 的浮宠界面从宿主令牌派生配色，除强调色外已自动跟随皮肤；
+      // 强调色走 --dsw-alias-brand-primary（宿主映射到中性色阶），这里按皮肤主色补上。
+      const skinAccent = skin.accent['--wb-control-on'] ?? skin.accent['--dsw-static-deepseek-500']
+      if (skinAccent) {
+        css += `body:not([data-ds-dark-theme]) .dcp {\n  --dsw-alias-brand-primary: ${skinAccent.light};\n}\n`
+      }
       if (skin.shadow) {
         // 宿主的 --dsw-elevation-* 定义在 body 与每个元素上，必须同时覆盖元素级变量。
         const elev = ['--dsw-elevation-panel', '--dsw-elevation-prominent', '--dsw-elevation-soft']

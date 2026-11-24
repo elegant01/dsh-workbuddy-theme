@@ -115,6 +115,11 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 皮肤色块放在一层 scoped `<style>`（`body:not([data-ds-dark-theme])`）里，
 换肤/关主题/切回「系统」时整层回收，不留残留。
 
+**与 dsh-codex-pet 联动**：该插件（`@michengai/dsh-codex-pet`）的浮宠界面从宿主令牌
+派生颜色，所以皮肤的背景、边框、文字会自然带到宠物卡片与气泡上；只有它的强调色走
+`--dsw-alias-brand-primary`（宿主映射到中性色阶），皮肤模式下由本插件在 `.dcp` 作用域
+内补成皮肤主色，恢复系统后自动撤销。宠物插件未安装时这条规则不产生任何效果。
+
 皮肤不是手抄的：`scripts/build-skins.mjs`（本地用，不进发布包）读取本机已登录
 WorkBuddy 的 CacheStorage 缓存，解出皮肤 ZIP 里的 `skin.css`，把 `--wb-*` / `--cr-*`
 变量映射成 DSH 令牌，重写 `client.js` 中 `SKIN_PRESETS` 标记区块。WorkBuddy 新增皮肤后
