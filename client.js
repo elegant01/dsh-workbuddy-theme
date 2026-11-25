@@ -1465,6 +1465,28 @@ window.__ModuleLoader__.load({
   background-repeat: no-repeat;
 }
 .dsh-wb-pet-name { font-size: 13px; line-height: 20px; color: var(--dsw-alias-label-primary); }
+.dsh-wb-pet-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.dsh-wb-pet-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.dsh-wb-pet-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px 3px 4px;
+  border: .5px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  background-color: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  cursor: pointer;
+}
+.dsh-wb-pet-option:hover { background-color: var(--dsw-alias-interactive-bg-hover); }
+.dsh-wb-pet-option.is-on {
+  border-color: var(--wb-control-on);
+  box-shadow: inset 0 0 0 1px var(--wb-control-on);
+}
+.dsh-wb-pet-option:focus-visible { outline: 2px solid var(--wb-control-on); outline-offset: 2px; }
 
 /* ============ 28. 会话行徽标（P2）============
    挂在 sidebar.session.row.trailing（list，inline: true），
@@ -1565,11 +1587,9 @@ window.__ModuleLoader__.load({
   border: .5px solid rgb(128 128 128 / 30%);
 }
 
-/* ============ 32. 宠物联动（dsh-codex-pet）============
-   浮宠颜色派生自宿主令牌，主题生效即跟随；这里补两处：
-   1) 新会话（composerHero 布局）把宠物摆在输入卡右上角，脚踩边框；
-   2) 宠物气泡换成 WorkBuddy 风格：14px 圆角、细描边、elevation 阴影。
-   宠物插件未安装时两条规则都遇不到目标元素。 */
+/* ============ 32. 宠物联动 ============
+   宠物图由本插件宿主端直接从 ~/.codex/pets 读出，主题只负责摆位：
+   新会话（composerHero 布局）把宠物摆在输入卡右上角，脚踩边框。 */
 .dsh-wb-perch {
   display: none;
   position: absolute;
@@ -1583,13 +1603,6 @@ window.__ModuleLoader__.load({
   filter: drop-shadow(0 2px 3px rgb(0 0 0 / 12%));
 }
 html[data-dsh-wb-pet="on"] .an3WzG_composerHero .dsh-wb-perch { display: block; }
-html[data-dsh-wb-pet="on"] .dcp .dcp-bubble {
-  border-radius: 14px !important;
-  border-color: var(--dsw-alias-border-l2) !important;
-  background: var(--dsw-alias-bg-layer-3) !important;
-  box-shadow: var(--dsw-elevation-panel) !important;
-}
-html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-label-primary); }
 `
 
     function installWidgetStyle() {
@@ -1830,8 +1843,15 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
         const [pet, setPet] = React.useState(null)
         React.useEffect(() => {
           let live = true
-          petInfo().then((info) => { if (live) setPet(selectedPet(info)) })
-          return () => { live = false }
+          const load = () => {
+            petInfo().then((info) => { if (live) setPet(selectedPet(info)) })
+          }
+          load()
+          petListeners.add(load)
+          return () => {
+            live = false
+            petListeners.delete(load)
+          }
         }, [])
         const cwd = props && props.session ? props.session.cwd : undefined
         const hasCwd = typeof cwd === 'string' && cwd !== ''
@@ -1951,7 +1971,7 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
         const [density, setDensity] = React.useState(densityChoice)
         const [skin, setSkin] = React.useState(skinChoice)
         const [drift, setDriftState] = React.useState(DRIFT.active)
-        const [pet, setPetState] = React.useState(null)
+        const [pets, setPets] = React.useState([])
         const [petOn, setPetOn] = React.useState(petEnabled)
         React.useEffect(() => {
           DRIFT.listeners.add(setDriftState)
@@ -1959,9 +1979,22 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
         }, [])
         React.useEffect(() => {
           let live = true
-          petInfo().then((info) => { if (live) setPetState(selectedPet(info)) })
-          return () => { live = false }
+          const load = () => {
+            petInfo().then((info) => { if (live) setPets(info === null ? [] : info.pets) })
+          }
+          load()
+          petListeners.add(load)
+          return () => {
+            live = false
+            petListeners.delete(load)
+          }
         }, [])
+        const pet = selectedPet(pets.length === 0 ? null : { pets })
+        function pickPet(id) {
+          if (pet !== null && pet.id === id) return
+          try { localStorage.setItem(PET_ID_KEY, id) } catch { /* 隐私模式写不了，忽略 */ }
+          refreshPets()
+        }
         function pickSkin(id) {
           writeSkin(id)
           try {
@@ -2022,17 +2055,38 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
               })),
             ),
           ),
-          pet === null ? null : h(Row, {
-            label: '宠物联动',
-            desc: !petOn
-              ? '已关闭：新会话不显示宠物，宠物气泡保持插件原样。'
-              : petOriginLabel(pet)
-                + (skin === '' ? '浮宠卡片、气泡与强调色跟随宿主配色。' : '当前皮肤已带到浮宠的卡片、气泡、文字与强调色。'),
-            control: h('span', { className: 'dsh-wb-pet-control' },
-              h('span', { className: 'dsh-wb-pet-chip' },
-                h('span', { className: 'dsh-wb-pet-thumb', style: petFrameStyle(pet, 30) }),
-                h('span', { className: 'dsh-wb-pet-name' }, pet.name),
+          pet === null ? null : h('div', { className: 'dsh-wb-row dsh-wb-row-stack' },
+            h('div', { className: 'dsh-wb-row-main' },
+              h('div', { className: 'dsh-wb-row-label' }, '宠物联动'),
+              h('div', { className: 'dsh-wb-row-desc' },
+                !petOn
+                  ? '已关闭：新会话不显示宠物。'
+                  : '来源 ~/.codex/pets；选中的宠物在新会话中站在输入卡右上角。',
               ),
+            ),
+            h('div', { className: 'dsh-wb-pet-bar' },
+              pets.length > 1
+                ? h('div', { className: 'dsh-wb-pet-list', role: 'radiogroup', 'aria-label': '选择宠物' },
+                  pets.map((item) => {
+                    const on = pet.id === item.id
+                    return h('button', {
+                      key: item.id,
+                      type: 'button',
+                      role: 'radio',
+                      'aria-checked': on ? 'true' : 'false',
+                      className: 'dsh-wb-pet-option' + (on ? ' is-on' : ''),
+                      title: item.name || item.id,
+                      onClick: () => pickPet(item.id),
+                    },
+                      h('span', { className: 'dsh-wb-pet-thumb', style: petFrameStyle(item, 30) }),
+                      h('span', { className: 'dsh-wb-pet-name' }, item.name || item.id),
+                    )
+                  }),
+                )
+                : h('span', { className: 'dsh-wb-pet-chip' },
+                  h('span', { className: 'dsh-wb-pet-thumb', style: petFrameStyle(pet, 30) }),
+                  h('span', { className: 'dsh-wb-pet-name' }, pet.name),
+                ),
               h(Segmented, {
                 value: petOn ? 'on' : 'off',
                 options: [{ id: 'on', label: '开' }, { id: 'off', label: '关' }],
@@ -2043,7 +2097,7 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
                 },
               }),
             ),
-          }),
+          ),
           h(Row, {
             label: '交互色',
             desc: skin === ''
@@ -2222,32 +2276,34 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
       } catch { /* 隐私模式写不了，忽略 */ }
     }
 
-    /** 宠物联动：优先用运行中的 dsh-codex-pet（含它选中的宠物与内置套），
-     *  没有该插件时退回宿主端直接读 ~/.codex/pets（Codex 原生宠物目录）。
+    /** 宠物联动：素材来自 Codex 原生目录 ~/.codex/pets，宿主端负责列目录、
+     *  客户端按名字展示并按本机记录选中。
      *  贴图是 8 列 × 9/11 行的精灵表，静态预览取第 0 帧（idle 第一格）。 */
-    const PET_PLUGIN_API = '/dsh-codex-pet/api/state'
-    const PET_OWN_API = '/dsh-workbuddy-theme/pet/state'
+    const PET_API = '/dsh-workbuddy-theme/pet/state'
     const PET_SWITCH_KEY = 'dsh-workbuddy-theme:pet'
     const PET_ID_KEY = 'dsh-workbuddy-theme:pet-id'
     let petRequest = null
+    const petListeners = new Set()
     function jsonOrNull(url) {
       return fetch(url).then((response) => (response.ok ? response.json() : null)).catch(() => null)
     }
-    function petPackOk(info) {
-      return info !== null && info !== undefined && Array.isArray(info.pets) && info.pets.length > 0
-    }
     function petInfo() {
       if (petRequest === null) {
-        petRequest = jsonOrNull(PET_PLUGIN_API).then((info) => {
-          if (petPackOk(info)) return { source: 'plugin', info }
-          return jsonOrNull(PET_OWN_API).then((own) => (petPackOk(own) ? { source: 'codex', info: own } : null))
-        }).then((pack) => {
+        petRequest = jsonOrNull(PET_API).then((info) => {
+          if (info !== null && Array.isArray(info.pets) && info.pets.length > 0) return info
           // 宿主刚启动时接口可能还没挂上，失败不缓存，下次挂载再试一次。
-          if (pack === null) petRequest = null
-          return pack
+          petRequest = null
+          return null
         })
       }
       return petRequest
+    }
+    /** 换宠物或目录变动后清缓存并通知所有已挂载的浮宠与设置行重新取值。 */
+    function refreshPets() {
+      petRequest = null
+      for (const fn of petListeners) {
+        try { fn() } catch { /* 单个订阅方出错不影响其他 */ }
+      }
     }
     function petEnabled() {
       try { return localStorage.getItem(PET_SWITCH_KEY) !== '0' } catch { return true }
@@ -2260,28 +2316,19 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
     function applyPetGate() {
       document.documentElement.setAttribute('data-dsh-wb-pet', isEnabled() && petEnabled() ? 'on' : 'off')
     }
-    function selectedPet(pack) {
-      if (!pack) return null
-      const list = pack.info.pets
-      let id = pack.info.config && pack.info.config.selected
-      if (typeof id !== 'string' || id === '') {
-        try { id = localStorage.getItem(PET_ID_KEY) } catch { id = null }
-      }
-      const pet = list.find((item) => item.id === id) ?? list[0]
+    function selectedPet(info) {
+      if (!info) return null
+      const list = info.pets
+      let id = null
+      try { id = localStorage.getItem(PET_ID_KEY) } catch { id = null }
+      const pet = (typeof id === 'string' && list.find((item) => item.id === id)) || list[0]
       if (!pet || typeof pet.url !== 'string' || pet.url === '') return null
       return {
         id: pet.id,
         name: pet.name || pet.id,
         url: pet.url,
         version: Number(pet.version) || 1,
-        source: pack.source,
       }
-    }
-    /** 来源按宠物本身判定：dsh-codex-pet 里的自定义宠物同样来自 ~/.codex/pets，
-     *  只有它自带的内置宠物才是插件自己的素材。 */
-    function petOriginLabel(pet) {
-      const custom = pet.source === 'codex' || pet.id.startsWith('custom:')
-      return custom ? '来源 ~/.codex/pets；' : '来源 dsh-codex-pet 内置；'
     }
     function petFrameStyle(pet, width) {
       const rows = pet.version >= 2 ? 11 : 9
@@ -2306,12 +2353,6 @@ html[data-dsh-wb-pet="on"] .dcp .dcp-bubble strong { color: var(--dsw-alias-labe
         .map(([name, value]) => `  ${name}: ${value};`)
         .join('\n')
       let css = `body:not([data-ds-dark-theme]) {\n${body}\n}\n`
-      // dsh-codex-pet 的浮宠界面从宿主令牌派生配色，除强调色外已自动跟随皮肤；
-      // 强调色走 --dsw-alias-brand-primary（宿主映射到中性色阶），这里按皮肤主色补上。
-      const skinAccent = skin.accent['--wb-control-on'] ?? skin.accent['--dsw-static-deepseek-500']
-      if (skinAccent) {
-        css += `body:not([data-ds-dark-theme]) .dcp {\n  --dsw-alias-brand-primary: ${skinAccent.light};\n}\n`
-      }
       if (skin.shadow) {
         // 宿主的 --dsw-elevation-* 定义在 body 与每个元素上，必须同时覆盖元素级变量。
         const elev = ['--dsw-elevation-panel', '--dsw-elevation-prominent', '--dsw-elevation-soft']

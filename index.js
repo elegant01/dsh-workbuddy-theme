@@ -2,8 +2,7 @@
 //
 // 效果全在 client.js：主题通过宿主公开的 ctx.theme.overrideTokens()
 // 叠加一层令牌覆盖（配色 + 字体），再注入一段只描述结构细节的 CSS。
-// 宿主端只做一件事：把 Codex 原生宠物目录（~/.codex/pets）暴露给客户端，
-// 让「宠物联动」不依赖 dsh-codex-pet 插件是否安装。
+// 宿主端只做一件事：把 Codex 原生宠物目录（~/.codex/pets）暴露给客户端。
 import { readdir, readFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
@@ -20,19 +19,17 @@ function sendJson(res, status, value) {
 }
 
 async function petDirs() {
-  const roots = [join(homedir(), '.codex', 'pets'), join(homedir(), '.dsh', 'codex-pet', 'pets')]
+  const root = join(homedir(), '.codex', 'pets')
   const seen = new Map()
-  for (const root of roots) {
-    let names
-    try {
-      names = await readdir(root, { withFileTypes: true })
-    } catch {
-      continue
-    }
-    for (const entry of names) {
-      if (!entry.isDirectory() || !CLEAN_ID.test(entry.name) || seen.has(entry.name)) continue
-      seen.set(entry.name, join(root, entry.name))
-    }
+  let names
+  try {
+    names = await readdir(root, { withFileTypes: true })
+  } catch {
+    return seen
+  }
+  for (const entry of names) {
+    if (!entry.isDirectory() || !CLEAN_ID.test(entry.name) || seen.has(entry.name)) continue
+    seen.set(entry.name, join(root, entry.name))
   }
   return seen
 }

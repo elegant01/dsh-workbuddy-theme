@@ -115,13 +115,11 @@ cordis.patch.yml  dsh.bundle 清单，声明插件 id 与包名
 皮肤色块放在一层 scoped `<style>`（`body:not([data-ds-dark-theme])`）里，
 换肤/关主题/切回「系统」时整层回收，不留残留。
 
-**宠物联动**：不要求装 `@michengai/dsh-codex-pet`。装了就直接用它的状态接口（含
-插件里的自定义宠物与当前选中项）；没装时宿主端自己读 Codex 原生目录
-`~/.codex/pets`（回退 `~/.dsh/codex-pet/pets`），把 `pet.json` 与精灵表暴露成
-`/dsh-workbuddy-theme/pet/state`、`/asset/<id>`。设置页「宠物联动」可整体开关：
-新会话（空输入卡）时在当前选中的宠物站在输入卡右上角；浮宠卡片、气泡、描边与文字
-派生自宿主令牌，皮肤下自动跟随，强调色由本插件在 `.dcp` 作用域补成皮肤主色。
-气泡改成 14px 圆角 + elevation 阴影。关掉开关或关掉主题总开关，浮宠与气泡样式一并收起。
+**宠物联动**：宿主端直接读 Codex 原生宠物目录 `~/.codex/pets`，把每只宠物的
+`pet.json` 与精灵表暴露成 `/dsh-workbuddy-theme/pet/state`、`/asset/<id>`。
+目录里有多只时，设置页「宠物联动」会列出全部宠物，点缩略图即切换（选择记在本机）；
+只有一只时显示为单个名称。新会话（空输入卡）时选中的宠物站在输入卡右上角。
+关掉开关或关掉主题总开关，浮宠一并收起。
 
 皮肤不是手抄的：`scripts/build-skins.mjs`（本地用，不进发布包）读取本机已登录
 WorkBuddy 的 CacheStorage 缓存，解出皮肤 ZIP 里的 `skin.css`，把 `--wb-*` / `--cr-*`
