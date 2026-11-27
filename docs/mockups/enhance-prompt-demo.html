@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>增强提示词 · 交互稿（DSH 输入框复刻）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f3f4f6;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 48px 16px;
+    color: #0f1115;
+  }
+  h1 { font-size: 16px; margin-bottom: 6px; }
+  .sub { font-size: 12px; color: #868e96; margin-bottom: 28px; }
+  .stage { width: 720px; max-width: 100%; }
+  .statebar { display: flex; gap: 8px; margin-bottom: 10px; font-size: 12px; color: #868e96; align-items: center; }
+  .statebar b { color: #0f1115; font-weight: 600; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: #ced4da; }
+  .dot.on { background: #00b96b; }
+
+  /* ===== DSH 输入卡复刻（当前主题生效后的样子） ===== */
+  .composer {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 16px;
+    padding: 12px 12px 8px;
+    box-shadow: 0 1px 2px rgba(15,17,21,.04);
+  }
+  .editor {
+    min-height: 72px; max-height: 200px; overflow-y: auto;
+    outline: none; font-size: 14px; line-height: 1.6;
+    padding: 4px 6px; white-space: pre-wrap; word-break: break-word;
+  }
+  .editor:empty::before { content: attr(data-ph); color: #adb5bd; }
+  .editor.flash { animation: flash .5s ease; }
+  @keyframes flash { 0% { background: rgba(0,185,107,.08); } 100% { background: transparent; } }
+
+  .toolbar { display: flex; align-items: center; gap: 4px; padding: 8px 2px 0; }
+  .tbtn {
+    width: 30px; height: 30px; border: none; background: transparent;
+    border-radius: 8px; cursor: pointer; color: #495057;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background-color .15s cubic-bezier(.4,0,.2,1), color .15s cubic-bezier(.4,0,.2,1);
+    position: relative;
+  }
+  .tbtn:hover { background: rgba(0,0,0,.05); }
+  .tbtn:active { background: rgba(0,0,0,.08); }
+  .tbtn:disabled { color: #ced4da; cursor: default; background: transparent; }
+  .tbtn svg { width: 16px; height: 16px; }
+  .modelsel {
+    font-size: 13px; color: #868e96; border: none; background: transparent;
+    padding: 4px 8px; border-radius: 8px; cursor: pointer;
+  }
+  .modelsel:hover { background: rgba(0,0,0,.05); }
+  .spacer { flex: 1; }
+
+  /* 增强按钮：ghost 圆形图标钮（WorkBuddy 规格） */
+  .enhance-btn { border-radius: 50%; width: 30px; height: 30px; }
+  .enhance-btn.revert { color: #00b96b; }
+  .enhance-btn.revert:hover { background: rgba(0,185,107,.08); }
+
+  .spinner {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid rgba(0,185,107,.25); border-top-color: #00b96b;
+    animation: rot .8s linear infinite;
+  }
+  @keyframes rot { to { transform: rotate(360deg); } }
+
+  /* 发送钮：34px 圆，品牌绿，白飞机（当前主题实测态） */
+  .send {
+    width: 34px; height: 34px; border: none; border-radius: 50%;
+    background: #00b96b; color: #fff; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background-color .15s cubic-bezier(.4,0,.2,1), filter .1s cubic-bezier(.4,0,.2,1);
+  }
+  .send:hover:not(:disabled) { background: #02a65f; }
+  .send:active:not(:disabled) { filter: brightness(.92); }
+  .send:disabled { background: rgba(0,0,0,.2); cursor: default; }
+  .send svg { width: 16px; height: 16px; }
+
+  /* tooltip */
+  [data-tip]::after {
+    content: attr(data-tip);
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: #0f1115; color: #fff; font-size: 12px; line-height: 1;
+    padding: 6px 8px; border-radius: 6px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity .12s;
+  }
+  [data-tip]:hover::after { opacity: 1; }
+
+  .err { color: #e03131; font-size: 12px; padding: 6px 6px 0; display: none; }
+  .err.show { display: block; }
+
+  .notes {
+    margin-top: 26px; width: 720px; max-width: 100%;
+    font-size: 12.5px; color: #495057; line-height: 1.9;
+    background: #fff; border: 1px solid #e9ecef; border-radius: 12px; padding: 14px 18px;
+  }
+  .notes b { color: #0f1115; }
+  .notes code { background: #f1f3f5; padding: 1px 5px; border-radius: 4px; font-size: 11.5px; }
+</style>
+</head>
+<body>
+<h1>增强提示词 · 交互稿</h1>
+<div class="sub">模拟链路：点魔法棒 → 转圈（可点取消）→ 文本替换、按钮变撤销 → 撤销复原 / 手改一字撤销消失</div>
+
+<div class="stage">
+  <div class="statebar">
+    状态：<b id="stateLabel">空闲</b>
+    <span class="dot on" id="d1"></span> 空闲
+    <span class="dot" id="d2"></span> 增强中
+    <span class="dot" id="d3"></span> 可撤销
+  </div>
+  <div class="composer">
+    <div class="editor" id="editor" contenteditable="true" data-ph="输入你的提示词，例如：帮我写个登录页"></div>
+    <div class="toolbar">
+      <button class="tbtn" data-tip="添加文件、技能或连接器" tabindex="-1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="modelsel" tabindex="-1">deepseek-v4-pro · 均衡</button>
+      <span class="spacer"></span>
+      <button class="tbtn enhance-btn" id="enhanceBtn" data-tip="增强提示词" disabled>
+        <span id="enhanceIcon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.5597 14.8428" fill="none">
+            <path fill="currentColor" fill-rule="evenodd" transform="matrix(1 0 0 1 0.280101 0.0764168)" d="M6.184 2.2189C6.6024 1.309 7.8631 1.2263 8.1049 2.093L8.8402 4.7326C8.9921 5.2777 9.3894 5.6894 9.929 5.8596L12.5424 6.6828C13.401 6.9534 13.276 8.2113 12.352 8.5988L9.9975 9.5852L9.8362 9.6584C9.0366 10.04 8.3723 10.7087 8.0023 11.5139L6.9379 13.8342L6.849 13.9943C6.3972 14.7005 5.3899 14.7664 5.0736 14.1106L5.016 13.9602L4.2816 11.3205C4.1487 10.8436 3.8278 10.468 3.3881 10.2678L3.1918 10.1936L0.5785 9.3703C-0.2801 9.0997 -0.1551 7.8417 0.7689 7.4543L3.1234 6.468C3.9404 6.1254 4.6321 5.4847 5.0404 4.6984L5.1185 4.5392L6.184 2.2189ZM6.3168 4.9162C5.7518 6.1462 4.7086 7.1556 3.4603 7.6789L1.9027 8.3312L3.7748 8.9221C4.6647 9.2024 5.3214 9.8816 5.5717 10.7805L6.099 12.6711L6.8041 11.1369C7.369 9.907 8.4123 8.8985 9.6606 8.3752L11.2172 7.7219L9.3461 7.132C8.4563 6.8517 7.7995 6.1723 7.5492 5.2736L7.0219 3.382L6.3168 4.9162ZM12.7065 0.2141C12.8287 -0.0521 13.1972 -0.0764 13.2679 0.1769L13.6194 1.4396C13.6418 1.5191 13.7 1.5788 13.7787 1.6037L15.0287 1.9973C15.2797 2.0764 15.2431 2.4445 14.9731 2.5578L13.6283 3.1213C13.5434 3.1569 13.4724 3.2261 13.434 3.3098L12.8246 4.634C12.7023 4.9002 12.3337 4.9247 12.2631 4.6711L11.9124 3.4094C11.8903 3.3296 11.8313 3.2692 11.7523 3.2443L10.5033 2.8508C10.2523 2.7717 10.2888 2.4035 10.559 2.2902L11.9037 1.7267C11.9885 1.6911 12.0596 1.6228 12.0981 1.5392L12.7065 0.2141Z"/>
+          </svg>
+        </span>
+      </button>
+      <button class="send" id="sendBtn" data-tip="发送" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="8 7 16 16"><path fill="currentColor" d="M16 19.2104C15.5529 19.2104 15.1342 19.4074 14.2968 19.8015L12.9369 20.4415C12.6768 20.5639 12.4283 20.6835 12.1915 20.7975C10.6375 21.5456 9.588 22.0508 9.0686 21.5057C8.5493 20.9605 9.1048 19.9367 9.9273 18.4208C10.0527 18.1898 10.1842 17.9474 10.3191 17.6935L14.2338 10.3247C14.3137 10.1743 14.3891 10.03 14.461 9.8925C15.0315 8.8018 15.3821 8.1315 16 8.1315C16.6179 8.1315 16.9685 8.8018 17.539 9.8925C17.6109 10.03 17.6863 10.1743 17.7662 10.3247L21.6809 17.6935C21.8158 17.9474 21.9473 18.1898 22.0727 18.4208C22.8952 19.9367 23.4507 20.9605 22.9314 21.5057C22.412 22.0508 21.3625 21.5456 19.8085 20.7975C19.5717 20.6835 19.3232 20.5639 19.0631 20.4415L17.7032 19.8015C16.8658 19.4074 16.4471 19.2104 16 19.2104Z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="err" id="errMsg">增强失败：网络超时（示意），原文已保留</div>
+</div>
+
+<div class="notes">
+  <b>这版交互稿定的规则（照 WorkBuddy 实测逻辑）</b><br>
+  1. <b>出现条件</b>：输入框有文本（≥1 字）时魔法棒才可点；空输入禁用。<br>
+  2. <b>增强中</b>：图标变转圈，tooltip 显示「增强中…」；<b>再点一次 = 取消</b>，原文立即恢复。<br>
+  3. <b>增强完成</b>：全文替换为增强结果（输入框闪一下淡绿提示），按钮变成绿色撤销箭头；tooltip「撤销增强」。<br>
+  4. <b>撤销消失条件</b>：增强后你手动改过任意字符 → 撤销钮自动退掉（WorkBuddy 的 before/after diff 逻辑）。<br>
+  5. <b>失败</b>：红字提示，输入框保持原文不变。<br>
+  6. <b>按钮位置</b>：发送钮左侧（WorkBuddy 同位），ghost 圆形图标钮，不动现有工具栏布局。<br>
+  7. 本稿里「增强结果」是本地模拟的；真实现走 <code>ctx.llm.prepareCall</code> + WB 同款 system/user 双 prompt，模型路由用当前会话模型。
+</div>
+
+<script>
+(function () {
+  var editor = document.getElementById('editor');
+  var btn = document.getElementById('enhanceBtn');
+  var icon = document.getElementById('enhanceIcon');
+  var send = document.getElementById('sendBtn');
+  var err = document.getElementById('errMsg');
+  var label = document.getElementById('stateLabel');
+  var dots = [document.getElementById('d1'), document.getElementById('d2'), document.getElementById('d3')];
+
+  var WAND = icon.innerHTML;
+  var SPINNER = '<span class="spinner"></span>';
+  var REVERT = '<svg viewBox="0 0 17 16" fill="none"><path d="M6.26558 9.33268L2.93225 5.99935L6.26558 2.66602" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M2.93225 6H9.93225C10.4138 6 10.8906 6.09484 11.3354 6.27911C11.7803 6.46338 12.1845 6.73346 12.525 7.07394C12.8655 7.41442 13.1355 7.81863 13.3198 8.26349C13.5041 8.70835 13.5989 9.18515 13.5989 9.66667C13.5989 10.1482 13.5041 10.625 13.3198 11.0698C12.8655 11.9189 12.1845 12.5999 11.3354 13.0542C10.8906 13.2385 10.4138 13.3333 9.93225 13.3333H7.59892" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  var state = 'idle'; // idle | enhancing | done
+  var backup = null;  // { before, after }
+  var timer = null;
+
+  function text() { return editor.innerText.replace(/\n+$/, ''); }
+  function hasText() { return text().trim().length > 0; }
+
+  function setState(s, tipText) {
+    state = s;
+    label.textContent = s === 'idle' ? '空闲' : s === 'enhancing' ? '增强中' : '可撤销';
+    dots.forEach(function (d, i) {
+      d.classList.toggle('on', (s === 'idle' && i === 0) || (s === 'enhancing' && i === 1) || (s === 'done' && i === 2));
+    });
+    btn.setAttribute('data-tip', tipText);
+    refresh();
+  }
+
+  function refresh() {
+    send.disabled = !hasText();
+    if (state === 'idle') {
+      btn.disabled = !hasText();
+      btn.classList.remove('revert');
+      icon.innerHTML = WAND;
+    } else if (state === 'enhancing') {
+      btn.disabled = false;
+      icon.innerHTML = SPINNER;
+    } else {
+      btn.disabled = false;
+      btn.classList.add('revert');
+      icon.innerHTML = REVERT;
+    }
+  }
+
+  // 模拟一次增强（真实实现走 ctx.llm，2 秒延迟模拟网络）
+  function fakeEnhance(t) {
+    return '请' + t.replace(/[。！？!?.]*$/, '') + '。要求：1) 先说明整体结构与关键流程；2) 给出可直接运行的完整实现；3) 标注需要特别注意的边界情况与错误处理；4) 代码附带必要注释，保持风格简洁统一。';
+  }
+
+  btn.addEventListener('click', function () {
+    err.classList.remove('show');
+    if (state === 'idle') {
+      if (!hasText()) return;
+      backup = { before: text(), after: null };
+      setState('enhancing', '增强中…（点击取消）');
+      timer = setTimeout(function () {
+        timer = null;
+        // 模拟 90% 成功；想演示失败把下一行改成 if (true)
+        if (Math.random() < 0.9) {
+          backup.after = fakeEnhance(backup.before);
+          editor.innerText = backup.after;
+          editor.classList.remove('flash'); void editor.offsetWidth;
+          editor.classList.add('flash');
+          setState('done', '撤销增强');
+        } else {
+          backup = null;
+          err.classList.add('show');
+          setState('idle', '增强提示词');
+        }
+      }, 2000);
+    } else if (state === 'enhancing') {
+      // 取消：恢复原文
+      if (timer) { clearTimeout(timer); timer = null; }
+      if (backup) editor.innerText = backup.before;
+      backup = null;
+      setState('idle', '增强提示词');
+    } else {
+      // 撤销
+      if (backup) editor.innerText = backup.before;
+      backup = null;
+      setState('idle', '增强提示词');
+    }
+  });
+
+  // 手改内容：增强后若文本与 after 不一致，撤销钮消失（WB before/after diff 逻辑）
+  editor.addEventListener('input', function () {
+    err.classList.remove('show');
+    if (state === 'done' && backup && text() !== backup.after) {
+      backup = null;
+      setState('idle', '增强提示词');
+    } else {
+      refresh();
+    }
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>

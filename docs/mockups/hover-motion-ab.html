@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>hover/按压动效 A/B：现在 vs WorkBuddy 风格</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: 'PingFang SC', system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei UI', sans-serif;
+    background: #fff; color: #0f1115; padding: 32px 40px 40px;
+    -webkit-user-select: none; user-select: none;
+  }
+  h1 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .sub { font-size: 12px; color: #00000080; margin-bottom: 24px; line-height: 1.8; }
+  .cols { display: flex; gap: 32px; align-items: flex-start; }
+  .col { flex: 1; min-width: 0; }
+  .col h2 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .col .mech { font-size: 11px; color: #00000066; margin-bottom: 14px; line-height: 1.8; }
+
+  .side { background: #f7f7f7; border-radius: 12px; padding: 6px 8px; }
+  .row {
+    min-height: 40px; border-radius: 8px; padding: 9px 8px;
+    font-size: 14px; line-height: 22px; color: #0f1115;
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  .row .dot { width: 6px; height: 6px; border-radius: 50%; background: #00000026; flex: none; }
+  .row .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .time { margin-left: auto; font-size: 12px; color: #0000004d; flex: none; }
+
+  .bar { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+  .send {
+    width: 34px; height: 34px; border-radius: 50%; border: 0; cursor: pointer;
+    background: #00c29a; color: #fff; font-size: 15px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .plus {
+    width: 30px; height: 30px; border-radius: 8px; border: 0; cursor: pointer;
+    background: transparent; color: #00000080; font-size: 17px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ===== 左：现在（主题生效中的 DSH 行为） ===== */
+  /* 面板行没有过渡声明，悬停色瞬跳；无按压态 */
+  .now .row:hover { background-color: #DEE7FF; }
+  .now .row.sel { background-color: #EDF2FF; }
+  .now .send:hover { background-color: #00b18d; }
+  .now .plus:hover { background-color: #DEE7FF; color: #0f1115; }
+
+  /* ===== 右：WorkBuddy 风格（提案） ===== */
+  /* 悬停 .15s standard 缓动淡入；按压 8% 黑；按钮按压深一档 */
+  .wb .row { transition: background-color .15s cubic-bezier(.4, 0, .2, 1); }
+  .wb .row:hover { background-color: color-mix(in srgb, #000 5%, transparent); }
+  .wb .row:active { background-color: color-mix(in srgb, #000 8%, transparent); }
+  .wb .row.sel { background-color: #ebebeb; }
+  .wb .send { transition: background-color .15s cubic-bezier(.4, 0, .2, 1), filter .1s cubic-bezier(.4, 0, .2, 1); }
+  .wb .send:hover { background-color: #00b18d; }
+  .wb .send:active { filter: brightness(.92); }
+  .wb .plus { transition: background-color .15s cubic-bezier(.4, 0, .2, 1), color .15s cubic-bezier(.4, 0, .2, 1); }
+  .wb .plus:hover { background-color: color-mix(in srgb, #000 5%, transparent); color: #0f1115; }
+  .wb .plus:active { background-color: color-mix(in srgb, #000 8%, transparent); }
+
+  .tip { margin-top: 18px; font-size: 11px; color: #00000066; line-height: 1.9; }
+  .tip b { color: #000000b3; font-weight: 600; }
+</style>
+</head>
+<body>
+  <h1>hover / 按压动效对比（请用鼠标亲自划、按住试试）</h1>
+  <div class="sub">静态图看不出动效，这页是可交互的：把鼠标移进列表行、按住不放再松开，左右各试一遍。<br>右列数值全部量自 WorkBuddy：过渡 .15s cubic-bezier(.4,0,.2,1)；悬停 5% 黑；按压 8% 黑；按钮按压 brightness(.92)。</div>
+  <div class="cols">
+    <div class="col now">
+      <h2>现在</h2>
+      <div class="mech">无过渡声明（颜色瞬跳）· 悬停浅蓝 #DEE7FF · 无按压态</div>
+      <div class="side">
+        <div class="row"><span class="dot"></span><span class="t">整理 Q3 需求文档目录结构</span><span class="time">12:01</span></div>
+        <div class="row sel"><span class="dot"></span><span class="t">dsh-workbuddy-theme 皮肤机制设计（选中态）</span><span class="time">11:47</span></div>
+        <div class="row"><span class="dot"></span><span class="t">排查插件设置页不渲染问题</span><span class="time">10:32</span></div>
+        <div class="row"><span class="dot"></span><span class="t">WorkBuddy 令牌抽取脚本</span><span class="time">昨天</span></div>
+      </div>
+      <div class="bar">
+        <button class="plus" title="附件">＋</button>
+        <button class="send" title="发送">↑</button>
+        <span style="font-size:12px;color:#0000004d">按钮也试试：悬停 + 按住</span>
+      </div>
+    </div>
+    <div class="col wb">
+      <h2>WorkBuddy 风格（提案）</h2>
+      <div class="mech">.15s 缓动淡入 · 悬停 5% 黑 · 按压 8% 黑 · 按钮按压深一档</div>
+      <div class="side">
+        <div class="row"><span class="dot"></span><span class="t">整理 Q3 需求文档目录结构</span><span class="time">12:01</span></div>
+        <div class="row sel"><span class="dot"></span><span class="t">dsh-workbuddy-theme 皮肤机制设计（选中态）</span><span class="time">11:47</span></div>
+        <div class="row"><span class="dot"></span><span class="t">排查插件设置页不渲染问题</span><span class="time">10:32</span></div>
+        <div class="row"><span class="dot"></span><span class="t">WorkBuddy 令牌抽取脚本</span><span class="time">昨天</span></div>
+      </div>
+      <div class="bar">
+        <button class="plus" title="附件">＋</button>
+        <button class="send" title="发送">↑</button>
+        <span style="font-size:12px;color:#0000004d">按钮也试试：悬停 + 按住</span>
+      </div>
+    </div>
+  </div>
+  <div class="tip">
+    <b>感受点：</b>左列颜色是「啪」地跳变；右列有一个 0.15 秒的淡入，快速划过列表时光带是滑的。
+    按住左列没反应，按住右列会再深半档、松手弹回——这是 WorkBuddy 列表「跟手」感的来源。
+  </div>
+</body>
+</html>

@@ -98,8 +98,8 @@ window.__ModuleLoader__.load({
        定义一个气泡专用令牌，明暗各写死一个值，避免跟着品牌色漂移。
        浅色 #f2f2f2 = WorkBuddy --wb-gray-3；深色 #2c2c2e = 比背景亮一档的深灰。 */
     const SEMANTIC_TOKENS = {
-      '--wb-bubble-fill': { light: '#f2f2f2', dark: '#2c2c2e' },
-      '--wb-border': { light: '#e6e6e6', dark: '#3a3a3c' },
+      '--wb-bubble-fill': { light: '#f2f2f2', dark: '#ffffff1a' },
+      '--wb-border': { light: '#e6e6e6', dark: '#2a2c31' },
       /* 预览与令牌校验脚本会引用到它；真实环境里 body 的 font-family 已是 DSH 的
          --dsw-font-family（我们在 FONT_TOKENS 里给了值），这里给一份兜底即可。 */
       '--dsw-font-family': { light: UI_FONT, dark: UI_FONT },
@@ -617,26 +617,29 @@ window.__ModuleLoader__.load({
        由 gen_tokens.mjs 生成，勿手改。 */
     const STATIC_TOKENS = {
       "--dsw-static-neutral-bluish-00": { light: "#ffffff", dark: "#ffffff" },
-      "--dsw-static-neutral-bluish-50": { light: "#f7f7f7", dark: "#f9fafb" },
+      /* 暗色档映射自 WorkBuddy 官方暗色令牌（:root,.cr-theme 块）：
+         bg-canvas #141414 / bg-primary #1a1b1e / bg-elevated #242629 /
+         text-primary #ffffffeb / secondary #ffffffa6 / tertiary #ffffff73。 */
+      "--dsw-static-neutral-bluish-50": { light: "#f7f7f7", dark: "#ffffffeb" },
       "--dsw-static-neutral-bluish-55": { light: "#f5f5f5", dark: "#f8f9fb" },
       "--dsw-static-neutral-bluish-60": { light: "#f4f4f4", dark: "#f7f8fa" },
       "--dsw-static-neutral-bluish-75": { light: "#f2f2f2", dark: "#f4f5f7" },
       "--dsw-static-neutral-bluish-90": { light: "#efefef", dark: "#f0f2f5" },
-      "--dsw-static-neutral-bluish-100": { light: "#f2f2f2", dark: "#eef0f3" },
+      "--dsw-static-neutral-bluish-100": { light: "#f2f2f2", dark: "#ffffffeb" },
       "--dsw-static-neutral-bluish-150": { light: "#ebebeb", dark: "#e9ecf2" },
       "--dsw-static-neutral-bluish-200": { light: "#e6e6e6", dark: "#e1e5ee" },
-      "--dsw-static-neutral-bluish-300": { light: "#d9d9d9", dark: "#cfd3d6" },
+      "--dsw-static-neutral-bluish-300": { light: "#d9d9d9", dark: "#ffffffa6" },
       "--dsw-static-neutral-bluish-310": { light: "#d4d4d4", dark: "#cad2db" },
-      "--dsw-static-neutral-bluish-400": { light: "#b3b3b3", dark: "#adb2b8" },
-      "--dsw-static-neutral-bluish-500": { light: "#8c8c8c", dark: "#979da6" },
-      "--dsw-static-neutral-bluish-600": { light: "#5c5c5c", dark: "#81858c" },
+      "--dsw-static-neutral-bluish-400": { light: "#b3b3b3", dark: "#ffffff73" },
+      "--dsw-static-neutral-bluish-500": { light: "#8c8c8c", dark: "#ffffff59" },
+      "--dsw-static-neutral-bluish-600": { light: "#5c5c5c", dark: "#ffffff40" },
       "--dsw-static-neutral-bluish-700": { light: "#474747", dark: "#61666b" },
-      "--dsw-static-neutral-bluish-750": { light: "#4a4a4a", dark: "#46484c" },
-      "--dsw-static-neutral-bluish-800": { light: "#3d3d3d", dark: "#36383b" },
-      "--dsw-static-neutral-bluish-850": { light: "#333333", dark: "#2b2c2e" },
-      "--dsw-static-neutral-bluish-875": { light: "#2b2b2b", dark: "#232426" },
-      "--dsw-static-neutral-bluish-900": { light: "#141414", dark: "#1c1c1e" },
-      "--dsw-static-neutral-bluish-950": { light: "#1a1a1a", dark: "#161617" },
+      "--dsw-static-neutral-bluish-750": { light: "#4a4a4a", dark: "#34373d" },
+      "--dsw-static-neutral-bluish-800": { light: "#3d3d3d", dark: "#2a2c31" },
+      "--dsw-static-neutral-bluish-850": { light: "#333333", dark: "#242629" },
+      "--dsw-static-neutral-bluish-875": { light: "#2b2b2b", dark: "#1a1b1e" },
+      "--dsw-static-neutral-bluish-900": { light: "#141414", dark: "#141518" },
+      "--dsw-static-neutral-bluish-950": { light: "#1a1a1a", dark: "#141414" },
       "--dsw-static-neutral-bluish-1000": { light: "#1a1a1a", dark: "#0f1115" },
       "--dsw-static-neutral-00": { light: "#ffffff", dark: "#ffffff" },
       "--dsw-static-neutral-50": { light: "#fafafa", dark: "#fafafa" },
@@ -650,8 +653,8 @@ window.__ModuleLoader__.load({
       "--dsw-static-neutral-550": { light: "#6b6b6b", dark: "#6b6b6b" },
       "--dsw-static-neutral-600": { light: "#545454", dark: "#545454" },
       "--dsw-static-neutral-700": { light: "#3c3c3c", dark: "#3c3c3c" },
-      "--dsw-static-neutral-800": { light: "#292929", dark: "#292929" },
-      "--dsw-static-neutral-850": { light: "#212121", dark: "#212121" },
+      "--dsw-static-neutral-800": { light: "#292929", dark: "#2a2c31" },
+      "--dsw-static-neutral-850": { light: "#212121", dark: "#242629" },
       "--dsw-static-neutral-900": { light: "#0f0f0f", dark: "#181818" },
       "--dsw-static-neutral-1000": { light: "#000000", dark: "#0f0f0f" },
       "--dsw-static-amber-100": { light: "#ffecd9", dark: "#3a2f1f" },
@@ -771,8 +774,8 @@ window.__ModuleLoader__.load({
   color: #fff;
 }
 [data-dsh-wb] [class*="GRgSLq_primary"]:disabled {
-  background-color: var(--dsw-static-neutral-bluish-150);
-  color: var(--dsw-alias-label-tertiary);
+  background-color: #0003;
+  color: #fff;
 }
 /* 输入卡左下角的「+」：WorkBuddy 是 8px 圆角、无边框、悬停淡灰 */
 [data-dsh-wb] [class*="GRgSLq_add"] {
@@ -872,6 +875,57 @@ window.__ModuleLoader__.load({
   padding: 14px 16px;
   font-size: 13px;
   line-height: 22px;
+}
+
+/* ============ 8b. 代码语法高亮（WorkBuddy/GitHub 浅色系） ============
+   只重排宿主 shiki 的 --shiki-token-* 变量，不动类名；色值量自
+   WorkBuddy --wb-code-syntax-*。开关属性见 applyCodehlGate()。 */
+html[data-dsh-wb-codehl="on"] {
+  --shiki-token-keyword: #0550ae;
+  --shiki-token-string: #0a3069;
+  --shiki-token-string-expression: #0a3069;
+  --shiki-token-constant: #953800;
+  --shiki-token-function: #8250df;
+  --shiki-token-comment: #6e7781;
+  --shiki-token-parameter: var(--dsw-alias-label-primary);
+  --shiki-token-punctuation: var(--dsw-alias-label-primary);
+  --shiki-token-link: #0550ae;
+}
+/* 暗色档：WorkBuddy IDE Night 语法色（keyword blue-10 #79c0ff / string #a5d6ff /
+   number #ffa657 / function #d2a8ff / error #ff7b72；注释 = 正文 60%）。 */
+html[data-dsh-wb-codehl="on"]:has(body[data-ds-dark-theme]) {
+  --shiki-token-keyword: #79c0ff;
+  --shiki-token-string: #a5d6ff;
+  --shiki-token-string-expression: #a5d6ff;
+  --shiki-token-constant: #ffa657;
+  --shiki-token-function: #d2a8ff;
+  --shiki-token-comment: #ffffff99;
+  --shiki-token-parameter: var(--dsw-alias-label-primary);
+  --shiki-token-punctuation: var(--dsw-alias-label-primary);
+  --shiki-token-link: #79c0ff;
+}
+html[data-dsh-wb-codehl="on"] [class*="_markdown_"] pre span[style*="--shiki-token-comment"] {
+  font-style: italic;
+}
+
+/* ============ 8c. 列表/按钮动效（WorkBuddy motion 令牌） ============
+   悬停 .15s standard 缓动淡入、按压 8% 黑、按钮按压深一档；
+   色值量自 --wb-motion-* / --wb-bg-active。开关属性见 applyMotionGate()。 */
+html[data-dsh-wb-motion="on"] .wtg9ga_panelRow,
+html[data-dsh-wb-motion="on"] [data-tool],
+html[data-dsh-wb-motion="on"] [class*="GRgSLq_add"] {
+  transition: background-color .15s cubic-bezier(.4, 0, .2, 1), color .15s cubic-bezier(.4, 0, .2, 1);
+}
+html[data-dsh-wb-motion="on"] .wtg9ga_panelRow:active,
+html[data-dsh-wb-motion="on"] [data-tool]:active,
+html[data-dsh-wb-motion="on"] [class*="GRgSLq_add"]:active {
+  background-color: color-mix(in srgb, #000 8%, transparent);
+}
+html[data-dsh-wb-motion="on"] [class*="GRgSLq_primary"] {
+  transition: background-color .15s cubic-bezier(.4, 0, .2, 1), filter .1s cubic-bezier(.4, 0, .2, 1);
+}
+html[data-dsh-wb-motion="on"] [class*="GRgSLq_primary"]:active:not(:disabled) {
+  filter: brightness(.92);
 }
 
 /* ============ 9. 引用块 ============
@@ -1341,6 +1395,140 @@ window.__ModuleLoader__.load({
   box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
 }
 .dsh-wb-segmented > button:disabled { opacity: .45; cursor: default; }
+/* 增强用模型选择器：对齐 DSH 对话区的模型菜单形态——
+   触发器 = 品牌图标 + 具体模型名；菜单按 provider 分组，每项带图标与勾选。
+   品牌图标复用第 33 段的 mask 规则（带 data-model-id/data-provider-id 的
+   trigger 与 menuitemradio 都命中），主题关闭时自动回落宿主原生图标位。 */
+.dsh-wb-modelpick { position: relative; flex: none; }
+.dsh-wb-modelpick-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 180px;
+  max-width: 300px;
+  padding: 5px 10px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  background-color: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: background-color .15s cubic-bezier(.4, 0, .2, 1);
+}
+.dsh-wb-modelpick-trigger:hover:not(:disabled) { background-color: var(--dsw-alias-interactive-bg-hover); }
+.dsh-wb-modelpick-trigger:disabled { opacity: .5; cursor: default; }
+.dsh-wb-modelpick-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dsh-wb-modelpick-name.is-empty { color: var(--dsw-alias-label-tertiary); }
+.dsh-wb-modelpick-caret {
+  flex: none;
+  display: inline-block;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 10px;
+  margin-left: auto;
+  transition: transform .15s cubic-bezier(.4, 0, .2, 1);
+}
+.dsh-wb-modelpick-trigger[aria-expanded="true"] .dsh-wb-modelpick-caret { transform: rotate(180deg); }
+.dsh-wb-modelpick-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 240px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 10px;
+  background-color: var(--dsw-alias-bg-base);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  z-index: 60;
+}
+.dsh-wb-modelpick-group + .dsh-wb-modelpick-group { margin-top: 4px; }
+.dsh-wb-modelpick-group-title {
+  padding: 6px 10px 2px;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--dsw-alias-label-tertiary);
+}
+.dsh-wb-modelpick-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  text-align: left;
+  cursor: pointer;
+}
+.dsh-wb-modelpick-item:hover { background-color: var(--dsw-alias-interactive-bg-hover); }
+.dsh-wb-modelpick-check { margin-left: auto; color: var(--wb-control-on); }
+.dsh-wb-modelpick-empty {
+  padding: 10px;
+  font-size: 12px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-tertiary);
+}
+/* 恢复默认 / 导出配置的小按钮 */
+.dsh-wb-reset-actions { display: inline-flex; gap: 8px; flex: none; }
+.dsh-wb-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  background-color: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-primary);
+  font: inherit;
+  font-size: 13px;
+  line-height: 20px;
+  cursor: pointer;
+}
+.dsh-wb-btn:hover { background-color: var(--dsw-alias-interactive-bg-hover); }
+.dsh-wb-btn.is-danger { color: #e03131; }
+/* 增强提示词钮：输入卡工具栏（发送钮左侧），ghost 圆钮 */
+.dsh-wb-enhance {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  cursor: pointer;
+  transition: background-color .15s cubic-bezier(.4, 0, .2, 1), color .15s cubic-bezier(.4, 0, .2, 1);
+}
+.dsh-wb-enhance:hover:not(:disabled) {
+  background-color: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+.dsh-wb-enhance:active:not(:disabled) { background-color: var(--dsw-alias-interactive-bg-active, var(--dsw-alias-interactive-bg-hover)); }
+.dsh-wb-enhance:disabled { opacity: .4; cursor: default; }
+.dsh-wb-enhance.is-revert { color: var(--wb-control-on); }
+.dsh-wb-enhance.is-revert:hover:not(:disabled) { color: var(--wb-control-on); }
+.dsh-wb-enhance.is-error { color: #e03131; }
+.dsh-wb-enhance svg { width: 16px; height: 16px; }
+.dsh-wb-enhance-spin {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--wb-control-on) 25%, transparent);
+  border-top-color: var(--wb-control-on);
+  animation: dsh-wb-enhance-rot .8s linear infinite;
+}
+@keyframes dsh-wb-enhance-rot { to { transform: rotate(360deg); } }
 .dsh-wb-row-stack { flex-direction: column; align-items: stretch; gap: 12px; }
 .dsh-wb-skins {
   display: grid;
@@ -1627,6 +1815,15 @@ html[data-dsh-wb-pet="on"] .an3WzG_composerHero .dsh-wb-perch:focus-visible {
   from { background-position: 0 -234px; }
   to { background-position: -288px -234px; }
 }
+/* 发送消息时蹦一下（第 5 行跳跃，8 帧；行 4 偏移 -312px）。
+   类名由 installPetHooks 的点击委托加上，animationend 自摘。 */
+html[data-dsh-wb-pet="on"] .an3WzG_composerHero .dsh-wb-perch.is-hop {
+  animation: dsh-wb-perch-hop .9s steps(8, end) 1;
+}
+@keyframes dsh-wb-perch-hop {
+  from { background-position: 0 -312px; }
+  to { background-position: -576px -312px; }
+}
 @media (prefers-reduced-motion: reduce) {
   html[data-dsh-wb-pet="on"] .an3WzG_composerHero .dsh-wb-perch:hover,
   html[data-dsh-wb-pet="on"] .an3WzG_composerHero .dsh-wb-perch:focus-visible { animation: none; }
@@ -1677,6 +1874,63 @@ html[data-dsh-wb] [data-model-id*="together" i][data-provider-id], html[data-dsh
 html[data-dsh-wb] [data-model-id*="fireworks" i][data-provider-id], html[data-dsh-wb] [data-provider-id*="fireworks" i][data-model-id] { --dsh-wb-brand-icon: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOCAxbDEuNSA0LjVMMTQgOGwtNC41IDEuNUw4IDE0bC0xLjUtNC41TDIgOGw0LjUtMS41TDggMXoiIGZpbGw9IiM3QzNBRUQiLz48cGF0aCBkPSJNMTIgMmwuNzUgMi4yNUwxNSA1bC0yLjI1Ljc1TDEyIDhsLS43NS0yLjI1TDkgNWwyLjI1LS43NUwxMiAyeiIgZmlsbD0iIzdDM0FFRCIgb3BhY2l0eT0iMC42Ii8+PHBhdGggZD0iTTQgOWwuNzUgMi4yNUw3IDEybC0yLjI1Ljc1TDQgMTVsLS43NS0yLjI1TDEgMTJsMi4yNS0uNzVMNCA5eiIgZmlsbD0iIzdDM0FFRCIgb3BhY2l0eT0iMC42Ii8+PC9zdmc+"); }
 /* perplexity */
 html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-dsh-wb] [data-model-id*="sonar" i][data-provider-id] { --dsh-wb-brand-icon: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOCAxTDIgNXY2bDYgNCA2LTRWNUw4IDF6IiBzdHJva2U9IiMyMDgwOEQiIHN0cm9rZS13aWR0aD0iMS4yIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTggMXYxNE0yIDVsNiAzLjVMMTQgNU0yIDExbDYtMi41IDYgMi41IiBzdHJva2U9IiMyMDgwOEQiIHN0cm9rZS13aWR0aD0iMS4yIi8+PC9zdmc+"); }
+
+/* ============ 34. WorkBuddy lucide 图标 ============
+   工具行 7 个变体走 [data-variant]（宿主承诺的钩子）+ 网页工具走 [data-tool]；
+   发送钮、新建会话钮走类名/结构锚点（宿主升级可能失效，失效=回退原图标，不错位）。
+   换法与品牌图标相同：原 SVG 保留，mask 罩成 lucide 形状，同色覆盖不可见。
+   发送钮在 [data-sending] 时让出——那时里面是停止方块，不能罩。
+   工具行图标取自 WorkBuddy 安装包的 lucide chunk；发送钮是 WorkBuddy 主输入框的 SendCircleIcon（32 视框圆形
+   镂空纸飞机，src-CFSfr0CS.js），只取镂空的飞机路径、裁掉外圈圆。开关见 applyIconsGate()。 */
+html[data-dsh-wb-icons="on"] :is([data-variant="bash"], [data-variant="read"], [data-variant="write"], [data-variant="edit"], [data-variant="search"], [data-variant="code"], [data-variant="others"], [data-tool="web_search"], [data-tool="web_fetch"]) [class*="hKdVjq_leading"] svg,
+html[data-dsh-wb-icons="on"] [class*="GRgSLq_primary"]:not([data-sending]) svg,
+html[data-dsh-wb-icons="on"] [data-sidebar-opener] + button svg {
+  background-color: currentColor;
+  -webkit-mask: var(--dsh-wb-tool-icon) center / contain no-repeat;
+  mask: var(--dsh-wb-tool-icon) center / contain no-repeat;
+}
+html[data-dsh-wb-icons="on"] [data-variant="bash"] [class*="hKdVjq_leading"] svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im03IDExIDItMi0yLTIiLz48cGF0aCBkPSJNMTEgMTNoNCIvPjxyZWN0IHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgeD0iMyIgeT0iMyIgcng9IjIiIHJ5PSIyIi8+PC9zdmc+"); }
+html[data-dsh-wb-icons="on"] [data-variant="read"] [class*="hKdVjq_leading"] svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik02IDIyYTIgMiAwIDAgMS0yLTJWNGEyIDIgMCAwIDEgMi0yaDhhMi40IDIuNCAwIDAgMSAxLjcwNC43MDZsMy41ODggMy41ODhBMi40IDIuNCAwIDAgMSAyMCA4djEyYTIgMiAwIDAgMS0yIDJ6Ii8+PHBhdGggZD0iTTE0IDJ2NWExIDEgMCAwIDAgMSAxaDUiLz48cGF0aCBkPSJNMTAgOUg4Ii8+PHBhdGggZD0iTTE2IDEzSDgiLz48cGF0aCBkPSJNMTYgMTdIOCIvPjwvc3ZnPg=="); }
+html[data-dsh-wb-icons="on"] :is([data-variant="write"], [data-variant="edit"]) [class*="hKdVjq_leading"] svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMi42NTkgMjJIMThhMiAyIDAgMCAwIDItMlY4YTIuNCAyLjQgMCAwIDAtLjcwNi0xLjcwNmwtMy41ODgtMy41ODhBMi40IDIuNCAwIDAgMCAxNCAySDZhMiAyIDAgMCAwLTIgMnY5LjM0Ii8+PHBhdGggZD0iTTE0IDJ2NWExIDEgMCAwIDAgMSAxaDUiLz48cGF0aCBkPSJNMTAuMzc4IDEyLjYyMmExIDEgMCAwIDEgMyAzLjAwM0w4LjM2IDIwLjYzN2EyIDIgMCAwIDEtLjg1NC41MDZsLTIuODY3LjgzN2EuNS41IDAgMCAxLS42Mi0uNjJsLjgzNi0yLjg2OWEyIDIgMCAwIDEgLjUwNi0uODUzeiIvPjwvc3ZnPg=="); }
+html[data-dsh-wb-icons="on"] [data-variant="search"] [class*="hKdVjq_leading"] svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0yMSAyMS00LjM0LTQuMzQiLz48Y2lyY2xlIGN4PSIxMSIgY3k9IjExIiByPSI4Ii8+PC9zdmc+"); }
+html[data-dsh-wb-icons="on"] [data-variant="code"] [class*="hKdVjq_leading"] svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAxOWg4Ii8+PHBhdGggZD0ibTQgMTcgNi02LTYtNiIvPjwvc3ZnPg=="); }
+html[data-dsh-wb-icons="on"] [data-variant="others"] [class*="hKdVjq_leading"] svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMyA1aDgiLz48cGF0aCBkPSJNMTMgMTJoOCIvPjxwYXRoIGQ9Ik0xMyAxOWg4Ii8+PHBhdGggZD0ibTMgMTcgMiAyIDQtNCIvPjxyZWN0IHg9IjMiIHk9IjQiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiIHJ4PSIxIi8+PC9zdmc+"); }
+html[data-dsh-wb-icons="on"] :is([data-tool="web_search"], [data-tool="web_fetch"]) [class*="hKdVjq_leading"] svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0iTTEyIDJhMTQuNSAxNC41IDAgMCAwIDAgMjAgMTQuNSAxNC41IDAgMCAwIDAtMjAiLz48cGF0aCBkPSJNMiAxMmgyMCIvPjwvc3ZnPg=="); }
+html[data-dsh-wb-icons="on"] [class*="GRgSLq_primary"]:not([data-sending]) svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjggNyAxNiAxNiI+PHBhdGggZmlsbD0iYmxhY2siIGQ9Ik0xNiAxOS4yMTA0QzE1LjU1MjkgMTkuMjEwNCAxNS4xMzQyIDE5LjQwNzQgMTQuMjk2OCAxOS44MDE1TDEyLjkzNjkgMjAuNDQxNUMxMi42NzY4IDIwLjU2MzkgMTIuNDI4MyAyMC42ODM1IDEyLjE5MTUgMjAuNzk3NUMxMC42Mzc1IDIxLjU0NTYgOS41ODggMjIuMDUwOCA5LjA2ODYgMjEuNTA1N0M4LjU0OTMgMjAuOTYwNSA5LjEwNDggMTkuOTM2NyA5LjkyNzMgMTguNDIwOEMxMC4wNTI3IDE4LjE4OTggMTAuMTg0MiAxNy45NDc0IDEwLjMxOTEgMTcuNjkzNUwxNC4yMzM4IDEwLjMyNDdDMTQuMzEzNyAxMC4xNzQzIDE0LjM4OTEgMTAuMDMgMTQuNDYxIDkuODkyNUMxNS4wMzE1IDguODAxOCAxNS4zODIxIDguMTMxNSAxNiA4LjEzMTVDMTYuNjE3OSA4LjEzMTUgMTYuOTY4NSA4LjgwMTggMTcuNTM5IDkuODkyNUMxNy42MTA5IDEwLjAzIDE3LjY4NjMgMTAuMTc0MyAxNy43NjYyIDEwLjMyNDdMMjEuNjgwOSAxNy42OTM1QzIxLjgxNTggMTcuOTQ3NCAyMS45NDczIDE4LjE4OTggMjIuMDcyNyAxOC40MjA4QzIyLjg5NTIgMTkuOTM2NyAyMy40NTA3IDIwLjk2MDUgMjIuOTMxNCAyMS41MDU3QzIyLjQxMiAyMi4wNTA4IDIxLjM2MjUgMjEuNTQ1NiAxOS44MDg1IDIwLjc5NzVDMTkuNTcxNyAyMC42ODM1IDE5LjMyMzIgMjAuNTYzOSAxOS4wNjMxIDIwLjQ0MTVMMTcuNzAzMiAxOS44MDE1QzE2Ljg2NTggMTkuNDA3NCAxNi40NDcxIDE5LjIxMDQgMTYgMTkuMjEwNFoiLz48L3N2Zz4="); }
+html[data-dsh-wb-icons="on"] [data-sidebar-opener] + button svg { --dsh-wb-tool-icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAzSDVhMiAyIDAgMCAwLTIgMnYxNGEyIDIgMCAwIDAgMiAyaDE0YTIgMiAwIDAgMCAyLTJ2LTciLz48cGF0aCBkPSJNMTguMzc1IDIuNjI1YTEgMSAwIDAgMSAzIDNsLTkuMDEzIDkuMDE0YTIgMiAwIDAgMS0uODUzLjUwNWwtMi44NzMuODRhLjUuNSAwIDAgMS0uNjItLjYybC44NC0yLjg3M2EyIDIgMCAwIDEgLjUwNi0uODUyeiIvPjwvc3ZnPg=="); }
+/* ============ 35. 弹层菜单 / 消息操作条 / 代码块工具条 ============
+   菜单壳（共享 Menu 模块）与消息操作条都已吃 --dsw-alias-* 令牌，
+   这里只补 WorkBuddy 的形状：12px 圆角浮层、8px 圆角行、圆形操作钮、
+   扁平代码头。散列类名漂移时本段是 no-op，不会错位。 */
+html[data-dsh-wb] :is([class*="_list_70kcw_"], [class*="_submenu_70kcw_"]) {
+  border-radius: 12px;
+  padding: 6px;
+}
+html[data-dsh-wb] :is([class*="_item_70kcw_"], [class*="_denseList_70kcw_"] > *) {
+  border-radius: 8px;
+}
+/* 消息操作条：WB ghost 圆钮（24px → 26px 圆，悬停淡灰底由令牌接管） */
+html[data-dsh-wb] [class*="_actions_"] > button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+/* 代码块工具条：扁平头（与代码块同底）、小号灰字、悬停浅灰圆角 */
+html[data-dsh-wb] [data-code-block-banner] {
+  background-color: var(--dsw-alias-markdown-code-block);
+  border-bottom: .5px solid var(--dsw-alias-border-l1);
+  font-size: 12px;
+  color: var(--dsw-alias-label-tertiary);
+}
+html[data-dsh-wb] [data-code-block-banner] button {
+  border-radius: 6px;
+  padding: 2px 6px;
+  color: var(--dsw-alias-label-secondary);
+}
+html[data-dsh-wb] [data-code-block-banner] button:hover {
+  background-color: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
 `
 
     function installWidgetStyle() {
@@ -1909,6 +2163,168 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
       }
     }
 
+    /** 发送消息时让浮宠蹦一下：点击委托到发送钮（GRgSLq_primary），
+     *  给输入卡右上角的 .dsh-wb-perch 加 is-hop 类播第 5 行跳跃帧，
+     *  animationend 自摘；新会话首屏之后 perch 会随 hero 卸载，届时空转。 */
+    function installPetHooks() {
+      const onClick = (event) => {
+        const target = event.target instanceof Element ? event.target : null
+        if (target === null || target.closest('[class*="GRgSLq_primary"]') === null) return
+        if (!petEnabled()) return
+        const perch = document.querySelector('.dsh-wb-perch')
+        if (perch === null) return
+        perch.classList.remove('is-hop')
+        void perch.offsetWidth
+        perch.classList.add('is-hop')
+        const done = () => {
+          perch.classList.remove('is-hop')
+          perch.removeEventListener('animationend', done)
+        }
+        perch.addEventListener('animationend', done)
+      }
+      document.addEventListener('click', onClick, true)
+      return () => document.removeEventListener('click', onClick, true)
+    }
+
+    /** 输入卡工具栏的增强提示词钮（挂 conversation.input.right，发送钮左侧）。
+     *  会话标准 props 提供 useInput（读草稿/阶段）与 inputActions.setDraft（整段替换）。
+     *  流程照 WorkBuddy：增强中可点取消；成功后备份 {before, after}，
+     *  手改草稿或换会话后撤销钮自动消失。调用宿主 /enhance 路由（ctx.llm 副调用）。 */
+    function makeEnhanceButton(React) {
+      const WAND_SVG = React.createElement('svg', {
+        xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 15.5597 14.8428',
+        width: 16, height: 16, fill: 'none', 'aria-hidden': 'true',
+      }, React.createElement('path', {
+        fill: 'currentColor',
+        fillRule: 'evenodd',
+        transform: 'matrix(1 0 0 1 0.280101 0.0764168)',
+        d: 'M6.184 2.2189C6.6024 1.309 7.8631 1.2263 8.1049 2.093L8.8402 4.7326C8.9921 5.2777 9.3894 5.6894 9.929 5.8596L12.5424 6.6828C13.401 6.9534 13.276 8.2113 12.352 8.5988L9.9975 9.5852L9.8362 9.6584C9.0366 10.04 8.3723 10.7087 8.0023 11.5139L6.9379 13.8342L6.849 13.9943C6.3972 14.7005 5.3899 14.7664 5.0736 14.1106L5.016 13.9602L4.2816 11.3205C4.1487 10.8436 3.8278 10.468 3.3881 10.2678L3.1918 10.1936L0.5785 9.3703C-0.2801 9.0997 -0.1551 7.8417 0.7689 7.4543L3.1234 6.468C3.9404 6.1254 4.6321 5.4847 5.0404 4.6984L5.1185 4.5392L6.184 2.2189ZM6.3168 4.9162C5.7518 6.1462 4.7086 7.1556 3.4603 7.6789L1.9027 8.3312L3.7748 8.9221C4.6647 9.2024 5.3214 9.8816 5.5717 10.7805L6.099 12.6711L6.8041 11.1369C7.369 9.907 8.4123 8.8985 9.6606 8.3752L11.2172 7.7219L9.3461 7.132C8.4563 6.8517 7.7995 6.1723 7.5492 5.2736L7.0219 3.382L6.3168 4.9162ZM12.7065 0.2141C12.8287 -0.0521 13.1972 -0.0764 13.2679 0.1769L13.6194 1.4396C13.6418 1.5191 13.7 1.5788 13.7787 1.6037L15.0287 1.9973C15.2797 2.0764 15.2431 2.4445 14.9731 2.5578L13.6283 3.1213C13.5434 3.1569 13.4724 3.2261 13.434 3.3098L12.8246 4.634C12.7023 4.9002 12.3337 4.9247 12.2631 4.6711L11.9124 3.4094C11.8903 3.3296 11.8313 3.2692 11.7523 3.2443L10.5033 2.8508C10.2523 2.7717 10.2888 2.4035 10.559 2.2902L11.9037 1.7267C11.9885 1.6911 12.0596 1.6228 12.0981 1.5392L12.7065 0.2141Z',
+      }))
+      const REVERT_SVG = React.createElement('svg', {
+        xmlns: 'http://www.w3.org/2000/svg', viewBox: '0 0 17 16',
+        width: 17, height: 16, fill: 'none', 'aria-hidden': 'true',
+      },
+        React.createElement('path', {
+          d: 'M6.26558 9.33268L2.93225 5.99935L6.26558 2.66602',
+          stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round',
+        }),
+        React.createElement('path', {
+          d: 'M2.93225 6H9.93225C10.4138 6 10.8906 6.09484 11.3354 6.27911C11.7803 6.46338 12.1845 6.73346 12.525 7.07394C12.8655 7.41442 13.1355 7.81863 13.3198 8.26349C13.5041 8.70835 13.5989 9.18515 13.5989 9.66667C13.5989 10.1482 13.5041 10.625 13.3198 11.0698C13.1355 11.5147 12.8655 11.9189 12.525 12.2594C12.1845 12.5999 11.7803 12.87 11.3354 13.0542C10.8906 13.2385 10.4138 13.3333 9.93225 13.3333H7.59892',
+          stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round',
+        }),
+      )
+      return function WorkBuddyEnhance(props) {
+        const [tick, setTick] = React.useState(0)
+        const [enhancing, setEnhancing] = React.useState(false)
+        const [error, setError] = React.useState(null)
+        const backupRef = React.useRef(null)
+        const abortRef = React.useRef(null)
+        const useInput = props.useInput
+        const draft = typeof useInput === 'function' ? useInput((state) => state.draft) : ''
+        const phase = typeof useInput === 'function' ? useInput((state) => state.phase) : 'plain'
+        React.useEffect(() => {
+          const fn = () => setTick((value) => value + 1)
+          enhanceListeners.add(fn)
+          return () => { enhanceListeners.delete(fn) }
+        }, [])
+        // 换会话：旧备份与在飞的请求都作废
+        React.useEffect(() => {
+          backupRef.current = null
+          const controller = abortRef.current
+          abortRef.current = null
+          if (controller !== null) controller.abort()
+          setEnhancing(false)
+          setError(null)
+          setTick((value) => value + 1)
+        }, [props.sessionId])
+        // 手改草稿：与增强结果不再一致时撤销钮退掉
+        React.useEffect(() => {
+          const backup = backupRef.current
+          if (backup !== null && draft !== backup.after) {
+            backupRef.current = null
+            setTick((value) => value + 1)
+          }
+        }, [draft])
+        if (!isEnabled() || !enhanceEnabled()) return null
+        const actions = props.inputActions
+        if (actions === null || actions === undefined || typeof actions.setDraft !== 'function') return null
+        const hasText = typeof draft === 'string' && draft.trim().length > 0
+        const showRevert = backupRef.current !== null
+        const disabled = !enhancing && (!hasText || phase !== 'plain')
+        const onClick = () => {
+          if (enhancing) {
+            abortRef.current?.abort()
+            abortRef.current = null
+            return
+          }
+          if (backupRef.current !== null) {
+            const before = backupRef.current.before
+            backupRef.current = null
+            try { actions.setDraft(before) } catch { /* 宿主拒绝时保持现状 */ }
+            setError(null)
+            setTick((value) => value + 1)
+            return
+          }
+          const text = typeof draft === 'string' ? draft : ''
+          if (text.trim() === '') return
+          const controller = new AbortController()
+          abortRef.current = controller
+          setEnhancing(true)
+          setError(null)
+          fetch(ENHANCE_API + '/run', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ text, ...enhanceRoute() }),
+            signal: controller.signal,
+          })
+            .then((response) => response.json().catch(() => null).then((json) => ({ response, json })))
+            .then(({ response, json }) => {
+              if (controller.signal.aborted) return
+              if (!response.ok || json === null || typeof json.text !== 'string') {
+                const unreachable = response.status === 404 || response.status === 405
+                const message = unreachable
+                  ? '增强暂不可用：需要重启 DSH 后生效'
+                  : (json?.error?.message ?? '增强失败（HTTP ' + response.status + '）')
+                setError(message)
+                notifyEnhanceError(props.sessionId, message)
+                return
+              }
+              backupRef.current = { before: text, after: json.text }
+              try { actions.setDraft(json.text) } catch { /* 忽略 */ }
+              try { actions.focus?.() } catch { /* 忽略 */ }
+              setTick((value) => value + 1)
+            })
+            .catch((err) => {
+              if (controller.signal.aborted || err?.name === 'AbortError') return
+              const message = String(err?.message ?? err)
+              setError(message)
+              notifyEnhanceError(props.sessionId, '增强失败：' + message)
+            })
+            .finally(() => {
+              if (abortRef.current === controller) abortRef.current = null
+              setEnhancing(false)
+            })
+        }
+        const title = error !== null
+          ? '增强失败：' + error
+          : enhancing
+            ? '增强中…（点击取消）'
+            : showRevert
+              ? '撤销增强'
+              : '增强提示词'
+        return React.createElement('button', {
+          type: 'button',
+          className: 'dsh-wb-enhance' + (showRevert ? ' is-revert' : '') + (error !== null ? ' is-error' : ''),
+          title,
+          'aria-label': title,
+          disabled,
+          onClick,
+        }, enhancing
+          ? React.createElement('span', { className: 'dsh-wb-enhance-spin', 'aria-hidden': 'true' })
+          : showRevert ? REVERT_SVG : WAND_SVG)
+      }
+    }
+
     /** 输入卡上方的快捷条。
      *  zone.session 拿得到 cwd，据此显示工作区名；点击没有任何副作用。
      *  新会话（composerHero）时在右端追加当前宠物，脚踩输入卡边框（CSS 门控显示）。 */
@@ -2029,6 +2445,85 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
         )
       }
 
+      /** 从目录里找 provider/model 对；找不到返回 null。 */
+      function findCatalogModel(catalog, value) {
+        if (!catalog || typeof value !== 'string') return null
+        const slash = value.indexOf('/')
+        if (slash <= 0) return null
+        const providerId = value.slice(0, slash)
+        const modelId = value.slice(slash + 1)
+        const group = catalog.providers.find((item) => item.id === providerId)
+        if (group === undefined) return null
+        const model = group.models.find((item) => item.id === modelId)
+        if (model === undefined) return null
+        return { providerId, modelId, name: model.name, providerName: group.name }
+      }
+
+      /** 增强用模型选择器：触发器 = 品牌图标 + 具体模型名（空/失效显示「请选择模型」），
+       *  菜单按 provider 分组。data-model-id/data-provider-id 交给第 33 段品牌图标规则。 */
+      function ModelPicker(props) {
+        const [open, setOpen] = React.useState(false)
+        const rootRef = React.useRef(null)
+        React.useEffect(() => {
+          if (!open) return undefined
+          const onDocDown = (event) => {
+            if (rootRef.current !== null && !rootRef.current.contains(event.target)) setOpen(false)
+          }
+          document.addEventListener('mousedown', onDocDown)
+          return () => document.removeEventListener('mousedown', onDocDown)
+        }, [open])
+        const catalog = props.catalog
+        const groups = catalog && Array.isArray(catalog.providers) ? catalog.providers : []
+        let display = findCatalogModel(catalog, props.value)
+        if (display === null && props.value === '' && catalog && catalog.default) {
+          display = findCatalogModel(catalog, catalog.default.provider + '/' + catalog.default.model)
+        }
+        const triggerName = h('span', {
+          className: 'dsh-wb-modelpick-name' + (display === null ? ' is-empty' : ''),
+          ...(display === null ? {} : { 'data-model-id': display.modelId, 'data-provider-id': display.providerId }),
+        }, display !== null ? display.name : '请选择模型')
+        return h('div', { className: 'dsh-wb-modelpick', ref: rootRef },
+          h('button', {
+            type: 'button',
+            className: 'dsh-wb-modelpick-trigger',
+            'aria-haspopup': 'menu',
+            'aria-expanded': open ? 'true' : 'false',
+            disabled: props.disabled === true,
+            onClick: () => setOpen((value) => !value),
+          },
+            triggerName,
+            h('span', { className: 'dsh-wb-modelpick-caret', 'aria-hidden': 'true' }, '▾'),
+          ),
+          open
+            ? h('div', { className: 'dsh-wb-modelpick-menu', role: 'menu' },
+              groups.length === 0
+                ? h('div', { className: 'dsh-wb-modelpick-empty' }, '模型列表不可用（需重启 DSH 后可用）')
+                : groups.map((group) => h('div', { key: group.id, className: 'dsh-wb-modelpick-group' },
+                  h('div', { className: 'dsh-wb-modelpick-group-title' }, group.name),
+                  group.models.map((model) => {
+                    const value = group.id + '/' + model.id
+                    const selected = value === props.value
+                    return h('button', {
+                      key: value,
+                      type: 'button',
+                      role: 'menuitemradio',
+                      'aria-checked': selected ? 'true' : 'false',
+                      className: 'dsh-wb-modelpick-item' + (selected ? ' is-on' : ''),
+                      onClick: () => {
+                        props.onChange(value)
+                        setOpen(false)
+                      },
+                    },
+                      h('span', { 'data-model-id': model.id, 'data-provider-id': group.id }, model.name),
+                      selected ? h('span', { className: 'dsh-wb-modelpick-check', 'aria-hidden': 'true' }, '✓') : null,
+                    )
+                  }),
+                )),
+            )
+            : null,
+        )
+      }
+
       function skinPreviewVars(preset) {
         const surface = preset.surface ?? {}
         return {
@@ -2049,6 +2544,18 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
         const [drift, setDriftState] = React.useState(DRIFT.active)
         const [pets, setPets] = React.useState([])
         const [petOn, setPetOn] = React.useState(petEnabled)
+        const [codehl, setCodehl] = React.useState(codehlEnabled)
+        const [motion, setMotion] = React.useState(motionEnabled)
+        const [icons, setIcons] = React.useState(iconsEnabled)
+        const [enhanceOn, setEnhanceOn] = React.useState(enhanceEnabled)
+        const [enhanceModel, setEnhanceModelState] = React.useState(enhanceModelChoice)
+        const [catalog, setCatalog] = React.useState(null)
+        const [exportStatus, setExportStatus] = React.useState('')
+        React.useEffect(() => {
+          let live = true
+          enhanceCatalog().then((info) => { if (live) setCatalog(info ?? false) })
+          return () => { live = false }
+        }, [])
         React.useEffect(() => {
           DRIFT.listeners.add(setDriftState)
           return () => DRIFT.listeners.delete(setDriftState)
@@ -2214,6 +2721,123 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
               },
             }),
           }),
+          h(Row, {
+            label: '代码高亮',
+            desc: '代码块语法色换成 WorkBuddy/GitHub 浅色系：关键字深蓝、字符串藏青、数字橙棕、注释灰色斜体。',
+            control: h(Segmented, {
+              value: codehl ? 'on' : 'off',
+              options: [{ id: 'on', label: '开' }, { id: 'off', label: '关' }],
+              onChange: (id) => {
+                const next = id === 'on'
+                writeCodehl(next)
+                setCodehl(next)
+              },
+            }),
+          }),
+          h(Row, {
+            label: '列表动效',
+            desc: '侧栏会话与工具行悬停 0.15s 缓动淡入、按住再深一档，发送按钮按压变深；量自 WorkBuddy 动效令牌。',
+            control: h(Segmented, {
+              value: motion ? 'on' : 'off',
+              options: [{ id: 'on', label: '开' }, { id: 'off', label: '关' }],
+              onChange: (id) => {
+                const next = id === 'on'
+                writeMotion(next)
+                setMotion(next)
+              },
+            }),
+          }),
+          h(Row, {
+            label: '图标',
+            desc: '工具行 7 类、发送钮（纸飞机）、新建会话钮（方框笔）换成 WorkBuddy 的 lucide 图标；关掉回退 DSH 自绘图标。',
+            control: h(Segmented, {
+              value: icons ? 'on' : 'off',
+              options: [{ id: 'on', label: '开' }, { id: 'off', label: '关' }],
+              onChange: (id) => {
+                const next = id === 'on'
+                writeIcons(next)
+                setIcons(next)
+              },
+            }),
+          }),
+          h(Row, {
+            label: '增强提示词',
+            desc: '输入框发送钮左侧加魔法棒：点一下把草稿扩写成更完整的提示词，完成后可撤销，手改即失效；每次点击消耗所选模型额度。',
+            control: h(Segmented, {
+              value: enhanceOn ? 'on' : 'off',
+              options: [{ id: 'on', label: '开' }, { id: 'off', label: '关' }],
+              onChange: (id) => {
+                const next = id === 'on'
+                writeEnhance(next)
+                setEnhanceOn(next)
+              },
+            }),
+          }),
+          h(Row, {
+            label: '增强用模型',
+            desc: catalog === false
+              ? '宿主端接口未就绪：重启 DSH 后可用（client.js 热更不挂宿主路由）。'
+              : catalog === null
+                ? '正在读取 DSH 模型列表…'
+                : '选项取自 DSH 模型列表（按 provider 分组）；不选时显示当前默认模型。',
+            control: h(ModelPicker, {
+              catalog: catalog || null,
+              value: enhanceModel,
+              disabled: !enhanceOn,
+              onChange: (value) => {
+                writeEnhanceModel(value)
+                setEnhanceModelState(value)
+              },
+            }),
+          }),
+          h(Row, {
+            label: '恢复默认 / 导出',
+            desc: exportStatus !== ''
+              ? exportStatus
+              : '恢复默认清空本机全部 WorkBuddy 设置并回退宿主原生（立即生效）；导出把当前设置复制成 JSON。',
+            control: h('div', { className: 'dsh-wb-reset-actions' },
+              h('button', {
+                type: 'button',
+                className: 'dsh-wb-btn',
+                onClick: () => {
+                  const config = {}
+                  try {
+                    for (const key of Object.keys(localStorage)) {
+                      if (key.startsWith('dsh-workbuddy-theme:')) config[key.slice('dsh-workbuddy-theme:'.length)] = localStorage.getItem(key)
+                    }
+                    navigator.clipboard.writeText(JSON.stringify(config, null, 2))
+                      .then(() => setExportStatus('已导出并复制到剪贴板'))
+                      .catch(() => setExportStatus('复制失败：浏览器拒绝了剪贴板权限'))
+                  } catch {
+                    setExportStatus('导出失败：本机存储不可读')
+                  }
+                },
+              }, '导出配置'),
+              h('button', {
+                type: 'button',
+                className: 'dsh-wb-btn is-danger',
+                onClick: () => {
+                  try {
+                    for (const key of Object.keys(localStorage)) {
+                      if (key.startsWith('dsh-workbuddy-theme:')) localStorage.removeItem(key)
+                    }
+                  } catch { /* 隐私模式写不了，忽略 */ }
+                  try { ON_SWITCH.call(true) } catch { /* 宿主拒绝时保持现状 */ }
+                  setOn(true)
+                  setAccent(accentChoice())
+                  setDensity(densityChoice())
+                  setSkin(skinChoice())
+                  setPetOn(petEnabled())
+                  setCodehl(codehlEnabled())
+                  setMotion(motionEnabled())
+                  setIcons(iconsEnabled())
+                  setEnhanceOn(enhanceEnabled())
+                  setEnhanceModelState(enhanceModelChoice())
+                  setExportStatus('已恢复默认设置')
+                },
+              }, '恢复默认'),
+            ),
+          }),
           h(Row, { label: '配色', desc: '由 --dsw-static-* 静态色阶整体重排，明暗两态各自成对。', control: h('span', { className: 'dsh-wb-row-label' }, '浅色 / 跟随系统') }),
           h(Row, { label: '字体', desc: '界面用系统中文栈（PingFang SC → 微软雅黑），代码用等宽栈。' }),
           h(Row, { label: '对话栏宽度', desc: '默认 848px；窗口宽于 1681px 时 1008px；仍可用宽度手柄拖拽覆盖。' }),
@@ -2269,6 +2893,7 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
         attach('sidebar.session.row.trailing', { id: 'workbuddy-dot', order: 10 }, makeTrailing(React))
         attach('conversation.session.header.utilities', { id: 'workbuddy-stat', order: 10 }, makeUtility(React))
         attach('conversation.input.dock', { id: 'workbuddy-actions', order: 30 }, makeDock(React))
+        attach('conversation.input.right', { id: 'workbuddy-enhance', order: 10 }, makeEnhanceButton(React))
       }
 
       // 整页设置：order 18 排在 agent-presets(20) 之前、plugins(15) 之后
@@ -2391,6 +3016,107 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
     /** 宠物样式属于主题的一部分：主题总开关关闭时一并收起，避免只残留一只浮宠。 */
     function applyPetGate() {
       document.documentElement.setAttribute('data-dsh-wb-pet', isEnabled() && petEnabled() ? 'on' : 'off')
+    }
+
+    /** 代码语法高亮：默认开；主题总开关关闭时一并撤掉（量自 WorkBuddy --wb-code-syntax-*）。 */
+    const CODEHL_KEY = 'dsh-workbuddy-theme:codehl'
+    function codehlEnabled() {
+      try { return localStorage.getItem(CODEHL_KEY) !== '0' } catch { return true }
+    }
+    function writeCodehl(on) {
+      try { localStorage.setItem(CODEHL_KEY, on ? '1' : '0') } catch { /* 隐私模式写不了，忽略 */ }
+      applyCodehlGate()
+    }
+    function applyCodehlGate() {
+      document.documentElement.setAttribute('data-dsh-wb-codehl', isEnabled() && codehlEnabled() ? 'on' : 'off')
+    }
+
+    /** 列表/按钮动效：默认开；主题总开关关闭时一并撤掉（量自 WorkBuddy --wb-motion-*）。 */
+    const MOTION_KEY = 'dsh-workbuddy-theme:motion'
+    function motionEnabled() {
+      try { return localStorage.getItem(MOTION_KEY) !== '0' } catch { return true }
+    }
+    function writeMotion(on) {
+      try { localStorage.setItem(MOTION_KEY, on ? '1' : '0') } catch { /* 隐私模式写不了，忽略 */ }
+      applyMotionGate()
+    }
+    function applyMotionGate() {
+      document.documentElement.setAttribute('data-dsh-wb-motion', isEnabled() && motionEnabled() ? 'on' : 'off')
+    }
+
+    /** WorkBuddy lucide 图标（工具行/发送/新建会话）：默认开；主题总开关关闭时一并撤掉。 */
+    const ICONS_KEY = 'dsh-workbuddy-theme:icons'
+    function iconsEnabled() {
+      try { return localStorage.getItem(ICONS_KEY) !== '0' } catch { return true }
+    }
+    function writeIcons(on) {
+      try { localStorage.setItem(ICONS_KEY, on ? '1' : '0') } catch { /* 隐私模式写不了，忽略 */ }
+      applyIconsGate()
+    }
+    function applyIconsGate() {
+      document.documentElement.setAttribute('data-dsh-wb-icons', isEnabled() && iconsEnabled() ? 'on' : 'off')
+    }
+
+    /** 增强提示词：默认开。按钮挂 conversation.input.right（发送钮左侧），
+     *  调用宿主 /dsh-workbuddy-theme/enhance 路由（ctx.llm 副调用）；
+     *  「增强用模型」取自 DSH 模型目录，存 provider/model 对，空 = 跟随默认模型。 */
+    const ENHANCE_KEY = 'dsh-workbuddy-theme:enhance'
+    const ENHANCE_MODEL_KEY = 'dsh-workbuddy-theme:enhance-model'
+    const ENHANCE_API = '/dsh-workbuddy-theme/enhance'
+    const enhanceListeners = new Set()
+    function enhanceEnabled() {
+      try { return localStorage.getItem(ENHANCE_KEY) !== '0' } catch { return true }
+    }
+    function writeEnhance(on) {
+      try { localStorage.setItem(ENHANCE_KEY, on ? '1' : '0') } catch { /* 隐私模式写不了，忽略 */ }
+      applyEnhanceGate()
+      for (const fn of enhanceListeners) {
+        try { fn() } catch { /* 单个订阅方出错不影响其他 */ }
+      }
+    }
+    function applyEnhanceGate() {
+      document.documentElement.setAttribute('data-dsh-wb-enhance', isEnabled() && enhanceEnabled() ? 'on' : 'off')
+    }
+    function enhanceModelChoice() {
+      try { return localStorage.getItem(ENHANCE_MODEL_KEY) ?? '' } catch { return '' }
+    }
+    function writeEnhanceModel(value) {
+      try {
+        if (value === '') localStorage.removeItem(ENHANCE_MODEL_KEY)
+        else localStorage.setItem(ENHANCE_MODEL_KEY, value)
+      } catch { /* 隐私模式写不了，忽略 */ }
+    }
+    function enhanceRoute() {
+      const value = enhanceModelChoice()
+      const slash = value.indexOf('/')
+      if (slash <= 0 || slash === value.length - 1) return {}
+      return { provider: value.slice(0, slash), model: value.slice(slash + 1) }
+    }
+    /** 宿主客户端 ctx：错误通知要借 conversation.input.for(actx).notify()，
+     *  和 /commands 的提示走同一条通道（输入卡旁浮出，不依赖 hover）。 */
+    let HOST_CTX = null
+    function notifyEnhanceError(sessionId, message) {
+      try {
+        const sessions = HOST_CTX?.get?.('sessions')
+        if (sessions === null || sessions === undefined || typeof sessions.scope !== 'function') return
+        if (typeof sessionId !== 'string' || sessionId === '') return
+        const actx = sessions.scope(sessionId)
+        if (actx === undefined) return
+        const conversation = actx.get('conversation')
+        conversation?.input?.for?.(actx)?.notify?.('error', message)
+      } catch { /* 提示通道不可用时静默，按钮 title 仍保留错误 */ }
+    }
+    let enhanceCatalogRequest = null
+    function enhanceCatalog() {
+      if (enhanceCatalogRequest === null) {
+        enhanceCatalogRequest = jsonOrNull(ENHANCE_API + '/models').then((info) => {
+          if (info !== null && Array.isArray(info.providers) && info.providers.length > 0) return info
+          // 宿主端路由可能还没挂上（index.js 改动需整启），失败不缓存。
+          enhanceCatalogRequest = null
+          return null
+        })
+      }
+      return enhanceCatalogRequest
     }
     function selectedPet(info) {
       if (!info) return null
@@ -2568,6 +3294,7 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
 
     function apply(ctx) {
       teardown()
+      HOST_CTX = ctx
 
       // 3'. 常驻小部件层：不随主题开关装卸（见 WIDGET_CSS 顶部说明）。
       track(installWidgetStyle())
@@ -2601,6 +3328,10 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
           handles.skin = () => {}
           applyTheme()
           applyPetGate()
+          applyCodehlGate()
+          applyMotionGate()
+          applyIconsGate()
+          applyEnhanceGate()
         })
       }
 
@@ -2629,7 +3360,12 @@ html[data-dsh-wb] [data-model-id*="perplexity" i][data-provider-id], html[data-d
       track(() => handles.tokens())
       track(() => handles.skin())
       applyPetGate()
+      applyCodehlGate()
+      applyMotionGate()
+      applyIconsGate()
+      applyEnhanceGate()
       applyTheme()
+      track(installPetHooks())
 
       // 3. 设置页那一行：用 enabled 决定是否叠加令牌层，而不是靠点主题。
       //    宿主的主题偏好只认 light / dark / system，

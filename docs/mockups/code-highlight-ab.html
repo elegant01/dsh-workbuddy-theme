@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>代码高亮 A/B：DSH 现状 vs WorkBuddy 风格</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    font-family: 'PingFang SC', system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei UI', sans-serif;
+    background: #ffffff;
+    color: #0f1115;
+    padding: 32px 40px 40px;
+  }
+  h1 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .sub { font-size: 12px; color: #00000080; margin-bottom: 24px; }
+  .cols { display: flex; gap: 24px; align-items: flex-start; }
+  .col { flex: 1; min-width: 0; }
+  .col h2 { font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+  .col h2 .tag {
+    display: inline-block; font-size: 11px; font-weight: 400;
+    color: #00000066; margin-left: 8px;
+  }
+  pre {
+    font-family: 'Cascadia Code', 'JetBrains Mono', Consolas, 'Courier New', monospace;
+    border-radius: 12px;
+    padding: 16px;
+    overflow-x: auto;
+    line-height: 19px;
+    font-size: 12px;
+    white-space: pre;
+  }
+  pre.wb { border-radius: 8px; font-size: 13px; line-height: 20px; }
+
+  /* ===== DSH 现状：shiki 令牌（从 app.asar 量出） ===== */
+  .dsh { background: #f9fafb; color: #0f1115; }
+  .dsh .k { color: #d6336c; }   /* keyword 玫红 */
+  .dsh .f { color: #6741d9; }   /* function 紫 */
+  .dsh .s { color: #2f9e44; }   /* string 绿 */
+  .dsh .n { color: #1c7ed6; }   /* number/constant 蓝 */
+  .dsh .c { color: #868e96; }   /* comment 灰 */
+  .dsh .p { color: #e8590c; }   /* parameter 橙 */
+  .dsh .u { color: #495057; }   /* punctuation */
+
+  /* ===== WorkBuddy 风格：--wb-code-syntax-*（GitHub 浅色系） ===== */
+  .wb { background: #f6f8fa; color: #1f2328; }
+  .wb .k { color: #0550ae; }    /* keyword 深蓝 */
+  .wb .f { color: #8250df; }    /* function 紫 */
+  .wb .s { color: #0a3069; }    /* string 藏青 */
+  .wb .n { color: #953800; }    /* number 橙棕 */
+  .wb .c { color: #6e7781; font-style: italic; } /* comment 灰 + 斜体 */
+  .wb .p { color: #1f2328; }    /* parameter 随正文 */
+  .wb .u { color: #1f2328; }    /* punctuation 随正文 */
+
+  .legend { margin-top: 14px; font-size: 11px; color: #00000066; line-height: 1.9; }
+  .legend b { font-weight: 600; color: #000000b3; }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin: 0 4px 0 10px; vertical-align: -1px; border: 1px solid #0000001a; }
+</style>
+</head>
+<body>
+  <h1>代码语法高亮：DSH 现状 vs WorkBuddy 风格</h1>
+  <div class="sub">同一段代码。左 = DSH 现有 shiki 配色（现状，主题未动语法色）；右 = 提案：搬 WorkBuddy 的 --wb-code-syntax-*（GitHub 浅色系）。色值均从各自安装包量出。</div>
+  <div class="cols">
+    <div class="col">
+      <h2>DSH 现状<span class="tag">shiki 令牌 · 12px · 圆角 12</span></h2>
+      <pre class="dsh"><span class="c">// 拉取会话列表并按时间排序</span>
+<span class="k">async function</span> <span class="f">loadSessions</span><span class="u">(</span><span class="p">profile</span><span class="u">,</span> <span class="p">limit</span> <span class="u">=</span> <span class="n">20</span><span class="u">)</span> <span class="u">{</span>
+  <span class="k">const</span> <span class="u">res</span> <span class="u">=</span> <span class="k">await</span> <span class="f">fetch</span><span class="u">(</span><span class="s">`/api/profiles/${profile}/sessions`</span><span class="u">);</span>
+  <span class="k">if</span> <span class="u">(!</span><span class="u">res</span><span class="u">.</span><span class="u">ok</span><span class="u">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span><span class="u">(</span><span class="s">'加载失败'</span><span class="u">);</span>
+  <span class="k">const</span> <span class="u">list</span> <span class="u">=</span> <span class="k">await</span> <span class="u">res</span><span class="u">.</span><span class="f">json</span><span class="u">();</span>
+  <span class="k">return</span> <span class="u">list</span>
+    <span class="u">.</span><span class="f">sort</span><span class="u">((</span><span class="p">a</span><span class="u">,</span> <span class="p">b</span><span class="u">)</span> <span class="k">=&gt;</span> <span class="p">b</span><span class="u">.</span><span class="u">mtime</span> <span class="u">-</span> <span class="p">a</span><span class="u">.</span><span class="u">mtime</span><span class="u">)</span>
+    <span class="u">.</span><span class="f">slice</span><span class="u">(</span><span class="n">0</span><span class="u">,</span> <span class="p">limit</span><span class="u">);</span>
+<span class="u">}</span></pre>
+      <div class="legend">
+        <b>DSH 用色：</b>
+        <span class="sw" style="background:#d6336c"></span>关键字 #d6336c
+        <span class="sw" style="background:#6741d9"></span>函数 #6741d9
+        <span class="sw" style="background:#2f9e44"></span>字符串 #2f9e44<br>
+        <span class="sw" style="background:#1c7ed6"></span>数字/常量 #1c7ed6
+        <span class="sw" style="background:#e8590c"></span>参数 #e8590c
+        <span class="sw" style="background:#868e96"></span>注释 #868e96（不斜体）
+        <span class="sw" style="background:#495057"></span>标点 #495057
+      </div>
+    </div>
+    <div class="col">
+      <h2>WorkBuddy 风格（提案）<span class="tag">--wb-code-syntax-* · 13px · 圆角 8</span></h2>
+      <pre class="wb"><span class="c">// 拉取会话列表并按时间排序</span>
+<span class="k">async function</span> <span class="f">loadSessions</span><span class="u">(</span><span class="p">profile</span><span class="u">,</span> <span class="p">limit</span> <span class="u">=</span> <span class="n">20</span><span class="u">)</span> <span class="u">{</span>
+  <span class="k">const</span> <span class="u">res</span> <span class="u">=</span> <span class="k">await</span> <span class="f">fetch</span><span class="u">(</span><span class="s">`/api/profiles/${profile}/sessions`</span><span class="u">);</span>
+  <span class="k">if</span> <span class="u">(!</span><span class="u">res</span><span class="u">.</span><span class="u">ok</span><span class="u">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="f">Error</span><span class="u">(</span><span class="s">'加载失败'</span><span class="u">);</span>
+  <span class="k">const</span> <span class="u">list</span> <span class="u">=</span> <span class="k">await</span> <span class="u">res</span><span class="u">.</span><span class="f">json</span><span class="u">();</span>
+  <span class="k">return</span> <span class="u">list</span>
+    <span class="u">.</span><span class="f">sort</span><span class="u">((</span><span class="p">a</span><span class="u">,</span> <span class="p">b</span><span class="u">)</span> <span class="k">=&gt;</span> <span class="p">b</span><span class="u">.</span><span class="u">mtime</span> <span class="u">-</span> <span class="p">a</span><span class="u">.</span><span class="u">mtime</span><span class="u">)</span>
+    <span class="u">.</span><span class="f">slice</span><span class="u">(</span><span class="n">0</span><span class="u">,</span> <span class="p">limit</span><span class="u">);</span>
+<span class="u">}</span></pre>
+      <div class="legend">
+        <b>WorkBuddy 用色：</b>
+        <span class="sw" style="background:#0550ae"></span>关键字 #0550ae
+        <span class="sw" style="background:#8250df"></span>函数 #8250df
+        <span class="sw" style="background:#0a3069"></span>字符串 #0a3069<br>
+        <span class="sw" style="background:#953800"></span>数字 #953800
+        <span class="sw" style="background:#1f2328"></span>参数/标点 随正文
+        <span class="sw" style="background:#6e7781"></span>注释 #6e7781（斜体）
+      </div>
+    </div>
+  </div>
+</body>
+</html>
